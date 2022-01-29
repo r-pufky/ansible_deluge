@@ -1,0 +1,16 @@
+[Unit]
+Description=Deluge Bittorrent Client Web Interface
+Documentation=man:deluge-web
+After=network-online.target deluged.service
+Wants=deluged.service
+
+[Service]
+User={{ deluge_user }}
+Group={{ deluge_group }}
+Type=simple
+UMask=027
+ExecStart=/usr/bin/deluge-web -d --logfile {{ deluge_log }}/web.log --loglevel {{ deluge_log_level }} --logrotate --config {{ deluge_config }}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
