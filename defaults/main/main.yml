@@ -18,9 +18,6 @@ deluge_log:            '/var/log/deluge'
 # Logging level.
 deluge_log_level:      'warning'
 
-# Subdomain hint for deluge service.
-deluge_subdomain:      'deluge'
-
 ###############################################################################
 # Deluge core.conf configuration
 ###############################################################################
