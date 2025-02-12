@@ -1,0 +1,48 @@
+---
+###############################################################################
+# Plugins (core.conf)
+###############################################################################
+# Custom plugins must be managed manually.
+
+# Enabled plugins.
+#
+# Included plugins may be enabled; manage settings via defaults/plugins.
+#
+#
+# Values:
+#         AutoAdd: Multiple watch folder support.
+#       Blocklist: Download and import IP blocklists.
+#         Execute: Executes a command upon an event.
+#       Extractor: Extracts files upon completion.
+#           Label: Assign labels to torrents for custom actions.
+#   Notifications: Provides Email, Popup, Blink and Sound notifications.
+#       Scheduler: Limit Deluge bandwidth depending on schedule.
+#           Stats: Displays pretty graphs of statistics. This enables tracking
+#                  data only; there is no WebUI display and no additional
+#                  options.
+#          Toggle: Allows the users to set the session to either paused or
+#                  resumed. No additional configuration options.
+#
+# deluge_core_enabled_plugins:
+#   - 'AutoAdd'
+#   - 'Blocklist'
+#
+# Default: [].
+#
+# Reference:
+# * https://deluge-torrent.org/plugins/
+deluge_core_enabled_plugins: []
+
+# Path to deluge plugin eggs.
+#
+# Sourced from ansible controller; automatically placed in
+# deluge_service_config_dir/config/plugins/ with correct permissions. Deluge
+# will be automatically configured to use the installed location.
+#
+# deluge_plugins_install: 'host_vars/deluge.example.com/data/plugins'
+#
+# Default: '' (disabled).
+#
+# Reference:
+# * https://deluge-torrent.org/plugins/
+deluge_core_install_plugins_source: ''

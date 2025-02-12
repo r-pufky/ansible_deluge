@@ -1,0 +1,41 @@
+---
+# yamllint disable rule:line-length
+- name: 'Default | verify'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | gather service status'
+      ansible.builtin.service_facts:
+
+    # Deluge will fail if configuration is bad.
+    - name: 'Default | verify | assert deluged.service active'
+      ansible.builtin.assert:
+        that:
+          - '"deluged.service" in ansible_facts.services'
+          - 'ansible_facts["services"]["deluged.service"]["state"] == "running"'
+        fail_msg: 'deluged.service should be enabled and running.'
+
+    - name: 'Default | verify | assert deluge-web.service active'
+      ansible.builtin.assert:
+        that:
+          - '"deluge-web.service" in ansible_facts.services'
+          - 'ansible_facts["services"]["deluge-web.service"]["state"] == "running"'
+        fail_msg: 'deluge-web.service should be enabled and running.'
+
+    - name: 'Default | verify | query /var/lib/deluge'
+      ansible.builtin.file:
+        path: '/var/lib/deluge'
+        owner: 'media'
+        group: 'media'
+        mode: '0750'
+      check_mode: true
+      diff: true
+      register: _test_deluge_var_lib
+
+    - name: 'Default | verify | assert /var/lib/deluge'
+      ansible.builtin.assert:
+        that:
+          - not _test_deluge_var_lib.changed
+        fail_msg: >
+          /var/lib/deluge should exist as 0750 media:media
+          ({{ _test_deluge_var_lib.diff }}).

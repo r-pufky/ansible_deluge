@@ -1,0 +1,25 @@
+---
+###############################################################################
+# Extractor Plugin
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+#
+# Extracts files upon completion.
+#
+# Reference:
+# * https://deluge-torrent.org/plugins/#plugins-included
+
+# deluge_plugins_extractor:
+#     dict - auto extract torrent plugin.
+#   extract_path: str - absolute path to extract torrents to.
+#       Default: deluge_core_download_location.
+#   use_name_folder: bool - create a torrent named sub-folder?
+#       Default: True.
+#
+# deluge_plugins_extractor:
+#   extract_path: '/data/downloads'
+#   use_name_folder: true
+#
+# Default: {}.
+deluge_plugins_extractor: {}

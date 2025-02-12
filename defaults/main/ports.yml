@@ -1,18 +1,19 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
 # Ports Configuration
 ###############################################################################
-# Ports should be managed externally via an OS role.
+# Manage firewall with r_pufky.srv.ufw.
 #
 # Reference:
-# * https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html
+# * https://github.com/r-pufky/ansible_ufw
 
-ports:
-  - {proto: 'tcp', from_ip: 'any', to_port: 8112, direction: 'in', comment: 'deluge http'}
+deluge_ports:
+  - {proto: 'tcp', from_ip: 'any', to_port: 8112, direction: 'in', comment: 'deluge WebUI'}
   - {proto: 'tcp', from_ip: 'any', to_port: 8080, direction: 'in', comment: 'deluge socks proxy'}
   - {proto: 'tcp', from_ip: 'any', to_port: 6881, direction: 'in', comment: 'deluge inbound torrent service'}
   - {proto: 'udp', from_ip: 'any', to_port: 6881, direction: 'in', comment: 'deluge inbound torrent service'}
   - {proto: 'tcp', from_ip: 'any', to_port: 6891, direction: 'in', comment: 'deluge inbound torrent service'}
   - {proto: 'udp', from_ip: 'any', to_port: 6891, direction: 'in', comment: 'deluge inbound torrent service'}
-  # - {proto: 'tcp', to_ip: 'any', to_port: 0, direction: 'out', comment: 'deluge outbound torrent service'}
-  # - {proto: 'udp', to_ip: 'any', to_port: 0, direction: 'out', comment: 'deluge outbound torrent service'}
+  - {proto: 'tcp', to_ip: 'any', to_port: 0, direction: 'out', comment: 'deluge outbound torrent service'}
+  - {proto: 'udp', to_ip: 'any', to_port: 0, direction: 'out', comment: 'deluge outbound torrent service'}

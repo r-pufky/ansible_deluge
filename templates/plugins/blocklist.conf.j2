@@ -1,0 +1,15 @@
+{
+    "file": 1,
+    "format": 1
+}{
+    "check_after_days": {{ _deluge_plugins_blocklist.check_after_days }},
+    "last_update": {{ _deluge_plugins_blocklist.last_update }},
+    "list_compression": "{{ _deluge_plugins_blocklist.list_compression }}",
+    "list_size": {{ _deluge_plugins_blocklist.list_size }},
+    "list_type": "{{ _deluge_plugins_blocklist.list_type }}",
+    "load_on_start": {{ _deluge_plugins_blocklist.load_on_start | string | lower }},
+    "timeout": {{ _deluge_plugins_blocklist.timeout }},
+    "try_times": {{ _deluge_plugins_blocklist.try_times }},
+    "url": "{{ _deluge_plugins_blocklist.url }}",
+    "whitelisted": {{ _deluge_plugins_blocklist.whitelisted }}
+}

@@ -1,0 +1,23 @@
+---
+# yamllint disable rule:line-length
+- name: 'Extensions | verify'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Extensions | verify | gather service status'
+      ansible.builtin.service_facts:
+
+    # Deluge will fail if configuration is bad (r_pufky.srv.systemd)
+    - name: 'Extensions | verify | assert deluged.service active'
+      ansible.builtin.assert:
+        that:
+          - '"deluged.service" in ansible_facts.services'
+          - 'ansible_facts["services"]["deluged.service"]["state"] == "running"'
+        fail_msg: 'deluged.service should be enabled and running.'
+
+    - name: 'Extensions | verify | assert deluge-web.service active'
+      ansible.builtin.assert:
+        that:
+          - '"deluge-web.service" in ansible_facts.services'
+          - 'ansible_facts["services"]["deluge-web.service"]["state"] == "running"'
+        fail_msg: 'deluge-web.service should be enabled and running.'

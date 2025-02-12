@@ -1,0 +1,129 @@
+---
+###############################################################################
+# Deluge Role Templates
+###############################################################################
+# Default dictionary templates are used as a base dictionary with user settings
+# merged into them to provide a known good dictionary of settings with defaults
+# if user has not specified all values.
+#
+# These should only be changed if new values are added to the config.
+
+# Template encryption values.
+deluge_role_template_encryption:
+  force: 0
+  disable: 1
+  either: 2
+  handshake: 0
+  full: 1
+
+# Template proxy types.
+deluge_role_template_proxy_type:
+  '': 0
+  socks4: 1
+  socks5: 2
+  socks5_auth: 3
+  http: 4
+  http_auth: 5
+  i2p: 6
+
+# Plugin AutoAdd defaults.
+deluge_role_template_auto_add:
+  - test_id: 1
+    abs_path: ''
+    path: ''
+    enabled: true
+    append_extension_toggle: false
+    append_extension: '.added'
+    copy_torrent_toggle: false
+    copy_torrent: ''
+    delete_copy_torrent_toggle: false
+    download_location_toggle: false
+    download_location: ''
+    move_completed: true
+    move_completed_toggle: false
+    move_completed_path: ''
+    owner: 'localclient'
+    max_download_speed_toggle: false
+    max_download_speed: -1
+    max_upload_speed_toggle: false
+    max_upload_speed: -1
+    max_connections_speed_toggle: false
+    max_connections_speed: -1
+    max_upload_slots_toggle: false
+    max_upload_slots: -1
+    add_paused_toggle: false
+    add_paused: true
+    add_queue_to_top_toggle: false
+    add_queue_to_top: true
+    auto_managed_toggle: false
+    auto_managed: true
+    stop_ratio_toggle: false
+    stop_ratio: 0
+    stop_at_ratio_toggle: false
+    stop_at_ratio: false
+    remove_at_ratio_toggle: false
+    remove_at_ratio: false
+    seed_mode: true
+    label_toggle: false
+    label: ''
+
+# Plugin Blocklist defaults:
+deluge_role_template_blocklist:
+  url: ''
+  check_after_days: 4
+  load_on_start: false
+  timeout: 180
+  try_times: 3
+  last_update: 0.0
+  list_compression: ''
+  list_size: 0
+  list_type: ''
+  whitelisted: []
+  blocklist: ''
+
+# Plugin Execute defaults:
+deluge_role_template_execute:
+  event: 'added'
+  command: ''
+
+# Plugin Extractor defaults:
+deluge_role_template_extractor:
+  extract_path: '{{ deluge_core_download_location }}'
+  use_name_folder: true
+
+# Plugin Label defaults:
+deluge_role_template_label:
+  name: ''
+  apply_max: false
+  apply_move_completed: false
+  apply_queue: false
+  auto_add: false
+  auto_add_trackers: []
+  is_auto_managed: false
+  max_connections: -1
+  max_download_speed: -1
+  max_upload_slots: -1
+  max_upload_speed: -1
+  move_completed: false
+  move_completed_path: ''
+  prioritize_first_last: false
+  remove_at_ratio: false
+  stop_at_ratio: false
+  stop_ratio: 2.0
+  # torrent_labels are active downloading torrent label associations.
+
+# Plugin Scheduler defaults:
+deluge_role_template_scheduler:
+  mon: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  tue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  wed: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  thr: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  fri: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  sat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  sun: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  low_active: 8
+  low_active_down: 3
+  low_active_up: 5
+  low_down: -1
+  low_up: -1
+  # only executed if it is set, no template render check needed.

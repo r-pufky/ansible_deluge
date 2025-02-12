@@ -1,0 +1,56 @@
+---
+###############################################################################
+# Install Deluge Packages
+###############################################################################
+# Deluge requires APT Debian components contrib, non-free to be enabled for all
+# dependencies to be installed.
+#
+# Attempt to install packages. If failed, install Debian repository components
+# and re-run install if enabled.
+
+- name: 'Install'
+  block:
+    - name: 'Install | packages'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.apt'
+      vars:
+        apt_packages:
+          - '{{ deluge_role_packages }}'
+        apt_package_update_cache: true
+  rescue:
+    - name: 'Install | APT SOURCE REQUIRED'
+      when: not deluge_service_auto_add_apt_sources_enable
+      ansible.builtin.fail:
+        msg: |
+          Required packages could not be installed.
+
+          Deluge requires APT Debian components:
+          * contrib
+          * non-free
+
+          Enable deluge_service_auto_add_apt_sources_enable or manage APT
+          outside of this role.
+
+    - name: 'Install | APT SOURCE REQUIRED'
+      when: not deluge_service_auto_add_apt_sources_enable
+      ansible.builtin.fail:
+        msg: |
+          Required packages could not be installed.
+
+          Deluge requires APT Debian components:
+          * contrib
+          * non-free
+
+          deluge_service_auto_add_apt_sources_enable=true
+
+          Automatically adding required Debian components ...
+
+    - name: 'Install | packages (modify APT debian repository)'
+      when: deluge_service_auto_add_apt_sources_enable
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.apt'
+      vars:
+        apt_packages:
+          - '{{ deluge_role_packages }}'
+        apt_sources: '{{ deluge_role_apt_debian_all }}'
+        apt_package_update_cache: true

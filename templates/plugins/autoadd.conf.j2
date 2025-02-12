@@ -1,0 +1,54 @@
+{
+    "file": 2,
+    "format": 1
+}{
+{% if _deluge_plugins_auto_add is defined and _deluge_plugins_auto_add | length > 0 %}
+    "next_id": {{ _deluge_plugins_auto_add | length + 1 }},
+    "watchdirs": {
+{% for auto in _deluge_plugins_auto_add %}
+        "{{ auto.id }}": {
+            "abspath": "{{ auto.abs_path }}",
+            "path": "{{ auto.abs_path }}",
+            "enabled": {{ auto.enabled | string | lower }},
+            "append_extension_toggle": {{ auto.append_extension_toggle | string | lower }},
+            "append_extension": "{{ auto.append_extension }}",
+            "copy_torrent_toggle": {{ auto.copy_torrent_toggle | string | lower }},
+            "copy_torrent": "{{ auto.copy_torrent }}",
+            "delete_copy_torrent_toggle": {{ auto.delete_copy_torrent_toggle | string | lower }},
+            "download_location_toggle": {{ auto.download_location_toggle | string | lower }},
+            "download_location": "{{ auto.download_location }}",
+            "move_completed": {{ auto.move_completed | string | lower }},
+            "move_completed_toggle": {{ auto.move_completed_toggle | string | lower }},
+            "move_completed_path": "{{ auto.move_completed_path }}",
+            "owner": "{{ auto.owner }}",
+            "max_download_speed_toggle": {{ auto.max_download_speed_toggle | string | lower }},
+            "max_download_speed": {{ auto.max_download_speed }},
+            "max_upload_speed_toggle": {{ auto.max_upload_speed_toggle | string | lower }},
+            "max_upload_speed": {{ auto.max_upload_speed }},
+            "max_connections_speed_toggle": {{ auto.max_connections_speed_toggle | string | lower }},
+            "max_connections_speed": {{ auto.max_connections_speed }},
+            "max_upload_slots_toggle": {{ auto.max_upload_slots_toggle | string | lower }},
+            "max_upload_slots": {{ auto.max_upload_slots }},
+            "add_paused_toggle": {{ auto.add_paused_toggle | string | lower }},
+            "add_paused": {{ auto.add_paused | string | lower }},
+            "add_queue_to_top_toggle": {{ auto.add_queue_to_top_toggle | string | lower }},
+            "add_queue_to_top": {{ auto.add_queue_to_top | string | lower }},
+            "auto_managed_toggle": {{ auto.auto_managed_toggle | string | lower }},
+            "auto_managed": {{ auto.auto_managed | string | lower }},
+            "stop_ratio_toggle": {{ auto.stop_ratio_toggle | string | lower }},
+            "stop_ratio": {{ auto.stop_ratio | string | lower }},
+            "stop_at_ratio_toggle": {{ auto.stop_at_ratio_toggle | string | lower }},
+            "stop_at_ratio": {{ auto.stop_at_ratio | string | lower }},
+            "remove_at_ratio_toggle": {{ auto.remove_at_ratio_toggle | string | lower }},
+            "remove_at_ratio": {{ auto.remove_at_ratio | string | lower }},
+            "seed_mode": {{ auto.seed_mode | string | lower }},
+            "label_toggle": {{ auto.label_toggle | string | lower }},
+            "label": "{{ auto.label }}"
+        }
+{% endfor %}
+{% else %}
+    "next_id": 1,
+    "watchdirs": {}
+{% endif %}
+    }
+}

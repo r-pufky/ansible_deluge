@@ -1,0 +1,59 @@
+---
+###############################################################################
+# Proxy (core.conf)
+###############################################################################
+
+# Proxy type.
+#
+# Values:
+#            '': no proxy. 0
+#        socks4: Socks4 proxy. 1
+#        socks5: Socks5 proxy. 2
+#   socks5_auth: Socks5 proxy with authentication. 3
+#          http: HTTP proxy. 4
+#     http_auth: HTTP proxy with authentication. 5
+#           i2p: I2P proxy. https://geti2p.net/en/. 6
+deluge_core_type: ''
+
+# Proxy host. Default: ''.
+deluge_core_hostname: ''
+
+# Proxy port. Default: 8080.
+deluge_core_port: 8080
+
+# Enable proxy peers? Default: True.
+deluge_core_peer_connections: true
+
+# Enable proxy trackers? Default: True.
+deluge_core_proxy_tracker_connections: true
+
+# Enable proxy hostnames?
+#
+# Only applies to deluge_core_type=socks5,socks5_auth,http,http_auth.
+#
+# Default: True.
+deluge_core_proxy_hostnames: true
+
+# Proxy username.
+#
+# Only applies to deluge_core_type=sock5_auth,http_auth.
+#
+# Default: ''.
+deluge_core_username: ''
+
+# Proxy password.
+#
+# Only applies to deluge_core_type=sock5_auth,http_auth.
+#
+# Default: ''.
+deluge_core_password: ''
+
+###############################################################################
+# Force Proxy
+###############################################################################
+
+# Force use of proxy? Default: False.
+deluge_core_force_proxy: false
+
+# Hide client identity? Default: False.
+deluge_core_anonymous_mode: false

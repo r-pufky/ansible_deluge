@@ -1,0 +1,28 @@
+---
+###############################################################################
+# Other (core.conf)
+###############################################################################
+
+# Be alerted about new releases? Default: False.
+deluge_core_new_release_check: false
+
+# Send anonymous usage statistics? Default: False.
+deluge_core_send_info: false
+
+# GeoIP Database location. Default: '/usr/share/GeoIP/GeoIP.dat'.
+deluge_core_geoip_db_location: '/usr/share/GeoIP/GeoIP.dat'
+
+###############################################################################
+# Non WebUI Options (core.conf)
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+
+# Time elapsed since last anonymous statistics data push (seconds).
+#
+# Triggers statistics to send if greater than a week and
+# deluge_core_send_info=true. This is automatically incremented during normal
+# Deluge use.
+#
+# Default: 0.0.
+deluge_core_info_sent: 0.0

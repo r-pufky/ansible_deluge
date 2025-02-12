@@ -3,18 +3,14 @@
 # Deluge Handlers
 ###############################################################################
 
-- name: 'reload systemd'
+- name: 'Handlers | restart deluged'
   ansible.builtin.systemd:
-    daemon-reload: true
-
-- name: 'restart deluge'
-  ansible.builtin.systemd:
-    name:    'deluge'
+    name: 'deluged'
     enabled: true
-    state:   'restarted'
+    state: 'restarted'
 
-- name: 'restart deluge-web'
+- name: 'Handlers | restart deluge-web'
   ansible.builtin.systemd:
-    name:    'deluge-web'
+    name: 'deluge-web'
     enabled: true
-    state:   'restarted'
+    state: 'restarted'
