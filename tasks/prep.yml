@@ -1,0 +1,197 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Deluge Prep
+###############################################################################
+# Deluge install from deb packages are categorically broken. There are no
+# debconf options.
+#
+# Prepare system for install by creating user/group for service, add drop-in
+# for user/group service override, and sanitize (standardize with default
+# values if not set) Deluge configuration.
+#
+# Debian install places services in /var/{lib,log}/deluged owned by
+# debian-deluged. Create /var/{lib,log}/deluge with configured user and
+# override services for those users and new location. Leave package locations
+# untouched to ensure package upgrades work properly.
+#
+# Do not remove the default (debian-deluged) user as this will put APT in a
+# broken state. Instead ensure the account is fully locked.
+#
+# The default password is 'deluge' and is hardcoded if a password is not set
+# in web.conf.
+#
+# For updates search the source code for undocumented variable usage and
+# changes.
+#
+# Generates:
+#   _deluge_uid: int - deluge user UID.
+#   _deluge_gid: int - deluge user GID.
+#
+# Reference:
+# * https://deluge-torrent.org/
+# * https://deluge.readthedocs.io/en/latest/how-to/systemd-service.html
+# * https://archlinuxarm.org/forum/viewtopic.php?f=30&t=7729
+# * https://linuxconfig.org/set-up-a-headless-deluge-server-on-linux
+# * https://serverfault.com/questions/22414/how-can-i-run-debian-stable-but-install-some-packages-from-testing
+
+- name: 'Prep | assert SSL requirements'
+  when: deluge_web_https
+  ansible.builtin.assert:
+    that:
+      - deluge_web_ssl_cert_path | length > 0
+      - deluge_web_ssl_key_path | length > 0
+    fail_msg: >
+      deluge_web_https=true requires
+      deluge_web_ssl_cert_path and deluge_web_ssl_key_path set.
+
+- name: 'Prep | manage users'
+  when: deluge_create_user
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.users'
+    tasks_from: 'role_account_add.yml'
+  vars:
+    users_role_group: '{{ deluge_role_group }}'
+    users_role_user: '{{ deluge_role_user }}'
+
+- name: 'Prep | enumerate system user {{ deluge_user }}'
+  ansible.builtin.user:
+    name: '{{ deluge_user }}'
+  check_mode: true
+  changed_when: false
+  register: _deluge_user_query
+
+- name: 'Prep | parse system user UID/GID'
+  ansible.builtin.set_fact:
+    _deluge_uid: '{{ _deluge_user_query.uid }}'
+    _deluge_gid: '{{ _deluge_user_query.group }}'
+
+# Sanitize service configuration. Deluge configuration files are JSON with some
+# fields strictly enforced. Map flat role settings to the equivalent JSON
+# settings with defaults; handling int, float cases where to_json converts
+# these values to strings -- causing the service to fail. Order does not matter
+# but will change based on WebUI usage and what values were changed last. This
+# can lead to 'changed' configurations when no values were actually changed.
+- name: 'Prep | build config'
+  ansible.builtin.set_fact:
+    _deluge_core: {
+      # Downloads
+      download_location: '{{ deluge_core_download_location | default("/var/lib/deluge/Downloads") }}',
+      move_completed: '{{ deluge_core_move_completed | default(false) | bool | string | lower }}',
+      move_completed_path: '{{ deluge_core_move_completed_path | default("/var/lib/deluge/Downloads") }}',
+      copy_torrent_file: '{{ deluge_core_copy_torrent_file | default(false) | bool | string | lower }}',
+      torrentfiles_location: '{{ deluge_core_torrentfiles_location | default("/var/lib/deluge/Downloads") }}',
+      prioritize_first_last_pieces: '{{ deluge_core_prioritize_first_last_pieces | default(false) | bool | string | lower }}',
+      sequential_download: '{{ deluge_core_sequential_download | default(false) | bool | string | lower }}',
+      add_paused: '{{ deluge_core_add_paused | default(false) | bool | string | lower }}',
+      pre_allocate_storage: '{{ deluge_core_pre_allocate_storage | default(false) | bool | string | lower }}',
+      download_location_paths_list: '{{ deluge_core_download_location_paths_list | default([]) }}',
+      move_completed_paths_list: '{{ deluge_core_move_completed_paths_list | default([]) }}',
+      del_copy_torrent_file: '{{ deluge_core_del_copy_torrent_file | default(false) | bool | string | lower }}',
+      auto_managed: '{{ deluge_core_auto_managed | default(true) | bool | string | lower }}',
+      shared: '{{ deluge_core_shared | default(false) | bool | string | lower }}',
+      # Network
+      listen_interface: '{{ deluge_core_listen_interface | default("") }}',
+      random_port: '{{ deluge_core_random_port | default(true) | bool | string | lower }}',
+      listen_ports: '{{ deluge_core_listen_ports.values() | default([6881, 6891]) }}',
+      outgoing_interface: '{{ deluge_core_outgoing_interface | default("") }}',
+      random_outgoing_ports: '{{ deluge_core_random_outgoing_ports | default(true) | bool | string | lower }}',
+      outgoing_ports: '{{ deluge_core_outgoing_ports.values() | default([0, 0]) }}',
+      upnp: '{{ deluge_core_upnp | default(true) | bool | string | lower }}',
+      natpmp: '{{ deluge_core_natpmp | default(true) | bool | string | lower }}',
+      utpex: '{{ deluge_core_utpex | default(true) | bool | string | lower }}',
+      lsd: '{{ deluge_core_lsd | default(true) | bool | string | lower }}',
+      dht: '{{ deluge_core_dht | default(true) | bool | string | lower }}',
+      peer_tos: '{{ deluge_core_peer_tos | default("0x00") }}',
+      listen_random_port: '{{ deluge_core_listen_random_port | default(49152 + (16373 | random)) }}',
+      listen_reuse_port: '{{ deluge_core_listen_reuse_port | default(true) | bool | string | lower }}',
+      listen_use_sys_port: '{{ deluge_core_listen_use_sys_port | default(false) | bool | string | lower }}',
+      super_seeding: '{{ deluge_core_super_seeding | default(false) | bool | string | lower }}',
+      # Encryption
+      enc_in_policy: '{{ deluge_role_template_encryption[deluge_core_enc_in_policy | default("force")] }}',
+      enc_level: '{{ deluge_role_template_encryption[deluge_core_enc_out_policy | default("force")] }}',
+      enc_out_policy: '{{ deluge_role_template_encryption[deluge_core_enc_level | default("full")] }}',
+      # Bandwidth
+      max_connections_global: '{{ deluge_core_max_connections_global | default(200) }}',
+      max_upload_slots_global: '{{ deluge_core_max_upload_slots_global | default(4) }}',
+      max_download_speed: '{{ deluge_core_max_download_speed | default(-1) | float }}',
+      max_upload_speed: '{{ deluge_core_max_upload_speed | default(-1) | float }}',
+      max_half_open_connections: '{{ deluge_core_max_half_open_connections | default(50) }}',
+      max_connections_per_second: '{{ deluge_core_max_connections_per_second | default(20) }}',
+      ignore_limits_on_local_network: '{{ deluge_core_ignore_limits_on_local_network | default(true) | bool | string | lower }}',
+      rate_limit_ip_overhead: '{{ deluge_core_rate_limit_ip_overhead | default(true) | bool | string | lower }}',
+      max_connections_per_torrent: '{{ deluge_core_max_connections_per_torrent | default(-1) }}',
+      max_upload_slots_per_torrent: '{{ deluge_core_max_upload_slots_per_torrent | default(-1) }}',
+      max_download_speed_per_torrent: '{{ deluge_core_max_download_speed_per_torrent | default(-1) }}',
+      max_upload_speed_per_torrent: '{{ deluge_core_max_upload_speed_per_torrent | default(-1) }}',
+      # Interface
+      path_chooser_accelerator_string: '{{ deluge_core_path_chooser_accelerator_string | default("Tab") }}',
+      path_chooser_auto_complete_enabled: '{{ deluge_core_path_chooser_auto_complete_enabled | default(true) | bool | string | lower }}',
+      path_chooser_max_popup_rows: '{{ deluge_core_path_chooser_max_popup_rows | default(20) }}',
+      path_chooser_show_chooser_button_on_localhost: '{{ deluge_core_path_chooser_show_chooser_button_on_localhost | default(true) | bool | string | lower }}',
+      path_chooser_show_hidden_files: '{{ deluge_core_path_chooser_show_hidden_files | default(false) | bool | string | lower }}',
+      # Other
+      new_release_check: '{{ deluge_core_new_release_check | default(false) | bool | string | lower }}',
+      send_info: '{{ deluge_core_send_info | default(false) | bool | string | lower }}',
+      geoip_db_location: '{{ deluge_core_geoip_db_location | default("/usr/share/GeoIP/GeoIP.dat") }}',
+      info_sent: '{{ deluge_core_info_sent | default(0.0) | float }}',
+      # Daemon
+      daemon_port: '{{ deluge_core_daemon_port | default(58846) }}',
+      allow_remote: '{{ deluge_core_allow_remote | default(false) | bool | string | lower }}',
+      # Queue
+      queue_new_to_top: '{{ deluge_core_queue_new_to_top | default(false) | bool | string | lower }}',
+      max_active_limit: '{{ deluge_core_max_active_limit | default(8) }}',
+      max_active_downloading: '{{ deluge_core_max_active_downloading | default(3) }}',
+      max_active_seeding: '{{ deluge_core_max_active_seeding | default(5) }}',
+      dont_count_slow_torrents: '{{ deluge_core_dont_count_slow_torrents | default(false) | bool | string | lower }}',
+      auto_manage_prefer_seeds: '{{ deluge_core_auto_manage_prefer_seeds | default(false) | bool | string | lower }}',
+      share_ratio_limit: '{{ deluge_core_share_ratio_limit | default(2.0) | float }}',
+      seed_time_ratio_limit: '{{ deluge_core_seed_time_ratio_limit | default(7.0) | float }}',
+      seed_time_limit: '{{ deluge_core_seed_time_limit | default(180) }}',
+      stop_seed_at_ratio: '{{ deluge_core_stop_seed_at_ratio | default(false) | bool | string | lower }}',
+      stop_seed_ratio: '{{ deluge_core_stop_seed_ratio | default(2.0) | float }}',
+      remove_seed_at_ratio: '{{ deluge_core_remove_seed_at_ratio | default(false) | bool | string | lower }}',
+      # Proxy
+      proxy: {
+        type: '{{ deluge_role_template_proxy_type[deluge_core_type] | default(0) }}',
+        hostname: '{{ deluge_core_hostname | default("") }}',
+        port: '{{ deluge_core_port | default(8080) }}',
+        password: '{{ deluge_core_username | default("") }}',
+        username: '{{ deluge_core_password | default("") }}',
+        proxy_hostnames: '{{ deluge_core_proxy_hostnames | default(false) | bool | string | lower }}',
+        proxy_peer_connections: '{{ deluge_core_peer_connections | default(true) | bool | string | lower }}',
+        proxy_tracker_connections: '{{ deluge_core_proxy_tracker_connections | default(true) | bool | string | lower }}',
+        force_proxy: '{{ deluge_core_force_proxy | default(false) | bool | string | lower }}',
+        anonymous_mode: '{{ deluge_core_anonymous_mode | default(false) | bool | string | lower }}',
+      },
+      # Cache
+      cache_size: '{{ deluge_core_cache_size | default(512) }}',
+      cache_expiry: '{{ deluge_core_cache_expiry | default(60) }}',
+      # Plugins
+      enabled_plugins: '{{ deluge_core_enabled_plugins | default([]) }}',
+      plugins_location: '{{ deluge_service_config_dir }}/config/plugins'  # automatically manage plugin location.
+    }
+    _deluge_web: {
+      # Interface
+      show_session_speed: '{{ deluge_web_show_session_speed | default(false) | bool | string | lower }}',
+      sidebar_show_zero: '{{ deluge_web_sidebar_show_zero | default(false) | bool | string | lower }}',
+      sidebar_multiple_filters: '{{ deluge_web_sidebar_multiple_filters | default(false) | bool | string | lower }}',
+      language: '{{ deluge_web_language | default("") }}',
+      # Only render values if deluge_web_pwd_salt set; empty strings will lockout user.
+      pwd_salt: '{{ deluge_web_pwd_salt }}',
+      pwd_sha1: '{{ deluge_web_pwd_sha1 }}',
+      session_timeout: '{{ deluge_web_session_timeout | default(3600) }}',
+      port: '{{ deluge_web_port | default(8112) }}',
+      https: '{{ deluge_web_https | default(false) | bool | string | lower }}',
+      cert: '{{ "{{ deluge_service_config_dir }}/config/ssl/daemon.cert" if deluge_web_https | default(false) else "" }}',  # static placement; var determines controller source.
+      pkey: '{{ "{{ deluge_service_config_dir }}/config/ssl/daemon.pkey" if deluge_web_https | default(false) else "" }}',  # static placement; var determines controller source.
+      # Non WebUI Options
+      theme: '{{ deluge_web_theme | default("gray") }}',
+      show_sidebar: '{{ deluge_web_show_sidebar | default(true) | bool | string | lower }}',
+      first_login: '{{ deluge_web_first_login | default(false) | bool | string | lower }}',
+      interface: '{{ deluge_web_interface | default("0.0.0.0") }}',
+      default_daemon: '{{ deluge_web_default_daemon | default("") }}',
+      sessions: '{}',  # always reset sessions on role application.
+      enabled_plugins: '{{ deluge_core_enabled_plugins | default([]) }}',  # same plugin list as core.conf.
+      base: '/',  # WebUI URL base (application use only, do not change).
+    }

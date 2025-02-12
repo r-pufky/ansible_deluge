@@ -1,0 +1,31 @@
+{
+    "file": 1,
+    "format": 1
+}{
+    "labels": {
+{% if _deluge_plugins_label is defined and _deluge_plugins_label | length > 0 %}
+{% for label in _deluge_plugins_label %}
+        "{{ label.name }}": {
+            "apply_max": {{ label.apply_max | string | lower  }},
+            "apply_move_completed": {{ label.apply_move_completed | string | lower  }},
+            "apply_queue": {{ label.apply_queue | string | lower  }},
+            "auto_add": {{ label.auto_add | string | lower  }},
+            "auto_add_trackers": {{ label.auto_add_trackers | string | lower  }},
+            "is_auto_managed": {{ label.is_auto_managed | string | lower  }},
+            "max_connections": {{ label.max_connections }},
+            "max_download_speed": {{ label.max_download_speed }},
+            "max_upload_slots": {{ label.max_upload_slots }},
+            "max_upload_speed": {{ label.max_upload_speed }},
+            "move_completed": {{ label.move_completed | string | lower  }},
+            "move_completed_path": "{{ label.move_completed_path }}",
+            "prioritize_first_last": {{ label.prioritize_first_last | string | lower  }},
+            "remove_at_ratio": {{ label.remove_at_ratio | string | lower  }},
+            "stop_at_ratio": {{ label.stop_at_ratio | string | lower  }},
+            "stop_ratio": {{ label.stop_ratio }}
+        }{% if not loop.last %},{% endif %}
+{% endfor %}
+{% endif %}
+
+    },
+    "torrent_labels": {}
+}

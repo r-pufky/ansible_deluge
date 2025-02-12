@@ -1,0 +1,163 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Configure Deluge Plugins
+###############################################################################
+# All pre-existing directories should be created in config; only configure
+# specific plugins if they are enabled (e.g. values are specified).
+#
+# WebUI plugin not supported (deluge-web is the WebUI plugin).
+#
+# TODO(2.0.4): Implement notifications plugin when module is fixed.
+#
+# Leaving plugin configurations after being disabled does not affect Deluge.
+#
+# Reference:
+# * https://dev.deluge-torrent.org/ticket/3303
+
+- name: 'Plugins | copy custom plugins'
+  when: deluge_core_install_plugins_source | length > 0
+  block:
+    - name: 'Config | plugins | copy'
+      ansible.posix.synchronize:
+        src: '{{ deluge_core_install_plugins_source if deluge_core_install_plugins_source.endswith("/") else deluge_core_install_plugins_source ~ "/" }}'
+        dest: '{{ deluge_service_config_dir }}/config/plugins'
+        delete: true
+        recursive: true
+        archive: false
+        checksum: true
+
+    - name: 'Config | plugins | set permissions'
+      ansible.builtin.shell: |
+        chown -R {{ deluge_user }}:{{ deluge_group }} '{{ deluge_service_config_dir }}/config/plugins' &&
+        find '{{ deluge_service_config_dir }}/config/plugins' -type d -exec chmod 0770 {} \; &&
+        find '{{ deluge_service_config_dir }}/config/plugins' -type f -exec chmod 0660 {} \;
+      changed_when: false
+
+- name: 'Plugins | autoadd'
+  when: deluge_plugins_auto_add | length > 0
+  block:
+    - name: 'Plugins | autoadd | sanitize deluge_plugins_auto_add'
+      ansible.builtin.set_fact:
+        _deluge_plugins_auto_add: '{{ _deluge_plugins_auto_add | default([]) + [deluge_role_template_auto_add | combine(item)] }}'
+      loop: '{{ deluge_plugins_auto_add }}'
+
+    - name: 'Plugins | autoadd | set autoadd.conf'
+      ansible.builtin.template:
+        src: 'plugins/autoadd.conf.j2'
+        dest: '{{ deluge_service_config_dir }}/config/autoadd.conf'
+        owner: '{{ deluge_user }}'
+        group: '{{ deluge_group }}'
+        mode: '0600'
+      notify:
+        - 'Handlers | restart deluged'
+        - 'Handlers | restart deluge-web'
+
+- name: 'Plugins | blocklist'
+  when: deluge_plugins_blocklist | length > 0
+  block:
+    - name: 'Prep | blocklist | sanitize deluge_plugins_blocklist'
+      ansible.builtin.set_fact:
+        _deluge_plugins_blocklist: '{{ deluge_role_template_blocklist | combine(deluge_plugins_blocklist) }}'
+
+    - name: 'Plugins | blocklist | set blocklist.conf'
+      ansible.builtin.template:
+        src: '{{ item.src }}'
+        dest: '{{ deluge_service_config_dir }}/config/{{ item.dest }}'
+        owner: '{{ deluge_user }}'
+        group: '{{ deluge_group }}'
+        mode: '0600'
+      loop:
+        - {src: 'plugins/blocklist.conf.j2', dest: 'blocklist.conf'}
+        - {src: 'plugins/blocklist.download.j2', dest: 'blocklist.download'}
+      notify:
+        - 'Handlers | restart deluged'
+        - 'Handlers | restart deluge-web'
+
+- name: 'Plugins | execute'
+  when: deluge_plugins_execute | length > 0
+  block:
+    - name: 'Prep | execute | sanitize deluge_plugins_execute'
+      ansible.builtin.set_fact:
+        _deluge_plugins_execute: '{{ deluge_role_template_execute | combine(deluge_plugins_execute) }}'
+
+    - name: 'Prep | execute | copy scripts'
+      ansible.posix.synchronize:
+        src: '{{ deluge_plugins_execute_source if deluge_plugins_execute_source.endswith("/") else deluge_plugins_execute_source ~ "/" }}'
+        dest: '{{ deluge_service_config_dir }}/config/scripts'
+        delete: true
+        recursive: true
+        archive: false
+        checksum: true
+
+    - name: 'Config | execute | set permissions'
+      ansible.builtin.shell: |
+        chown -R {{ deluge_user }}:{{ deluge_group }} '{{ deluge_service_config_dir }}/config/scripts' &&
+        find '{{ deluge_service_config_dir }}/config/scripts' -type f -exec chmod 0750 {} \;
+      changed_when: false
+
+    - name: 'Plugins | execute | set execute.conf'
+      ansible.builtin.template:
+        src: 'plugins/execute.conf.j2'
+        dest: '{{ deluge_service_config_dir }}/config/execute.conf'
+        owner: '{{ deluge_user }}'
+        group: '{{ deluge_group }}'
+        mode: '0600'
+      notify:
+        - 'Handlers | restart deluged'
+        - 'Handlers | restart deluge-web'
+
+- name: 'Plugins | extractor'
+  when: deluge_plugins_extractor | length > 0
+  block:
+    - name: 'Plugins | extractor | sanitize deluge_plugins_extractor'
+      ansible.builtin.set_fact:
+        _deluge_plugins_extractor: '{{ deluge_role_template_extractor | combine(deluge_plugins_extractor) }}'
+
+    - name: 'Plugins | extractor | set extractor.conf'
+      ansible.builtin.template:
+        src: 'plugins/extractor.conf.j2'
+        dest: '{{ deluge_service_config_dir }}/config/extractor.conf'
+        owner: '{{ deluge_user }}'
+        group: '{{ deluge_group }}'
+        mode: '0600'
+      notify:
+        - 'Handlers | restart deluged'
+        - 'Handlers | restart deluge-web'
+
+- name: 'Plugins | label'
+  when: deluge_plugins_label | length > 0
+  block:
+    - name: 'Plugins | label | sanitize deluge_plugins_label'
+      ansible.builtin.set_fact:
+        _deluge_plugins_label: '{{ _deluge_plugins_label | default([]) + [deluge_role_template_label | combine(item)] }}'
+      loop: '{{ deluge_plugins_label }}'
+
+    - name: 'Plugins | label | set label.conf'
+      ansible.builtin.template:
+        src: 'plugins/label.conf.j2'
+        dest: '{{ deluge_service_config_dir }}/config/label.conf'
+        owner: '{{ deluge_user }}'
+        group: '{{ deluge_group }}'
+        mode: '0600'
+      notify:
+        - 'Handlers | restart deluged'
+        - 'Handlers | restart deluge-web'
+
+- name: 'Plugins | scheduler'
+  when: deluge_plugins_scheduler | length > 0
+  block:
+    - name: 'Plugins | scheduler | sanitize deluge_plugins_scheduler'
+      ansible.builtin.set_fact:
+        _deluge_plugins_scheduler: '{{ deluge_role_template_scheduler | combine(deluge_plugins_scheduler) }}'
+
+    - name: 'Plugins | scheduler | set scheduler.conf'
+      ansible.builtin.template:
+        src: 'plugins/scheduler.conf.j2'
+        dest: '{{ deluge_service_config_dir }}/config/scheduler.conf'
+        owner: '{{ deluge_user }}'
+        group: '{{ deluge_group }}'
+        mode: '0600'
+      notify:
+        - 'Handlers | restart deluged'
+        - 'Handlers | restart deluge-web'

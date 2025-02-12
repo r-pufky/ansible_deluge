@@ -1,0 +1,41 @@
+---
+###############################################################################
+# Blocklist Plugin
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+#
+# Download and import IP blocklists.
+#
+# Reference:
+# * https://deluge-torrent.org/plugins/blocklist
+
+# deluge_plugins_blocklist:
+#     dict - blocklist configuration.
+#   url: str - URL to retrieve blocklist from.
+#   check_after_days: int - interval to check for list updates (days).
+#       Default: 4.
+#   load_on_start: bool - import list from URL on startup?
+#       Default: False.
+#   timeout: int - connection timeout limit (seconds).
+#       Default: 180.
+#   try_times: int - number of times to retry connections before failing.
+#       Default: 3.
+#   whitelisted: list of str - IP addresses to whitelist.
+#       Default: []
+#   blocklist: str - set initial blocklist before the URL is queried; allows
+#         seeding of known bad IPs before initial blocklist sync.
+#       Default: '' (no blocklist until URL is queried).
+#
+# deluge_plugins_blocklist:
+#   url: 'http://hostex.de/1316700423'
+#   check_after_days: 7
+#   load_on_start: true
+#   whitelisted:
+#     - '172.31.234.32'
+#   blocklist: |
+#     001.057.143.125-001.057.143.125,116,[BD]China Unicom Heilong
+#     001.036.132.226-001.036.132.226,116,[BD]PCCW/Netvigator kad
+#
+# Default: {}.
+deluge_plugins_blocklist: {}

@@ -1,0 +1,171 @@
+---
+###############################################################################
+# Network (core.conf)
+###############################################################################
+
+###############################################################################
+# Incoming
+###############################################################################
+
+# Incoming (listen) address (IPv4/6). Default '' (auto detect).
+deluge_core_listen_interface: ''
+
+# Enable random incoming port?
+#
+# Disables deluge_core_listen_ports.
+#
+# Default: True.
+deluge_core_random_port: true
+
+# Incoming (listen) ports.
+#
+# deluge_core_listen_ports:
+#     dict - listen port range.
+#   start: int - staring port.
+#   end: int - ending port, use start value for single listen port.
+#
+# deluge_core_listen_ports:
+#   start: 0
+#   end: 0
+#
+# Default:
+#   start: 6881
+#   end: 6891
+deluge_core_listen_ports:
+  start: 6881
+  end: 6891
+
+###############################################################################
+# Outgoing
+###############################################################################
+
+# Outgoing address (IPv4/6). Default '' (auto detect).
+deluge_core_outgoing_interface: ''
+
+# Enable random outgoing ports?
+#
+# Disables deluge_core_outgoing_ports.
+#
+# Default: True.
+deluge_core_random_outgoing_ports: true
+
+# Outgoing ports.
+#
+# deluge_core_outgoing_ports:
+#     dict - outgoing port range.
+#   start: int - staring port.
+#   end: int - ending port, use start value for single outgoing port.
+#
+# deluge_core_outgoing_ports:
+#   start: 0
+#   end: 0
+#
+# Default: [0, 0].
+deluge_core_outgoing_ports:
+  start: 0
+  end: 0
+
+###############################################################################
+# Network Extras
+###############################################################################
+
+# Enable UPnP?
+#
+# Default: True.
+#
+# Reference:
+# * https://en.wikipedia.org/wiki/Universal_Plug_and_Play
+deluge_core_upnp: true
+
+# Enable NAT-PMP?
+#
+# Default: True.
+#
+# Reference:
+# * https://en.wikipedia.org/wiki/NAT_Port_Mapping_Protocol
+deluge_core_natpmp: true
+
+# Enable Peer Exchange?
+#
+# Default: True.
+#
+# Reference:
+# * https://en.wikipedia.org/wiki/Peer_exchange
+deluge_core_utpex: true
+
+# Enable LSD (LPD)?
+#
+# Default: True.
+#
+# Reference:
+# * https://en.wikipedia.org/wiki/Local_Peer_Discovery
+deluge_core_lsd: true
+
+# Enable DHT?
+#
+# Default: True.
+#
+# Reference:
+# * https://en.wikipedia.org/wiki/Mainline_DHT
+deluge_core_dht: true
+
+###############################################################################
+# Type of Service
+###############################################################################
+
+# Peer TOS Byte.
+#
+# DSCP supersedes TOS but are equivalent. Sets DSCP IP Header.
+#
+# Value:
+#   0x00: no heading (default).
+#   0x04: lower effort.
+#
+# Default: '0x00'.
+#
+# Reference:
+# * https://www.libtorrent.org/reference-Settings.html#peer_dscp
+# * https://datatracker.ietf.org/doc/html/rfc8622
+deluge_core_peer_tos: '0x00'
+
+###############################################################################
+# Non WebUI Options (core.conf)
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+
+# Random listening port if deluge_core_random_port=true.
+#
+# preferencemanager.py randomly chooses a port from 49152-65525.
+#
+# Default: {PORT} (random port between 49152-65525).
+deluge_core_listen_random_port: '{{ 49152 + (16373 | random) }}'
+
+# Re-use listening ports?
+#
+# Addresses no incoming connections errors. This should not be changed unless
+# specifically needed.
+#
+# Default: True.
+#
+# Reference:
+# * https://forum.deluge-torrent.org/viewtopic.php?t=48725
+deluge_core_listen_reuse_port: true
+
+# Fallback to system privileged ports?
+#
+# If requested listening ports are busy, fallback to another system port. This
+# should not be changed unless specifically needed.
+#
+# Default: False.
+#
+# Reference:
+# * https://forum.deluge-torrent.org/viewtopic.php?t=54338&start=100
+deluge_core_listen_use_sys_port: false
+
+# Enable super seeding?
+#
+# Sends chunks that no other client is offering.
+#
+# Default: False.
+deluge_core_super_seeding: false

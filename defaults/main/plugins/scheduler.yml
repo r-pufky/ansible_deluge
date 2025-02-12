@@ -1,0 +1,97 @@
+---
+###############################################################################
+# Scheduler Plugin
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+#
+# Limit Deluge bandwidth depending on schedule.
+#
+# Reference:
+# * https://deluge-torrent.org/plugins/#plugins-included
+
+# deluge_plugins_scheduler:
+#     dict - torrent scheduling.
+#   mon: list - per hour schedule limits for Monday.
+#       Special Case:
+#         * must be 24 elements (starting at 0000 - midnight).
+#       Values:
+#         0: no schedule (default).
+#         1: throttled.
+#         2: paused.
+#       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
+#   tue: list - per hour schedule limits for Tuesday.
+#       Special Case:
+#         * must be 24 elements (starting at 0000 - midnight).
+#       Values:
+#         0: no schedule (default).
+#         1: throttled.
+#         2: paused.
+#       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
+#   wed: list - per hour schedule limits for Wednesday.
+#       Special Case:
+#         * must be 24 elements (starting at 0000 - midnight).
+#       Values:
+#         0: no schedule (default).
+#         1: throttled.
+#         2: paused.
+#       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
+#   thr: list - per hour schedule limits for Thursday.
+#       Special Case:
+#         * must be 24 elements (starting at 0000 - midnight).
+#       Values:
+#         0: no schedule (default).
+#         1: throttled.
+#         2: paused.
+#       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
+#   fri: list - per hour schedule limits for Friday.
+#       Special Case:
+#         * must be 24 elements (starting at 0000 - midnight).
+#       Values:
+#         0: no schedule (default).
+#         1: throttled.
+#         2: paused.
+#       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
+#   sat: list - per hour schedule limits for Saturday.
+#       Special Case:
+#         * must be 24 elements (starting at 0000 - midnight).
+#       Values:
+#         0: no schedule (default).
+#         1: throttled.
+#         2: paused.
+#       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
+#   sun: list - per hour schedule limits for Sunday.
+#       Special Case:
+#         * must be 24 elements (starting at 0000 - midnight).
+#       Values:
+#         0: no schedule (default).
+#         1: throttled.
+#         2: paused.
+#       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
+#   low_active: int - maximum number of active torrents.
+#     Special Case:
+#       -1: unlimited active torrents.
+#     Default: 8.
+#   low_active_down: int - maximum number of downloading torrents.
+#     Special Case:
+#       -1: unlimited active downloading torrents to low_active.
+#     Default: 3.
+#   low_active_up: int - maximum number of uploading torrents.
+#     Special Case:
+#       -1: unlimited active uploading torrents to low_active.
+#     Default: 5.
+#   low_down: int - maximum download speed (KiB/s).
+#     Special Case:
+#       -1: unlimited download speed.
+#     Default: -1.
+#   low_up:  int - maximum upload speed (KiB/s).
+#     Special Case:
+#       -1: unlimited upload speed.
+#     Default: -1.
+#
+#
+# deluge_plugins_scheduler:
+#   mon: [1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0]
+#   low_active: -1
+#
+deluge_plugins_scheduler: {}

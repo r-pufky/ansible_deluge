@@ -1,0 +1,111 @@
+---
+###############################################################################
+# AutoAdd Plugin
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+#
+# Multiple watch folder support.
+#
+# Reference:
+# * https://deluge-torrent.org/plugins/autoadd
+
+# deluge_plugins_auto_add:
+#     list of dict - directories to watch to auto add torrents. All paths must
+#         be accessible by deluge_user.
+#   - id: int - incremental directory id starting at 1, use contiguous IDs.
+#         Default: 1.
+#     abs_path: str - absolute path to watch directory.
+#     enabled: bool - enable watching of this directory.
+#         Default: True.
+#     append_extension_toggle: bool - append extension to torrent file?
+#         Special Case:
+#           * torrent will be deleted after adding if both
+#             append_extension_toggle=true and copy_torrent_toggle=true.
+#         Default: False.
+#     append_extension: str - extension to append.
+#         Default: '.added'.
+#     copy_torrent_toggle: bool - copy (backup) torrent files?
+#         Special Case:
+#           * torrent will be deleted after adding if both
+#             append_extension_toggle=true and copy_torrent_toggle=true.
+#         Default: False.
+#     copy_torrent: str - location to copy (backup) torrent files.
+#         Default: ''.
+#     delete_copy_torrent_toggle: bool - delete torrent after copying?
+#         Default: False.
+#     download_location_toggle: bool - set download folder?
+#         Default: False.
+#     download_location: str - download location to set.
+#         Default: ''.
+#     move_completed: bool - move completed files to staging?
+#         Default: True.
+#     move_completed_toggle: bool - set move completed folder?
+#           Enabling this option will override move_completed.
+#         Default: False.
+#     move_completed_path: str - move completed downloads to location.
+#         Default: ''.
+#     owner: str - Deluge daemon managing the download.
+#         Default: 'localclient'.
+#     max_download_speed_toggle: bool - enable max_download_speed?
+#         Default: False.
+#     max_download_speed: int - max download speed (KiB/s).
+#         Special Case:
+#           -1: unlimited download speed.
+#         Default: -1.
+#     max_upload_speed_toggle: bool - enable max_upload_speed?
+#         Default: False.
+#     max_upload_speed: int - max upload speed (KiB/s).
+#         Special Case:
+#           -1: unlimited upload speed.
+#         Default: -1.
+#     max_connections_speed_toggle: bool - enable max_connections?
+#         Default: False.
+#     max_connections_speed: int - max connections.
+#         Special Case:
+#           -1: unlimited connections.
+#         Default: -1.
+#     max_upload_slots_toggle: bool - enable max_upload_slots?
+#         Default: False.
+#     max_upload_slots: int - max upload slots.
+#         Special Case:
+#           -1: unlimited slots.
+#         Default: -1.
+#     add_paused_toggle: bool - enable add_pause?
+#         Default: False.
+#     add_paused: bool - add torrent as paused?
+#         Default: True.
+#     add_queue_to_top_toggle: bool - enable add_queue_to_top?
+#         Default: False.
+#     add_queue_to_top: bool - add torrent to top of queue?
+#         Default: True.
+#     auto_managed_toggle: bool - enable auto_managed?
+#         Default: False.
+#     auto_managed: bool - auto manage torrent?
+#         Default: True.
+#     stop_ratio_toggle: bool - enable stop_ratio?
+#         Default: False.
+#     stop_ratio: float - seed ratio limit.
+#         Default: 0.
+#     stop_at_ratio_toggle: bool - enable stop_at_ratio?
+#         Default: False.
+#     stop_at_ratio: bool - stop seeding when stop_ratio hit?
+#         Default: False.
+#     remove_at_ratio_toggle: bool - enable remove_at_ratio?
+#         Default: False.
+#     remove_at_ratio: bool - remove torrent when stop_ratio hit.
+#         Default: False.
+#     seed_mode: bool - skip file hash check?
+#         Default: True.
+#     label_toggle: bool - enable label?
+#         Default: False.
+#     label: str - label torrent for Labels plugin.
+#         Default: ''.
+#
+# deluge_plugins_auto_add:
+#   - id: 1
+#     abs_path: '/var/lib/deluge'
+#     enabled: true
+#
+# Default: [].
+deluge_plugins_auto_add: []

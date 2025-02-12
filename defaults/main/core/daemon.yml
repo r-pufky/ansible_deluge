@@ -1,0 +1,14 @@
+---
+###############################################################################
+# Daemon (core.conf)
+###############################################################################
+
+# Deluge service daemon port. Default: 58846.
+deluge_core_daemon_port: 58846
+
+# Allow remote connections? Default: False.
+deluge_core_allow_remote: false
+
+# Periodically check the website for new releases?
+#
+# This is a duplicate setting. See deluge_core_new_release_check.

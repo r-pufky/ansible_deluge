@@ -1,0 +1,68 @@
+---
+###############################################################################
+# Label Plugin
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+#
+# Assign labels to torrents for custom actions.
+#
+# Reference:
+# * https://deluge-torrent.org/plugins/#plugins-included
+
+# deluge_plugins_label:
+#     list of dict - torrent labeling and classification.
+#   - name: str - label name.
+#     apply_max: bool - apply per torrent max settings?
+#         Default: False.
+#     max_download_speed: int - max download speed (KiB/s).
+#         Special Case:
+#           -1: unlimited download speed.
+#         Default: -1.
+#     max_upload_speed: int - max upload speed (KiB/s).
+#         Special Case:
+#           -1: unlimited upload speed.
+#         Default: -1.
+#     max_upload_slots: int - max upload slots.
+#         Special Case:
+#           -1: unlimited upload slots.
+#         Default: -1.
+#     max_connections: int - max connections.
+#         Special Case:
+#           -1: unlimited connections.
+#         Default: -1.
+#     apply_queue: bool - apply queue settings?
+#         Default: False.
+#     is_auto_managed: bool - auto manage torrent?
+#         Default: False.
+#     stop_at_ratio: bool - stop seed at ratio?
+#         Default: False.
+#     stop_ratio: float - seed ratio.
+#         Default: 2.0
+#     remove_at_ratio: bool - remove torrent at ratio?
+#         Default: False.
+#     apply_move_completed: bool - apply folder settings?
+#         Default: False.
+#     move_completed: bool - move completed files to move_completed_path?
+#         Default: False.
+#     move_completed_path: str - absolute path to move completed torrents to.
+#         Default: ''.
+#     auto_add: bool - automatically apply labels (trackers)?
+#         Default: False.
+#     auto_add_trackers: list of str - labels to add. Labels can be used in
+#           other plugins to take specific actions.
+#         Default: [].
+#     prioritize_first_last: bool - prioritize first and last torrent pieces?
+#         Default: False.
+#
+# deluge_plugins_label:
+#   - name: 'isos'
+#     apply_max: true
+#     auto_add: true
+#     auto_add_trackers:
+#       - 'os'
+#       - 'archive'
+#     prioritize_first_last: true
+#
+# Default: {}.
+deluge_plugins_label: []

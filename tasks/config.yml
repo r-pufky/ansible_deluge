@@ -1,0 +1,135 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Configure Deluge Install
+###############################################################################
+# Run Deluge under specific role user, using systemd logging instead of log
+# files; add ability to restart the service daily.
+#
+# Do not remove the default (debian-deluged) user as this will put APT in a
+# broken state. Instead ensure the account is fully locked.
+#
+# New Deluge options must be manually added to the template and role
+# default templates.
+#
+# Args:
+#   _deluge_news_servers: list of dict - sanitized deluge_news_servers
+#   _deluge_categories: list of dict - sanitized deluge_categories
+#   _deluge_rss_feeds:  list of dict - sanitized deluge_rss_feeds
+#   _deluge_tasks: list of dict - sanitized deluge_tasks
+#
+# Reference:
+# * https://delugecom.github.io/#debian-repository
+# * https://deluge.com
+
+- name: 'Install | set service drop-ins'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.systemd'
+  vars:
+    systemd_daemon_reload_enable: true
+    systemd_services:
+      - name: 'deluged'
+        state: 'present'
+        drop_in: true
+        service:
+          exec_start:
+            - ''
+            - '/usr/bin/deluged -d --loglevel {{ deluge_service_log_level }} --config "{{ deluge_service_config_dir }}/config"'
+          restart: 'always'  # always restart for periodic service restarts
+          runtime_max_sec: '{{ "1d" if deluge_service_restart_daily_enable else "infinity" }}'
+        exec:
+          user: '{{ deluge_user }}'
+          group: '{{ deluge_group }}'
+      - name: 'deluge-web'
+        state: 'present'
+        drop_in: true
+        service:
+          exec_start:
+            - ''
+            - '/usr/bin/deluge-web -d --loglevel {{ deluge_service_log_level }} --config "{{ deluge_service_config_dir }}/config"'
+          restart: 'always'  # always restart for periodic service restarts
+          runtime_max_sec: '{{ "1d" if deluge_service_restart_daily_enable else "infinity" }}'
+        exec:
+          user: '{{ deluge_user }}'
+          group: '{{ deluge_group }}'
+
+- name: 'Config | stop Deluge'
+  ansible.builtin.service:
+    name: '{{ item }}'
+    state: 'stopped'
+  loop:
+    - 'deluged'
+    - 'deluge-web'
+
+- name: 'Config | lock Deluge package user'
+  when: deluge_user != 'debian-deluged'
+  ansible.builtin.user:
+    name: 'debian-deluged'
+    password: '!'
+    password_lock: true
+
+# Permissions determined from vanilla service start
+- name: 'Config | manage required directories'
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    owner: '{{ item.owner }}'
+    group: '{{ item.group }}'
+    mode: '{{ item.mode }}'
+    recurse: true
+    state: 'directory'
+  become: true
+  changed_when: false  # https://github.com/ansible/ansible/issues/32636
+  loop:
+    - {path: '{{ deluge_service_config_dir }}/config/icons', mode: '0750', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
+    - {path: '{{ deluge_service_config_dir }}/config/plugins', mode: '0770', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
+    - {path: '{{ deluge_service_config_dir }}/config/ssl', mode: '0770', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
+    - {path: '{{ deluge_service_config_dir }}/config/state', mode: '0770', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
+    - {path: '{{ deluge_service_config_dir }}/config/scripts', mode: '0770', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
+
+- name: 'Prep | set daemon HTTPS certs'
+  when: deluge_web_https
+  ansible.builtin.copy:
+    src: '{{ item.src }}'
+    dest: '{{ deluge_service_config_dir }}/config/ssl/{{ item.dest }}'
+    owner: '{{ deluge_user }}'
+    group: '{{ deluge_group }}'
+    mode: '0600'
+    force: true
+  loop:
+    - {src: '{{ deluge_web_ssl_cert_path }}', dest: 'daemon.cert'}
+    - {src: '{{ deluge_web_ssl_key_path }}', dest: 'daemon.pkey'}
+
+# Deluged will always re-create default daemon.* on startup; remove custom.
+- name: 'Prep | remove daemon HTTPS certs'
+  when: not deluge_web_https
+  ansible.builtin.file:
+    dest: '{{ deluge_service_config_dir }}/config/ssl/{{ item }}'
+    state: 'absent'
+  loop:
+    - 'daemon.cert'
+    - 'daemon.pkey'
+
+- name: 'Config | set configuration'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ deluge_service_config_dir }}/config/{{ item.dest }}'
+    owner: '{{ deluge_user }}'
+    group: '{{ deluge_group }}'
+    mode: '0600'
+  loop:
+    - {src: 'core.conf.j2', dest: 'core.conf'}
+    - {src: 'web.conf.j2', dest: 'web.conf'}
+  notify:
+    - 'Handlers | restart deluged'
+    - 'Handlers | restart deluge-web'
+
+- name: 'Config | configure plugins'
+  ansible.builtin.include_tasks: 'plugins.yml'
+
+- name: 'Config | start Deluge'
+  ansible.builtin.service:
+    name: '{{ item }}'
+    state: 'started'
+  loop:
+    - 'deluged'
+    - 'deluge-web'

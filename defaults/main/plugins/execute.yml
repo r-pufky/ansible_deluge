@@ -1,0 +1,43 @@
+---
+###############################################################################
+# Execute Plugin
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+#
+# Executes a command upon an event.
+#
+# Reference:
+# * https://deluge-torrent.org/plugins/execute
+
+# deluge_plugins_execute:
+#     list of dict - script execution on torrent files.
+#    - event: str - torrent event.
+#          Values:
+#               added: torrent added.
+#            complete: torrent complete.
+#             removed: torrent removed.
+#      command: str - script name to execute.
+#          Special Case:
+#            * deluge_plugins_execute_source scripts will be placed in
+#              /var/lib/deluge/config/scripts and set executable.
+#            * use absolute path if self-managing scripts.
+#
+# deluge_plugins_execute:
+#   - event: 'added'
+#     command: '/var/lib/deluge/config/scripts/sourced_script'
+#   - event: 'added'
+#     command: '/home/user/manual_script'
+#
+# Default: [].
+deluge_plugins_execute: []
+
+# Path to execute script source.
+#
+# Sourced from ansible controller; automatically placed in
+# deluge_service_config_dir/config/scripts with correct permissions.
+#
+# deluge_plugins_execute_source: 'host_vars/deluge.example.com/data/scripts'
+#
+# Default: '' (disabled).
+deluge_plugins_execute_source: ''

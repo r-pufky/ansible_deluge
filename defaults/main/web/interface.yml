@@ -1,0 +1,131 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Interface (web.conf)
+###############################################################################
+# Existing web sessions will be expired when is applied.
+
+# Show session speed in titlebar? Default: False.
+deluge_web_show_session_speed: false
+
+# Show filters with zero torrents? Default: False.
+deluge_web_sidebar_show_zero: false
+
+# Allow the use of multiple filters at once? Default: True.
+deluge_web_sidebar_multiple_filters: false
+
+# WebUI language.
+#
+# Special Case:
+#   * Uses ISO639-1_ISO3166-1 identifiers (en_GB).
+#
+# Values:
+#   '': use system default.
+#
+# Default: ''.
+#
+# Reference:
+# * https://en.wikipedia.org/wiki/ISO_639-1
+# * https://en.wikipedia.org/wiki/ISO_3166-1
+deluge_web_language: ''
+
+
+# WebUI session timeout (seconds). Default: 3600 (1 hour).
+deluge_web_session_timeout: 3600
+
+# WebUI port. Default: 8112.
+deluge_web_port: 8112
+
+# Enable HTTPS for WebUI? Default: False.
+deluge_web_https: false
+
+# Path to public certificate (for HTTPS).
+#
+# Sourced from ansible controller; automatically placed in
+# deluge_service_config_dir/config/ssl/daemon.cert with correct permissions.
+# Deluge will be automatically configured to use the installed location.
+#
+# deluge_web_ssl_cert_path: 'host_vars/deluge.example.com/data/my_cert.cert'
+#
+# Default: '' (disabled).
+deluge_web_ssl_cert_path: ''
+
+# Path to private key for HTTPS).
+#
+# Sourced from ansible controller; automatically placed in
+# deluge_service_config_dir/config/ssl/daemon.pkey with correct permissions.
+# Deluge will be automatically configured to use the installed location.
+#
+# deluge_web_ssl_key_path: 'host_vars/deluge.example.com/data/my_cert.key'
+#
+# Default: '' (disabled).
+deluge_web_ssl_key_path: ''
+
+###############################################################################
+# Password (web.conf)
+###############################################################################
+# Deluge hardcodes the default password 'deluge' if it is not set. Salted SHA1
+# is insecure and unsupported. Use unique password.
+#
+# Security:
+#   CVE: https://en.wikipedia.org/wiki/Cryptographic_hash_function
+#   Decision: user managed SHA1 salted hash - modern tooling no longer supports
+#       salted SHA1 hashes, including ansible and python libraries. As these
+#       are insecure; use must decide to insecurely store the hash themselves.
+#   Mitigation:
+#   * Generate salted SHA1 password using Python hashlib in auth.py or set
+#     password and copy hashes from web.conf.
+#   Reference:
+#   * https://docs.python.org/3/library/hashlib.html
+#   * https://en.wikipedia.org/wiki/Cryptographic_hash_function
+#   * https://github.com/deluge-torrent/deluge/blob/develop/deluge/ui/web/auth.py#L188
+
+# WebUI password salt.
+#
+# Special Case:
+#   * salt must be 32 alphanumeric characters.
+#
+# Default: '' (disabled).
+deluge_web_pwd_salt: ''
+
+# WebUI password hash.
+#
+# Default: '' (default password 'deluge').
+deluge_web_pwd_sha1: ''
+
+###############################################################################
+# Non WebUI Options (web.conf)
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+
+# Deluge theme.
+#
+# Values:
+#   gray: default gray theme.
+#   default: default gray theme.
+#   access: dark theme with orange highlights.
+#
+# Default: 'gray'.
+deluge_web_theme: 'gray'
+
+# Show sidebar for new user login? Default: True.
+deluge_web_show_sidebar: true
+
+# Immediately prompt for password change on login? Default: False.
+deluge_web_first_login: false
+
+# Interface to serve WebUI (IPv4/6). Default '0.0.0.0' (auto detect).
+deluge_web_interface: '0.0.0.0'
+
+# Default daemon to connect to on login.
+#
+# Values:
+#   '': list detected daemons to connect to (default).
+#   {ID}: daemon ID from hostlist.conf (first field).
+#
+# Default: ''.
+#
+# Reference:
+# * https://deluge-torrent.org/faq/#how-do-i-auto-connect-to-a-specific-daemon
+deluge_web_default_daemon: ''

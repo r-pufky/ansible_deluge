@@ -1,0 +1,61 @@
+---
+# yamllint disable rule:line-length
+- name: 'HTTPS | verify'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'HTTPS | verify | gather service status'
+      ansible.builtin.service_facts:
+
+    # Deluge will fail if configuration is bad.
+    - name: 'HTTPS | verify | assert deluged.service active'
+      ansible.builtin.assert:
+        that:
+          - '"deluged.service" in ansible_facts.services'
+          - 'ansible_facts["services"]["deluged.service"]["state"] == "running"'
+        fail_msg: 'deluged.service should be enabled and running.'
+
+    - name: 'HTTPS | verify | assert deluge-web.service active'
+      ansible.builtin.assert:
+        that:
+          - '"deluge-web.service" in ansible_facts.services'
+          - 'ansible_facts["services"]["deluge-web.service"]["state"] == "running"'
+        fail_msg: 'deluge-web.service should be enabled and running.'
+
+    - name: 'HTTPS | verify | query daemon.cert'
+      ansible.builtin.copy:
+        src: '{{ lookup("env", "MOLECULE_SCENARIO_DIRECTORY") }}/files/test.cert'
+        dest: '/var/lib/deluge/config/ssl/daemon.cert'
+        owner: 'media'
+        group: 'media'
+        mode: '0600'
+      check_mode: true
+      diff: true
+      register: _test_deluge_cert
+
+    - name: 'HTTPS | verify | assert daemon.cert'
+      ansible.builtin.assert:
+        that:
+          - not _test_deluge_cert.changed
+        fail_msg: >
+          /var/lib/deluge/config/daemon.cert is not in expected format:
+          {{ _test_deluge_cert.diff }}.
+
+    - name: 'HTTPS | verify | query daemon.pkey'
+      ansible.builtin.copy:
+        src: '{{ lookup("env", "MOLECULE_SCENARIO_DIRECTORY") }}/files/test.pkey'
+        dest: '/var/lib/deluge/config/ssl/daemon.pkey'
+        owner: 'media'
+        group: 'media'
+        mode: '0600'
+      check_mode: true
+      diff: true
+      register: _test_deluge_pkey
+
+    - name: 'HTTPS | verify | assert daemon.pkey'
+      ansible.builtin.assert:
+        that:
+          - not _test_deluge_pkey.changed
+        fail_msg: >
+          /var/lib/deluge/config/daemon.pkey is not in expected format:
+          {{ _test_deluge_pkey.diff }}.

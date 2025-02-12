@@ -1,24 +1,31 @@
 {
-    "file": {{ deluge_web_file|tojson }},
-    "format": {{ deluge_web_format|tojson }}
+    "file": 2,
+    "format": 1
 }{
-    "base": {{ deluge_web_base|tojson }},
-    "cert": {{ deluge_web_cert|tojson }},
-    "default_daemon": {{ deluge_web_default_daemon|tojson }},
-    "enabled_plugins": {{ deluge_web_enabled_plugins|tojson }},
-    "first_login": {{ deluge_web_first_login|tojson }},
-    "https": {{ deluge_web_https|tojson }},
-    "interface": {{ deluge_web_interface|tojson }},
-    "language": {{ deluge_web_language|tojson }},
-    "pkey": {{ deluge_web_pkey|tojson }},
-    "port": {{ deluge_web_port|int }},
-    "pwd_salt": {{ deluge_web_pwd_salt|tojson }},
-    "pwd_sha1": {{ deluge_web_pwd_sha1|tojson }},
-    "session_timeout": {{ deluge_web_session_timeout|tojson }},
-    "sessions": {{ deluge_web_sessions|tojson }},
-    "show_session_speed": {{ deluge_web_show_session_speed|tojson }},
-    "show_sidebar": {{ deluge_web_show_sidebar|tojson }},
-    "sidebar_multiple_filters": {{ deluge_web_sidebar_multiple_filters|tojson }},
-    "sidebar_show_zero": {{ deluge_web_sidebar_show_zero|tojson }},
-    "theme": {{ deluge_web_theme|tojson }}
+    "base": "{{ _deluge_web.base}}",
+    "cert": "{{ _deluge_web.cert }}",
+    "default_daemon": "{{ _deluge_web.default_daemon }}",
+    "enabled_plugins": {{ _deluge_web.enabled_plugins }},
+    "first_login": {{ _deluge_web.first_login }},
+    "https": {{ _deluge_web.https }},
+    "interface": "{{ _deluge_web.interface }}",
+    "language": "{{ _deluge_web.language }}",
+    "pkey": "{{ _deluge_web.pkey }}",
+    "port": {{ _deluge_web.port }},
+{% if _deluge_web.pwd_salt | length > 0 %}
+    "pwd_salt": "{{ _deluge_web.pwd_salt }}",
+    "pwd_sha1": "{{ _deluge_web.pwd_sha1 }}",
+{% endif %}
+    "session_timeout": {{ _deluge_web.session_timeout }},
+    "sessions": {{ _deluge_web.sessions }},
+    "show_session_speed": {{ _deluge_web.show_session_speed }},
+    "show_sidebar": {{ _deluge_web.show_sidebar }},
+    "sidebar_multiple_filters": {{ _deluge_web.sidebar_multiple_filters }},
+    "sidebar_show_zero": {{ _deluge_web.sidebar_show_zero }},
+    "theme": "{{ _deluge_web.theme }}"{% if deluge_config_extensions_web | length > 0 %},
+{% for key, value in deluge_config_extensions_web.items() %}
+    "{{ key}}": {{ value }}{% if not loop.last %},{% endif %}
+{% endfor %}
+{% endif %}
+
 }

@@ -1,0 +1,83 @@
+---
+# yamllint disable rule:line-length
+# Confirm:
+# * deluged.service active and running.
+# * deluge-web.service active and running.
+# * /var/lib/deluge created with correct permissions.
+# * default plugins configurations are rendered correctly.
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'podman'
+provisioner:
+  name: 'ansible'
+  config_options:
+    defaults:
+      interpreter_python: 'auto_silent'
+      callback_whitelist: 'profile_tasks, timer, yaml'
+    ssh_connection:
+      pipelining: false
+  inventory:
+    group_vars:
+      all:
+        deluge_plugins_auto_add:
+          - id: 1
+            abs_path: '/var/lib/deluge'
+            enabled: true
+        deluge_plugins_blocklist:
+          url: 'http://example.com/blocklist'
+          check_after_days: 7
+          timeout: 60
+          try_times: 1
+          load_on_start: false
+          whitelisted:
+            - '172.31.234.32'
+          blocklist: |
+            001.057.143.125-001.057.143.125,116,[BD]China Unicom Heilong
+            001.036.132.226-001.036.132.226,116,[BD]PCCW/Netvigator kad
+        deluge_plugins_execute:
+          - event: 'completed'
+            command: '/var/lib/deluge/config/scripts/test'
+        deluge_plugins_execute_source: '{{ lookup("env", "MOLECULE_SCENARIO_DIRECTORY") }}/files/scripts'
+        deluge_plugins_extractor:
+          extract_path: '/tmp'
+          use_name_folder: true
+        deluge_plugins_label:
+          - name: 'isos'
+            apply_max: true
+            auto_add: true
+            auto_add_trackers:
+              - 'os'
+              - 'archive'
+            prioritize_first_last: true
+        deluge_plugins_scheduler:
+          mon: [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0]
+          low_active: -1
+platforms:
+  - name: 'deluge-debian-12-plugins'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+verifier:
+  name: 'ansible'
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    # - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # services always restarted.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'
