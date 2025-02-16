@@ -12,7 +12,7 @@ deluge_web_show_session_speed: false
 deluge_web_sidebar_show_zero: false
 
 # Allow the use of multiple filters at once? Default: True.
-deluge_web_sidebar_multiple_filters: false
+deluge_web_sidebar_multiple_filters: true
 
 # WebUI language.
 #
