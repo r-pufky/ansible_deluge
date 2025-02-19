@@ -22,6 +22,44 @@
           - 'ansible_facts["services"]["deluge-web.service"]["state"] == "running"'
         fail_msg: 'deluge-web.service should be enabled and running.'
 
+    - name: 'Plugins | verify | query core.conf'
+      ansible.builtin.copy:
+        src: 'files/core.conf'
+        dest: '/var/lib/deluge/config/core.conf'
+        owner: 'media'
+        group: 'media'
+        mode: '0600'
+      check_mode: true
+      diff: true
+      register: _test_deluge_core
+
+    - name: 'Plugins | verify | assert core.conf'
+      ansible.builtin.assert:
+        that:
+          - not _test_deluge_core.changed
+        fail_msg: >
+          /var/lib/deluge/config/core.conf is not in expected format:
+          {{ _test_deluge_core.diff }}.
+
+    - name: 'Plugins | verify | query web.conf'
+      ansible.builtin.copy:
+        src: 'files/web.conf'
+        dest: '/var/lib/deluge/config/web.conf'
+        owner: 'media'
+        group: 'media'
+        mode: '0600'
+      check_mode: true
+      diff: true
+      register: _test_deluge_web
+
+    - name: 'Plugins | verify | assert web.conf'
+      ansible.builtin.assert:
+        that:
+          - not _test_deluge_web.changed
+        fail_msg: >
+          /var/lib/deluge/config/web.conf is not in expected format:
+          {{ _test_deluge_web.diff }}.
+
     - name: 'Plugins | verify | query autoadd.conf'
       ansible.builtin.copy:
         src: 'files/autoadd.conf'

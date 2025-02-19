@@ -20,6 +20,15 @@ provisioner:
   inventory:
     group_vars:
       all:
+        deluge_core_listen_random_port: 54666
+        deluge_web_pwd_salt: 'e0156aa94ecff125dc48665acf3b6b5842588c11'
+        deluge_web_pwd_sha1: '75559193c309f82bedbd5d865d45ac16a90db577'
+        deluge_core_enabled_plugins:
+          - 'AutoAdd'
+          - 'Blocklist'
+          - 'Extractor'
+          - 'Label'
+          - 'Scheduler'
         deluge_plugins_auto_add:
           - id: 1
             abs_path: '/var/lib/deluge'

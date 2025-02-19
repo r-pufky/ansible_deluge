@@ -15,7 +15,16 @@
     "dont_count_slow_torrents": {{ _deluge_core.dont_count_slow_torrents }},
     "download_location": "{{ _deluge_core.download_location }}",
     "download_location_paths_list": {{ _deluge_core.download_location_paths_list }},
-    "enabled_plugins": {{ _deluge_core.enabled_plugins }},
+{% if _deluge_core.enabled_plugins | length > 0 %}
+    "enabled_plugins": [
+{% for plugin in _deluge_core.enabled_plugins %}
+        "{{ plugin }}"{% if not loop.last %},{% endif %}
+
+{% endfor %}
+    ],
+{% else %}
+    "enabled_plugins": [],
+{% endif %}
     "enc_in_policy": {{ _deluge_core.enc_in_policy }},
     "enc_level": {{ _deluge_core.enc_level }},
     "enc_out_policy": {{ _deluge_core.enc_out_policy }},
@@ -23,7 +32,10 @@
     "ignore_limits_on_local_network": {{ _deluge_core.ignore_limits_on_local_network }},
     "info_sent": {{ _deluge_core.info_sent }},
     "listen_interface": "{{ _deluge_core.listen_interface }}",
-    "listen_ports": {{ _deluge_core.listen_ports }},
+    "listen_ports": [
+        {{ _deluge_core.listen_ports.start }},
+        {{ _deluge_core.listen_ports.end }}
+    ],
     "listen_random_port": {{ _deluge_core.listen_random_port }},
     "listen_reuse_port": {{ _deluge_core.listen_reuse_port }},
     "listen_use_sys_port": {{ _deluge_core.listen_use_sys_port }},
@@ -47,7 +59,10 @@
     "natpmp": {{ _deluge_core.natpmp }},
     "new_release_check": {{ _deluge_core.new_release_check }},
     "outgoing_interface": "{{ _deluge_core.outgoing_interface }}",
-    "outgoing_ports": {{ _deluge_core.outgoing_ports }},
+    "outgoing_ports": [
+        {{ _deluge_core.outgoing_ports.start }},
+        {{ _deluge_core.outgoing_ports.end }}
+    ],
     "path_chooser_accelerator_string": "{{ _deluge_core.path_chooser_accelerator_string }}",
     "path_chooser_auto_complete_enabled": {{ _deluge_core.path_chooser_auto_complete_enabled }},
     "path_chooser_max_popup_rows": {{ _deluge_core.path_chooser_max_popup_rows }},

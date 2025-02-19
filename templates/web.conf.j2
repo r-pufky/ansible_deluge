@@ -5,7 +5,16 @@
     "base": "{{ _deluge_web.base}}",
     "cert": "{{ _deluge_web.cert }}",
     "default_daemon": "{{ _deluge_web.default_daemon }}",
-    "enabled_plugins": {{ _deluge_web.enabled_plugins }},
+{% if _deluge_web.enabled_plugins | length > 0 %}
+    "enabled_plugins": [
+{% for plugin in _deluge_web.enabled_plugins %}
+        "{{ plugin }}"{% if not loop.last %},{% endif %}
+
+{% endfor %}
+    ],
+{% else %}
+    "enabled_plugins": [],
+{% endif %}
     "first_login": {{ _deluge_web.first_login }},
     "https": {{ _deluge_web.https }},
     "interface": "{{ _deluge_web.interface }}",
