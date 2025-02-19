@@ -93,10 +93,10 @@
       # Network
       listen_interface: '{{ deluge_core_listen_interface | default("") }}',
       random_port: '{{ deluge_core_random_port | default(true) | bool | string | lower }}',
-      listen_ports: '{{ deluge_core_listen_ports.values() | default([6881, 6891]) }}',
+      listen_ports: '{{ deluge_core_listen_ports | default({"start": 6881, "end": 6891}) }}',
       outgoing_interface: '{{ deluge_core_outgoing_interface | default("") }}',
       random_outgoing_ports: '{{ deluge_core_random_outgoing_ports | default(true) | bool | string | lower }}',
-      outgoing_ports: '{{ deluge_core_outgoing_ports.values() | default([0, 0]) }}',
+      outgoing_ports: '{{ deluge_core_outgoing_ports | default({"start": 0, "end": 0}) }}',
       upnp: '{{ deluge_core_upnp | default(true) | bool | string | lower }}',
       natpmp: '{{ deluge_core_natpmp | default(true) | bool | string | lower }}',
       utpex: '{{ deluge_core_utpex | default(true) | bool | string | lower }}',

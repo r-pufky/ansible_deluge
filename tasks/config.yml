@@ -9,6 +9,16 @@
 # Do not remove the default (debian-deluged) user as this will put APT in a
 # broken state. Instead ensure the account is fully locked.
 #
+# NOTE
+# > Deluge will silently fail parsing configuration files and continue
+# > starting - leading to a partially configured state. Errors in rendering
+# > config files may be expressed as 'working' but not all set options
+# > configured or work; these will all occur after the parsing error. This
+# > applies to ALL parsed configs.
+# >
+# > Debugging requires working backwards in the config until the errors are
+# > found.
+#
 # New Deluge options must be manually added to the template and role
 # default templates.
 #

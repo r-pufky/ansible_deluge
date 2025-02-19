@@ -11,5 +11,14 @@
     "timeout": {{ _deluge_plugins_blocklist.timeout }},
     "try_times": {{ _deluge_plugins_blocklist.try_times }},
     "url": "{{ _deluge_plugins_blocklist.url }}",
-    "whitelisted": {{ _deluge_plugins_blocklist.whitelisted }}
+{% if _deluge_plugins_blocklist.whitelisted | length > 0 %}
+    "whitelisted": [
+{% for whitelist in _deluge_plugins_blocklist.whitelisted %}
+        "{{ whitelist }}"{% if not loop.last %},{% endif %}
+
+{% endfor %}
+    ]
+{% else %}
+    "whitelisted": []
+{% endif %}
 }

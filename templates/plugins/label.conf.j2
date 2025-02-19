@@ -10,7 +10,16 @@
             "apply_move_completed": {{ label.apply_move_completed | string | lower  }},
             "apply_queue": {{ label.apply_queue | string | lower  }},
             "auto_add": {{ label.auto_add | string | lower  }},
-            "auto_add_trackers": {{ label.auto_add_trackers | string | lower  }},
+{% if label.auto_add_trackers | length > 0 %}
+            "auto_add_trackers": [
+{% for name in label.auto_add_trackers %}
+                "{{ name }}"{% if not loop.last %},{% endif %}
+
+{% endfor %}
+            ],
+{% else %}
+            "auto_add_trackers": [],
+{% endif %}
             "is_auto_managed": {{ label.is_auto_managed | string | lower  }},
             "max_connections": {{ label.max_connections }},
             "max_download_speed": {{ label.max_download_speed }},
