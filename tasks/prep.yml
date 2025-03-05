@@ -38,6 +38,7 @@
 - name: 'Prep | assert SSL requirements'
   when: deluge_web_https
   ansible.builtin.assert:
+    quiet: true
     that:
       - deluge_web_ssl_cert_path | length > 0
       - deluge_web_ssl_key_path | length > 0
