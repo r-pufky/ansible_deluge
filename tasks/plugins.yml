@@ -41,6 +41,8 @@
       ansible.builtin.set_fact:
         _deluge_plugins_auto_add: '{{ _deluge_plugins_auto_add | default([]) + [deluge_role_template_auto_add | combine(item)] }}'
       loop: '{{ deluge_plugins_auto_add }}'
+      loop_control:
+        label: '{{ item.abs_path }}'
 
     - name: 'Plugins | autoadd | set autoadd.conf'
       ansible.builtin.template:
@@ -132,6 +134,8 @@
       ansible.builtin.set_fact:
         _deluge_plugins_label: '{{ _deluge_plugins_label | default([]) + [deluge_role_template_label | combine(item)] }}'
       loop: '{{ deluge_plugins_label }}'
+      loop_control:
+        label: '{{ item.name }}'
 
     - name: 'Plugins | label | set label.conf'
       ansible.builtin.template:
