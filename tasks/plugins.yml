@@ -45,15 +45,13 @@
         label: '{{ item.abs_path }}'
 
     - name: 'Plugins | autoadd | set autoadd.conf'
+      notify: 'Handlers | restart deluge'
       ansible.builtin.template:
         src: 'plugins/autoadd.conf.j2'
         dest: '{{ deluge_service_config_dir }}/config/autoadd.conf'
         owner: '{{ deluge_user }}'
         group: '{{ deluge_group }}'
         mode: '0600'
-      notify:
-        - 'Handlers | restart deluged'
-        - 'Handlers | restart deluge-web'
 
 - name: 'Plugins | blocklist'
   when: deluge_plugins_blocklist | length > 0
@@ -63,6 +61,7 @@
         _deluge_plugins_blocklist: '{{ deluge_role_template_blocklist | combine(deluge_plugins_blocklist) }}'
 
     - name: 'Plugins | blocklist | set blocklist.conf'
+      notify: 'Handlers | restart deluge'
       ansible.builtin.template:
         src: '{{ item.src }}'
         dest: '{{ deluge_service_config_dir }}/config/{{ item.dest }}'
@@ -72,9 +71,6 @@
       loop:
         - {src: 'plugins/blocklist.conf.j2', dest: 'blocklist.conf'}
         - {src: 'plugins/blocklist.download.j2', dest: 'blocklist.download'}
-      notify:
-        - 'Handlers | restart deluged'
-        - 'Handlers | restart deluge-web'
 
 - name: 'Plugins | execute'
   when: deluge_plugins_execute | length > 0
@@ -99,15 +95,13 @@
       changed_when: false
 
     - name: 'Plugins | execute | set execute.conf'
+      notify: 'Handlers | restart deluge'
       ansible.builtin.template:
         src: 'plugins/execute.conf.j2'
         dest: '{{ deluge_service_config_dir }}/config/execute.conf'
         owner: '{{ deluge_user }}'
         group: '{{ deluge_group }}'
         mode: '0600'
-      notify:
-        - 'Handlers | restart deluged'
-        - 'Handlers | restart deluge-web'
 
 - name: 'Plugins | extractor'
   when: deluge_plugins_extractor | length > 0
@@ -117,15 +111,13 @@
         _deluge_plugins_extractor: '{{ deluge_role_template_extractor | combine(deluge_plugins_extractor) }}'
 
     - name: 'Plugins | extractor | set extractor.conf'
+      notify: 'Handlers | restart deluge'
       ansible.builtin.template:
         src: 'plugins/extractor.conf.j2'
         dest: '{{ deluge_service_config_dir }}/config/extractor.conf'
         owner: '{{ deluge_user }}'
         group: '{{ deluge_group }}'
         mode: '0600'
-      notify:
-        - 'Handlers | restart deluged'
-        - 'Handlers | restart deluge-web'
 
 - name: 'Plugins | label'
   when: deluge_plugins_label | length > 0
@@ -138,15 +130,13 @@
         label: '{{ item.name }}'
 
     - name: 'Plugins | label | set label.conf'
+      notify: 'Handlers | restart deluge'
       ansible.builtin.template:
         src: 'plugins/label.conf.j2'
         dest: '{{ deluge_service_config_dir }}/config/label.conf'
         owner: '{{ deluge_user }}'
         group: '{{ deluge_group }}'
         mode: '0600'
-      notify:
-        - 'Handlers | restart deluged'
-        - 'Handlers | restart deluge-web'
 
 - name: 'Plugins | scheduler'
   when: deluge_plugins_scheduler | length > 0
@@ -156,12 +146,10 @@
         _deluge_plugins_scheduler: '{{ deluge_role_template_scheduler | combine(deluge_plugins_scheduler) }}'
 
     - name: 'Plugins | scheduler | set scheduler.conf'
+      notify: 'Handlers | restart deluge'
       ansible.builtin.template:
         src: 'plugins/scheduler.conf.j2'
         dest: '{{ deluge_service_config_dir }}/config/scheduler.conf'
         owner: '{{ deluge_user }}'
         group: '{{ deluge_group }}'
         mode: '0600'
-      notify:
-        - 'Handlers | restart deluged'
-        - 'Handlers | restart deluge-web'

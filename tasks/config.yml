@@ -120,6 +120,7 @@
     - 'daemon.pkey'
 
 - name: 'Config | set configuration'
+  notify: 'Handlers | restart deluge'
   ansible.builtin.template:
     src: '{{ item.src }}'
     dest: '{{ deluge_service_config_dir }}/config/{{ item.dest }}'
@@ -129,9 +130,6 @@
   loop:
     - {src: 'core.conf.j2', dest: 'core.conf'}
     - {src: 'web.conf.j2', dest: 'web.conf'}
-  notify:
-    - 'Handlers | restart deluged'
-    - 'Handlers | restart deluge-web'
 
 - name: 'Config | configure plugins'
   ansible.builtin.include_tasks: 'plugins.yml'
