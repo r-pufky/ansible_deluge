@@ -4,12 +4,14 @@
 ###############################################################################
 
 - name: 'Handlers | restart deluged'
+  listen: 'Handlers | restart deluge'
   ansible.builtin.systemd:
     name: 'deluged'
     enabled: true
     state: 'restarted'
 
 - name: 'Handlers | restart deluge-web'
+  listen: 'Handlers | restart deluge'
   ansible.builtin.systemd:
     name: 'deluge-web'
     enabled: true
