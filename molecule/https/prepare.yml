@@ -1,0 +1,32 @@
+---
+# yamllint disable rule:line-length
+# Testing requires valid certificate. Generate valid test certificates.
+#
+# Reference:
+# * https://gist.github.com/rquackenbush/53ff432567699b21c86f3360fb4ec7f0
+# * https://superuser.com/questions/226192/avoid-password-prompt-for-keys-and-prompts-for-dn-information
+
+- name: 'HTTPS | prepare'
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: 'HTTPS | prepare | generate cache location'
+      ansible.builtin.set_fact:
+        _test_cache: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache'
+
+    - name: 'HTTPS | prepare | create cache'
+      ansible.builtin.file:
+        path: '{{ _test_cache }}'
+        mode: '0755'
+        state: 'directory'
+
+    - name: 'HTTPS | prepare | generate test certificate'
+      ansible.builtin.command: 'openssl req -new -newkey rsa:4096 -nodes -subj "/C=US/ST=NY/L=NY/O=test/CN=test.example.com" -keyout "{{ _test_cache }}/test.key" -out "{{ _test_cache }}/test.csr"'
+      args:
+        creates: '{{ _test_cache }}/test.key'
+
+    - name: 'HTTPS | prepare | sign test certificate'
+      ansible.builtin.command: 'openssl x509 -req -sha256 -days 3650 -in "{{ _test_cache }}/test.csr" -signkey "{{ _test_cache }}/test.key" -out "{{ _test_cache }}/test.pem"'
+      args:
+        creates: '{{ _test_cache }}/test.pem'

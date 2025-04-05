@@ -21,8 +21,8 @@ provisioner:
     group_vars:
       all:
         deluge_web_https: true
-        deluge_web_ssl_cert_path: '{{ lookup("env", "MOLECULE_SCENARIO_DIRECTORY") }}/files/test.cert'
-        deluge_web_ssl_key_path: '{{ lookup("env", "MOLECULE_SCENARIO_DIRECTORY") }}/files/test.pkey'
+        deluge_web_ssl_cert_path: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/test.pem'
+        deluge_web_ssl_key_path: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/test.key'
         deluge_web_pwd_salt: 'e0156aa94ecff125dc48665acf3b6b5842588c11'
         deluge_web_pwd_sha1: '75559193c309f82bedbd5d865d45ac16a90db577'
 platforms:
@@ -46,7 +46,7 @@ scenario:
     - 'destroy'
     - 'syntax'
     - 'create'
-    # - 'prepare'
+    - 'prepare'
     - 'converge'
     # - 'idempotence'  # services always restarted.
     # - 'side_effect'
