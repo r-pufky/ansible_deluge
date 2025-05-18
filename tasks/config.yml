@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Configure Deluge Install
 ###############################################################################
@@ -32,9 +31,9 @@
 # * https://delugecom.github.io/#debian-repository
 # * https://deluge.com
 
-- name: 'Install | set service drop-ins'
+- name: 'Config | set service drop-ins'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.systemd'
+    name: 'r_pufky.deb.systemd'
   vars:
     systemd_daemon_reload_enable: true
     systemd_services:
@@ -44,9 +43,13 @@
         service:
           exec_start:
             - ''
-            - '/usr/bin/deluged -d --loglevel {{ deluge_service_log_level }} --config "{{ deluge_service_config_dir }}/config"'
-          restart: 'always'  # always restart for periodic service restarts
-          runtime_max_sec: '{{ "1d" if deluge_service_restart_daily_enable else "infinity" }}'
+            - >-
+              /usr/bin/deluged -d
+              --loglevel {{ deluge_service_log_level }}
+              --config "{{ deluge_service_config_dir }}/config"
+          restart: 'always'  # Always restart for periodic service restarts.
+          runtime_max_sec:
+            '{{ "1d" if deluge_service_restart_daily_enable else "infinity" }}'
         exec:
           user: '{{ deluge_user }}'
           group: '{{ deluge_group }}'
@@ -56,9 +59,13 @@
         service:
           exec_start:
             - ''
-            - '/usr/bin/deluge-web -d --loglevel {{ deluge_service_log_level }} --config "{{ deluge_service_config_dir }}/config"'
-          restart: 'always'  # always restart for periodic service restarts
-          runtime_max_sec: '{{ "1d" if deluge_service_restart_daily_enable else "infinity" }}'
+            - >-
+              /usr/bin/deluge-web -d
+              --loglevel {{ deluge_service_log_level }}
+              --config "{{ deluge_service_config_dir }}/config"
+          restart: 'always'  # Always restart for periodic service restarts.
+          runtime_max_sec:
+            '{{ "1d" if deluge_service_restart_daily_enable else "infinity" }}'
         exec:
           user: '{{ deluge_user }}'
           group: '{{ deluge_group }}'
@@ -90,11 +97,26 @@
   become: true
   changed_when: false  # https://github.com/ansible/ansible/issues/32636
   loop:
-    - {path: '{{ deluge_service_config_dir }}/config/icons', mode: '0750', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
-    - {path: '{{ deluge_service_config_dir }}/config/plugins', mode: '0770', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
-    - {path: '{{ deluge_service_config_dir }}/config/ssl', mode: '0770', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
-    - {path: '{{ deluge_service_config_dir }}/config/state', mode: '0770', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
-    - {path: '{{ deluge_service_config_dir }}/config/scripts', mode: '0770', owner: '{{ deluge_user }}', group: '{{ deluge_group }}'}
+    - path: '{{ deluge_service_config_dir }}/config/icons'
+      mode: '0750'
+      owner: '{{ deluge_user }}'
+      group: '{{ deluge_group }}'
+    - path: '{{ deluge_service_config_dir }}/config/plugins'
+      mode: '0770'
+      owner: '{{ deluge_user }}'
+      group: '{{ deluge_group }}'
+    - path: '{{ deluge_service_config_dir }}/config/ssl'
+      mode: '0770'
+      owner: '{{ deluge_user }}'
+      group: '{{ deluge_group }}'
+    - path: '{{ deluge_service_config_dir }}/config/state'
+      mode: '0770'
+      owner: '{{ deluge_user }}'
+      group: '{{ deluge_group }}'
+    - path: '{{ deluge_service_config_dir }}/config/scripts'
+      mode: '0770'
+      owner: '{{ deluge_user }}'
+      group: '{{ deluge_group }}'
 
 - name: 'Prep | set daemon HTTPS certs'
   when: deluge_web_https

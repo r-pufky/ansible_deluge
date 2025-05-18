@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 - name: 'Plugins | verify'
   hosts: 'all'
   gather_facts: false
@@ -10,204 +9,50 @@
     # Deluge will fail if configuration is bad.
     - name: 'Plugins | verify | assert deluged.service active'
       ansible.builtin.assert:
+        quiet: true
         that:
           - '"deluged.service" in ansible_facts.services'
-          - 'ansible_facts["services"]["deluged.service"]["state"] == "running"'
+          - 'ansible_facts["services"]["deluged.service"]["state"] == "running"'  # yamllint disable-line rule:line-length
         fail_msg: 'deluged.service should be enabled and running.'
 
     - name: 'Plugins | verify | assert deluge-web.service active'
       ansible.builtin.assert:
+        quiet: true
         that:
           - '"deluge-web.service" in ansible_facts.services'
-          - 'ansible_facts["services"]["deluge-web.service"]["state"] == "running"'
+          - 'ansible_facts["services"]["deluge-web.service"]["state"] == "running"'  # yamllint disable-line rule:line-length
         fail_msg: 'deluge-web.service should be enabled and running.'
 
-    - name: 'Plugins | verify | query core.conf'
-      ansible.builtin.copy:
-        src: 'files/core.conf'
-        dest: '/var/lib/deluge/config/core.conf'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_core
+    - name: 'Plugins | verify | /var/lib/deluge/config'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Plugins | verify | {{ item }}'
+        test_src: 'files/{{ item }}'
+        test_file: '/var/lib/deluge/config/{{ item }}'
+        test_owner: 'media'
+        test_group: 'media'
+        test_mode: '0600'
+      loop:
+        - 'core.conf'
+        - 'web.conf'
+        - 'autoadd.conf'
+        - 'blocklist.conf'
+        - 'blocklist.download'
+        - 'execute.conf'
+        - 'extractor.conf'
+        - 'label.conf'
+        - 'scheduler.conf'
 
-    - name: 'Plugins | verify | assert core.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_core.changed
-        fail_msg: >
-          /var/lib/deluge/config/core.conf is not in expected format:
-          {{ _test_deluge_core.diff }}.
-
-    - name: 'Plugins | verify | query web.conf'
-      ansible.builtin.copy:
-        src: 'files/web.conf'
-        dest: '/var/lib/deluge/config/web.conf'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_web
-
-    - name: 'Plugins | verify | assert web.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_web.changed
-        fail_msg: >
-          /var/lib/deluge/config/web.conf is not in expected format:
-          {{ _test_deluge_web.diff }}.
-
-    - name: 'Plugins | verify | query autoadd.conf'
-      ansible.builtin.copy:
-        src: 'files/autoadd.conf'
-        dest: '/var/lib/deluge/config/autoadd.conf'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_auto_add
-
-    - name: 'Plugins | verify | assert autoadd.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_auto_add.changed
-        fail_msg: >
-          /var/lib/deluge/config/autoadd.conf is not in expected format:
-          {{ _test_deluge_auto_add.diff }}.
-
-    - name: 'Default | verify | query blocklist.conf'
-      ansible.builtin.copy:
-        src: 'files/blocklist.conf'
-        dest: '/var/lib/deluge/config/blocklist.conf'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_blocklist
-
-    - name: 'Default | verify | assert blocklist.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_blocklist.changed
-        fail_msg: >
-          /var/lib/deluge/config/blocklist.conf is not in expected format:
-          {{ _test_deluge_blocklist.diff }}.
-
-    - name: 'Default | verify | query blocklist.download'
-      ansible.builtin.copy:
-        src: 'files/blocklist.download'
-        dest: '/var/lib/deluge/config/blocklist.download'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_blocklist_download
-
-    - name: 'Default | verify | assert blocklist.download'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_blocklist_download.changed
-        fail_msg: >
-          /var/lib/deluge/config/blocklist.download is not in expected format:
-          {{ _test_deluge_blocklist_download.diff }}.
-
-    - name: 'Default | verify | query execute.conf'
-      ansible.builtin.copy:
-        src: 'files/execute.conf'
-        dest: '/var/lib/deluge/config/execute.conf'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_execute
-
-    - name: 'Default | verify | assert execute.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_execute.changed
-        fail_msg: >
-          /var/lib/deluge/config/execute.conf is not in expected format:
-          {{ _test_deluge_execute.diff }}.
-
-    - name: 'Default | verify | query scripts/test'
-      ansible.builtin.copy:
-        src: 'files/scripts/test'
-        dest: '/var/lib/deluge/config/scripts/test'
-        owner: 'media'
-        group: 'media'
-        mode: '0750'
-      check_mode: true
-      diff: true
-      register: _test_deluge_execute_scripts
-
-    - name: 'Default | verify | assert scripts/test'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_execute_scripts.changed
-        fail_msg: >
-          /var/lib/deluge/config/scripts/test is not in expected format:
-          {{ _test_deluge_execute_scripts.diff }}.
-
-    - name: 'Default | verify | query extractor.conf'
-      ansible.builtin.copy:
-        src: 'files/extractor.conf'
-        dest: '/var/lib/deluge/config/extractor.conf'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_extractor
-
-    - name: 'Default | verify | assert extractor.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_extractor.changed
-        fail_msg: >
-          /var/lib/deluge/config/extractor.conf is not in expected format:
-          {{ _test_deluge_extractor.diff }}.
-
-    - name: 'Default | verify | query label.conf'
-      ansible.builtin.copy:
-        src: 'files/label.conf'
-        dest: '/var/lib/deluge/config/label.conf'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_label
-
-    - name: 'Default | verify | assert label.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_label.changed
-        fail_msg: >
-          /var/lib/deluge/config/label.conf is not in expected format:
-          {{ _test_deluge_label.diff }}.
-
-    - name: 'Default | verify | query scheduler.conf'
-      ansible.builtin.copy:
-        src: 'files/scheduler.conf'
-        dest: '/var/lib/deluge/config/scheduler.conf'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_scheduler
-
-    - name: 'Default | verify | assert scheduler.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_scheduler.changed
-        fail_msg: >
-          /var/lib/deluge/config/scheduler.conf is not in expected format:
-          {{ _test_deluge_scheduler.diff }}.
+    - name: 'Plugins | verify | /var/lib/deluge/config/scripts/test'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Plugins | verify | /var/lib/deluge/config/scripts/test'
+        test_src: 'files/scripts/test'
+        test_file: '/var/lib/deluge/config/scripts/test'
+        test_owner: 'media'
+        test_group: 'media'
+        test_mode: '0750'

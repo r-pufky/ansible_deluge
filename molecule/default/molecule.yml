@@ -1,9 +1,15 @@
 ---
-# Confirm:
+###############################################################################
+# Default
+###############################################################################
+# Default values results in running service.
+#
+# Tests:
 # * deluged.service active and running.
 # * deluge-web.service active and running.
 # * /var/lib/deluge created with correct permissions.
-# * default plugins configurations are rendered correctly.
+# * Default plugins configurations are rendered correctly.
+
 dependency:
   name: 'galaxy'
 driver:

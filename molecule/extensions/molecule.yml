@@ -1,8 +1,14 @@
 ---
-# Confirm:
+###############################################################################
+# Extensions
+###############################################################################
+# Confirm deluge config extensions are deployed correctly.
+#
+# Tests:
 # * deluged.service active and running.
 # * deluge-web.service active and running.
 # * /var/lib/deluge created with correct permissions.
+
 dependency:
   name: 'galaxy'
 driver:
@@ -22,7 +28,6 @@ provisioner:
           other: 'false'
         deluge_config_extensions_web:
           other: 'false'
-
 platforms:
   - name: 'deluge-debian-12-extensions'
     image: 'ghcr.io/hifis-net/debian-systemd:12'

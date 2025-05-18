@@ -17,10 +17,10 @@ deluge_role_packages:
   - 'deluge-console'  # CLI interface (required).
   - 'deluge-web'  # WebUI (required).
   - 'rsync'  # ansible.builtin.synchronize.
-  - 'unrar'  # requires: contrib, non-free
+  - 'unrar'  # requires: contrib, non-free.
   - 'unzip'
-  - '7zip'  # provides: 7zz
-  - 'p7zip-full'  # provides: 7za
+  - '7zip'  # provides: 7zz.
+  - 'p7zip-full'  # provides: 7za.
 
 # Debian APT sources to use if package install fails.
 deluge_role_apt_debian_all:

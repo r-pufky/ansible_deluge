@@ -1,10 +1,15 @@
 ---
-# yamllint disable rule:line-length
-# Confirm:
+###############################################################################
+# Plugins
+###############################################################################
+# Ensure all included plugins may be configured without error.
+#
+# Tests:
 # * deluged.service active and running.
 # * deluge-web.service active and running.
 # * /var/lib/deluge created with correct permissions.
 # * default plugins configurations are rendered correctly.
+
 dependency:
   name: 'galaxy'
 driver:
@@ -47,7 +52,8 @@ provisioner:
         deluge_plugins_execute:
           - event: 'completed'
             command: '/var/lib/deluge/config/scripts/test'
-        deluge_plugins_execute_source: '{{ lookup("env", "MOLECULE_SCENARIO_DIRECTORY") }}/files/scripts'
+        deluge_plugins_execute_source:
+          '{{ lookup("env", "MOLECULE_SCENARIO_DIRECTORY") }}/files/scripts'
         deluge_plugins_extractor:
           extract_path: '/tmp'
           use_name_folder: true
@@ -60,7 +66,9 @@ provisioner:
               - 'archive'
             prioritize_first_last: true
         deluge_plugins_scheduler:
-          mon: [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0]
+          mon: [1, 1, 1, 1, 1, 1, 1, 1,
+                2, 2, 2, 2, 2, 2, 2, 2,
+                0, 0, 0, 0, 0, 0, 0, 0]
           low_active: -1
 platforms:
   - name: 'deluge-debian-12-plugins'

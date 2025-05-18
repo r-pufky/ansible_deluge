@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 - name: 'HTTPS | verify'
   hosts: 'all'
   gather_facts: false
@@ -10,52 +9,36 @@
     # Deluge will fail if configuration is bad.
     - name: 'HTTPS | verify | assert deluged.service active'
       ansible.builtin.assert:
+        quiet: true
         that:
           - '"deluged.service" in ansible_facts.services'
-          - 'ansible_facts["services"]["deluged.service"]["state"] == "running"'
+          - 'ansible_facts["services"]["deluged.service"]["state"] == "running"'  # yamllint disable-line rule:line-length
         fail_msg: 'deluged.service should be enabled and running.'
 
     - name: 'HTTPS | verify | assert deluge-web.service active'
       ansible.builtin.assert:
+        quiet: true
         that:
           - '"deluge-web.service" in ansible_facts.services'
-          - 'ansible_facts["services"]["deluge-web.service"]["state"] == "running"'
+          - 'ansible_facts["services"]["deluge-web.service"]["state"] == "running"'  # yamllint disable-line rule:line-length
         fail_msg: 'deluge-web.service should be enabled and running.'
 
-    - name: 'HTTPS | verify | query daemon.cert'
-      ansible.builtin.copy:
-        src: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/test.pem'
-        dest: '/var/lib/deluge/config/ssl/daemon.cert'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_cert
-
-    - name: 'HTTPS | verify | assert daemon.cert'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_cert.changed
-        fail_msg: >
-          /var/lib/deluge/config/daemon.cert is not in expected format:
-          {{ _test_deluge_cert.diff }}.
-
-    - name: 'HTTPS | verify | query daemon.pkey'
-      ansible.builtin.copy:
-        src: '{{ lookup("env", "MOLECULE_PROJECT_DIRECTORY") }}/molecule/cache/test.key'
-        dest: '/var/lib/deluge/config/ssl/daemon.pkey'
-        owner: 'media'
-        group: 'media'
-        mode: '0600'
-      check_mode: true
-      diff: true
-      register: _test_deluge_pkey
-
-    - name: 'HTTPS | verify | assert daemon.pkey'
-      ansible.builtin.assert:
-        that:
-          - not _test_deluge_pkey.changed
-        fail_msg: >
-          /var/lib/deluge/config/daemon.pkey is not in expected format:
-          {{ _test_deluge_pkey.diff }}.
+    - name: 'HTTPS | verify | /var/lib/deluge/config/ssl'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'HTTPS | verify | /var/lib/deluge/config/ssl/{{ item.file }}'  # yamllint disable-line rule:line-length
+        test_src: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/molecule/cache/" ~ item.src
+          }}'
+        test_file: '/var/lib/deluge/config/ssl/{{ item.file }}'
+        test_owner: 'media'
+        test_group: 'media'
+        test_mode: '0600'
+      loop:
+        - {src: 'test.pem', file: 'daemon.cert'}
+        - {src: 'test.key', file: 'daemon.pkey'}
+      loop_control:
+        label: '{{ item.file }}'
