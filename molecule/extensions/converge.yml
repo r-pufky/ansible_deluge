@@ -1,8 +1,0 @@
----
-- name: 'Extensions | converge'
-  hosts: 'all'
-  gather_facts: false
-  tasks:
-    - name: 'Extensions | converge | apply r_pufky.srv.deluge'
-      ansible.builtin.include_role:
-        name: 'r_pufky.srv.deluge'

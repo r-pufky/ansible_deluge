@@ -2,6 +2,6 @@
     "file": 1,
     "format": 1
 }{
-    "extract_path": "{{ _deluge_plugins_extractor.extract_path }}",
-    "use_name_folder": {{ _deluge_plugins_extractor.use_name_folder | string | lower }}
+    "extract_path": "{{ deluge_cfg_plugins_extractor.raw.extract_path }}",
+    "use_name_folder": {{ deluge_cfg_plugins_extractor.raw.use_name_folder | string | lower }}
 }

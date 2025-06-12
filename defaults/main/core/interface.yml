@@ -9,16 +9,16 @@
 # change over time and should be re-validated from time to time.
 
 # Accelerator key for path dialogs. Default: 'Tab'.
-deluge_core_path_chooser_accelerator_string: 'Tab'
+deluge_cfg_core_path_chooser_accelerator_string: 'Tab'
 
 # Enable auto-completion of paths? Default: True.
-deluge_core_path_chooser_auto_complete_enabled: true
+deluge_cfg_core_path_chooser_auto_complete_enabled: true
 
 # Maximum number of paths to display at one time. Default: 20.
-deluge_core_path_chooser_max_popup_rows: 20
+deluge_cfg_core_path_chooser_max_popup_rows: 20
 
 # Enable path chooser on localhost connections? Default: True.
-deluge_core_path_chooser_show_chooser_button_on_localhost: true
+deluge_cfg_core_path_chooser_show_chooser_button_on_localhost: true
 
 # Show hidden files in path dialog? Default: False.
-deluge_core_path_chooser_show_hidden_files: false
+deluge_cfg_core_path_chooser_show_hidden_files: false

@@ -6,52 +6,52 @@
 # Download staging location.
 #
 # Download files are staged here while in progress. If
-# deluge_core_move_completed=false completed downloads will exist here.
+# deluge_cfg_core_move_completed=false completed downloads will exist here.
 #
-# Default: '/var/lib/deluge/Downloads'.
-deluge_core_download_location: '/var/lib/deluge/Downloads'
+# Default: '/opt/deluge/Downloads'.
+deluge_cfg_core_download_location: '/opt/deluge/Downloads'
 
 # List of quick-select paths for download staging location.
 #
 # Default: [] (auto).
-deluge_core_download_location_paths_list: []
+deluge_cfg_core_download_location_paths_list: []
 
 # Move completed downloads from staging? Default: False.
-deluge_core_move_completed: false
+deluge_cfg_core_move_completed: false
 
 # List of quick-select completed paths for move completed downloads.
 #
 # Default: [] (auto).
-deluge_core_move_completed_paths_list: []
+deluge_cfg_core_move_completed_paths_list: []
 
 # Completed download location.
 #
-# Enable with deluge_core_move_completed.
+# Enable with deluge_cfg_core_move_completed.
 #
-# Default: '/var/lib/deluge/Downloads'
-deluge_core_move_completed_path: '/var/lib/deluge/Downloads'
+# Default: '/opt/deluge/Downloads'
+deluge_cfg_core_move_completed_path: '/opt/deluge/Downloads'
 
 # Copy (backup) .torrent files? Default: False.
-deluge_core_copy_torrent_file: false
+deluge_cfg_core_copy_torrent_file: false
 
 # Backup torrent file location.
 #
-# Enable with deluge_core_copy_torrent_file.
+# Enable with deluge_cfg_core_copy_torrent_file.
 #
-# Default: '/var/lib/deluge/Downloads'
-deluge_core_torrentfiles_location: '/var/lib/deluge/Downloads'
+# Default: '/opt/deluge/Downloads'
+deluge_cfg_core_torrentfiles_location: '/opt/deluge/Downloads'
 
 # Prioritize first and last piece of torrent? Default: False.
-deluge_core_prioritize_first_last_pieces: false
+deluge_cfg_core_prioritize_first_last_pieces: false
 
 # Download sequentially? Default: False.
-deluge_core_sequential_download: false
+deluge_cfg_core_sequential_download: false
 
 # Add torrents in paused state? Default: False.
-deluge_core_add_paused: false
+deluge_cfg_core_add_paused: false
 
 # Pre-allocate disk space? Default: False.
-deluge_core_pre_allocate_storage: false
+deluge_cfg_core_pre_allocate_storage: false
 
 ###############################################################################
 # Non WebUI Options (core.conf)
@@ -60,10 +60,10 @@ deluge_core_pre_allocate_storage: false
 # change over time and should be re-validated from time to time.
 
 # Delete .torrent files when copied to final location? Default: False.
-deluge_core_del_copy_torrent_file: false
+deluge_cfg_core_del_copy_torrent_file: false
 
 # Set torrent to auto managed (started or queued automatically). Default: True.
-deluge_core_auto_managed: true
+deluge_cfg_core_auto_managed: true
 
 # Enable the torrent to be seen by other Deluge users. Default: False.
-deluge_core_shared: false
+deluge_cfg_core_shared: false

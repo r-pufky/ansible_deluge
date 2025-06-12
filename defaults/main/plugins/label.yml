@@ -10,7 +10,7 @@
 # Reference:
 # * https://deluge-torrent.org/plugins/#plugins-included
 
-# deluge_plugins_label:
+# deluge_cfg_plugins_label:
 #     list of dict - torrent labeling and classification.
 #   - name: str - label name.
 #     apply_max: bool - apply per torrent max settings?
@@ -55,7 +55,7 @@
 #     prioritize_first_last: bool - prioritize first and last torrent pieces?
 #         Default: False.
 #
-# deluge_plugins_label:
+# deluge_cfg_plugins_label:
 #   - name: 'isos'
 #     apply_max: true
 #     auto_add: true
@@ -65,4 +65,4 @@
 #     prioritize_first_last: true
 #
 # Default: {}.
-deluge_plugins_label: []
+deluge_cfg_plugins_label: []

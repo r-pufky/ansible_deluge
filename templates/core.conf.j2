@@ -2,108 +2,36 @@
     "file": 1,
     "format": 1
 }{
-    "add_paused": {{ _deluge_core.add_paused }},
-    "allow_remote": {{ _deluge_core.allow_remote }},
-    "auto_manage_prefer_seeds": {{ _deluge_core.auto_manage_prefer_seeds }},
-    "auto_managed": {{ _deluge_core.auto_managed }},
-    "cache_expiry": {{ _deluge_core.cache_expiry }},
-    "cache_size": {{ _deluge_core.cache_size }},
-    "copy_torrent_file": {{ _deluge_core.copy_torrent_file }},
-    "daemon_port": {{ _deluge_core.daemon_port }},
-    "del_copy_torrent_file": {{ _deluge_core.del_copy_torrent_file }},
-    "dht": {{ _deluge_core.dht }},
-    "dont_count_slow_torrents": {{ _deluge_core.dont_count_slow_torrents }},
-    "download_location": "{{ _deluge_core.download_location }}",
-    "download_location_paths_list": {{ _deluge_core.download_location_paths_list }},
-{% if _deluge_core.enabled_plugins | length > 0 %}
-    "enabled_plugins": [
-{% for plugin in _deluge_core.enabled_plugins %}
-        "{{ plugin }}"{% if not loop.last %},{% endif %}
-
-{% endfor %}
-    ],
-{% else %}
-    "enabled_plugins": [],
-{% endif %}
-    "enc_in_policy": {{ _deluge_core.enc_in_policy }},
-    "enc_level": {{ _deluge_core.enc_level }},
-    "enc_out_policy": {{ _deluge_core.enc_out_policy }},
-    "geoip_db_location": "{{ _deluge_core.geoip_db_location  }}",
-    "ignore_limits_on_local_network": {{ _deluge_core.ignore_limits_on_local_network }},
-    "info_sent": {{ _deluge_core.info_sent }},
-    "listen_interface": "{{ _deluge_core.listen_interface }}",
-    "listen_ports": [
-        {{ _deluge_core.listen_ports.start }},
-        {{ _deluge_core.listen_ports.end }}
-    ],
-    "listen_random_port": {{ _deluge_core.listen_random_port }},
-    "listen_reuse_port": {{ _deluge_core.listen_reuse_port }},
-    "listen_use_sys_port": {{ _deluge_core.listen_use_sys_port }},
-    "lsd": {{ _deluge_core.lsd }},
-    "max_active_downloading": {{ _deluge_core.max_active_downloading }},
-    "max_active_limit": {{ _deluge_core.max_active_limit }},
-    "max_active_seeding": {{ _deluge_core.max_active_seeding }},
-    "max_connections_global": {{ _deluge_core.max_connections_global }},
-    "max_connections_per_second": {{ _deluge_core.max_connections_per_second }},
-    "max_connections_per_torrent": {{ _deluge_core.max_connections_per_torrent }},
-    "max_download_speed": {{ _deluge_core.max_download_speed }},
-    "max_download_speed_per_torrent": {{ _deluge_core.max_download_speed_per_torrent }},
-    "max_half_open_connections": {{ _deluge_core.max_half_open_connections }},
-    "max_upload_slots_global": {{ _deluge_core.max_upload_slots_global }},
-    "max_upload_slots_per_torrent": {{ _deluge_core.max_upload_slots_per_torrent }},
-    "max_upload_speed": {{ _deluge_core.max_upload_speed }},
-    "max_upload_speed_per_torrent": {{ _deluge_core.max_upload_speed_per_torrent }},
-    "move_completed": {{ _deluge_core.move_completed }},
-    "move_completed_path": "{{ _deluge_core.move_completed_path }}",
-    "move_completed_paths_list": {{ _deluge_core.move_completed_paths_list }},
-    "natpmp": {{ _deluge_core.natpmp }},
-    "new_release_check": {{ _deluge_core.new_release_check }},
-    "outgoing_interface": "{{ _deluge_core.outgoing_interface }}",
-    "outgoing_ports": [
-        {{ _deluge_core.outgoing_ports.start }},
-        {{ _deluge_core.outgoing_ports.end }}
-    ],
-    "path_chooser_accelerator_string": "{{ _deluge_core.path_chooser_accelerator_string }}",
-    "path_chooser_auto_complete_enabled": {{ _deluge_core.path_chooser_auto_complete_enabled }},
-    "path_chooser_max_popup_rows": {{ _deluge_core.path_chooser_max_popup_rows }},
-    "path_chooser_show_chooser_button_on_localhost": {{ _deluge_core.path_chooser_show_chooser_button_on_localhost }},
-    "path_chooser_show_hidden_files": {{ _deluge_core.path_chooser_show_hidden_files }},
-    "peer_tos": "{{ _deluge_core.peer_tos }}",
-    "plugins_location": "{{ _deluge_core.plugins_location }}",
-    "pre_allocate_storage": {{ _deluge_core.pre_allocate_storage }},
-    "prioritize_first_last_pieces": {{ _deluge_core.prioritize_first_last_pieces }},
+{% for header in _deluge_cfg_order %}
+{%   set header_loop = loop %}
+{%   if header == 'Proxy' %}
     "proxy": {
-        "anonymous_mode": {{ _deluge_core.proxy.anonymous_mode }},
-        "force_proxy": {{ _deluge_core.proxy.force_proxy }},
-        "hostname": "{{ _deluge_core.proxy.hostname }}",
-        "password": "{{ _deluge_core.proxy.password }}",
-        "port": {{ _deluge_core.proxy.port }},
-        "proxy_hostnames": {{ _deluge_core.proxy.proxy_hostnames }},
-        "proxy_peer_connections": {{ _deluge_core.proxy.proxy_peer_connections }},
-        "proxy_tracker_connections": {{ _deluge_core.proxy.proxy_tracker_connections }},
-        "type": {{ _deluge_core.proxy.type }},
-        "username": "{{ _deluge_core.proxy.username }}"
-    },
-    "queue_new_to_top": {{ _deluge_core.queue_new_to_top }},
-    "random_outgoing_ports": {{ _deluge_core.random_outgoing_ports }},
-    "random_port": {{ _deluge_core.random_port }},
-    "rate_limit_ip_overhead": {{ _deluge_core.rate_limit_ip_overhead }},
-    "remove_seed_at_ratio": {{ _deluge_core.remove_seed_at_ratio }},
-    "seed_time_limit": {{ _deluge_core.seed_time_limit }},
-    "seed_time_ratio_limit": {{ _deluge_core.seed_time_ratio_limit }},
-    "send_info": {{ _deluge_core.send_info }},
-    "sequential_download": {{ _deluge_core.sequential_download }},
-    "share_ratio_limit": {{ _deluge_core.share_ratio_limit }},
-    "shared": {{ _deluge_core.shared }},
-    "stop_seed_at_ratio": {{ _deluge_core.stop_seed_at_ratio }},
-    "stop_seed_ratio": {{ _deluge_core.stop_seed_ratio }},
-    "super_seeding": {{ _deluge_core.super_seeding }},
-    "torrentfiles_location": "{{ _deluge_core.torrentfiles_location }}",
-    "upnp": {{ _deluge_core.upnp }},
-    "utpex": {{ _deluge_core.utpex }}{% if deluge_config_extensions_core | length > 0 %},
-{% for key, value in deluge_config_extensions_core.items() %}
-    "{{ key}}": {{ value }}{% if not loop.last %},{% endif %}
-{% endfor %}
-{% endif %}
+{%     for section in _deluge_cfg_map | selectattr("value.section", "match", header) | sort(attribute="value.order") %}
+{%       if not section.value.deprecated %}
+{%         if section.value.hint == 'int' %}
+        "{{ section.value.key }}": {{ section.value.raw | int | to_json }}{% if not loop.last %},{% endif %}
+{%         elif section.value.hint == 'float' %}
+        "{{ section.value.key }}": {{ section.value.raw | float | to_json }}{% if not loop.last %},{% endif %}
+{%         else %}
+        "{{ section.value.key }}": {{ section.value.raw | to_json }}{% if not loop.last %},{% endif %}
+{%         endif %}
 
+{%       endif %}
+{%     endfor %}
+    },
+{%   else %}
+{%     for section in _deluge_cfg_map | selectattr("value.section", "match", header) | sort(attribute="value.order") %}
+{%       if not section.value.deprecated %}
+{%         if section.value.hint == 'int' %}
+    "{{ section.value.key }}": {{ section.value.raw | int | to_json }}{% if not header_loop.last or not loop.last %},{% endif %}
+{%         elif section.value.hint == 'float' %}
+    "{{ section.value.key }}": {{ section.value.raw | float | to_json }}{% if not header_loop.last or not loop.last %},{% endif %}
+{%         else %}
+    "{{ section.value.key }}": {{ section.value.raw | to_json }}{% if not header_loop.last or not loop.last %},{% endif %}
+{%         endif %}
+
+{%       endif %}
+{%     endfor %}
+{%   endif %}
+{% endfor %}
 }

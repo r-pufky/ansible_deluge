@@ -15,7 +15,7 @@
 #   -1: unlimited connections.
 #
 # Default: 200.
-deluge_core_max_connections_global: 200
+deluge_cfg_core_max_connections_global: 200
 
 # Maximum upload slots. Default: 4.
 #
@@ -23,7 +23,7 @@ deluge_core_max_connections_global: 200
 #   -1: unlimited upload slots.
 #
 # Default: 4.
-deluge_core_max_upload_slots_global: 4
+deluge_cfg_core_max_upload_slots_global: 4
 
 # Maximum download speed (KiB/s).
 #
@@ -31,7 +31,7 @@ deluge_core_max_upload_slots_global: 4
 #   -1: unlimited download speed.
 #
 # Default: -1.
-deluge_core_max_download_speed: -1
+deluge_cfg_core_max_download_speed: -1
 
 # Maximum upload speed (KiB/s).
 #
@@ -39,7 +39,7 @@ deluge_core_max_download_speed: -1
 #   -1: unlimited upload speed.
 #
 # Default: -1.
-deluge_core_max_upload_speed: -1
+deluge_cfg_core_max_upload_speed: -1
 
 # Maximum half-open connections.
 #
@@ -47,7 +47,7 @@ deluge_core_max_upload_speed: -1
 #   -1: unlimited connections.
 #
 # Default: 50.
-deluge_core_max_half_open_connections: 50
+deluge_cfg_core_max_half_open_connections: 50
 
 # Maximum connection attempts per second.
 #
@@ -55,13 +55,13 @@ deluge_core_max_half_open_connections: 50
 #   -1: unlimited attempts.
 #
 # Default: 20.
-deluge_core_max_connections_per_second: 20
+deluge_cfg_core_max_connections_per_second: 20
 
-# Ignore bandwidth limits on local nework? Default: True.
-deluge_core_ignore_limits_on_local_network: true
+# Ignore bandwidth limits on local network? Default: True.
+deluge_cfg_core_ignore_limits_on_local_network: true
 
 # Rate limit IP overhead? Default: True.
-deluge_core_rate_limit_ip_overhead: true
+deluge_cfg_core_rate_limit_ip_overhead: true
 
 ###############################################################################
 # Per Torrent
@@ -73,7 +73,7 @@ deluge_core_rate_limit_ip_overhead: true
 #   -1: unlimited connections.
 #
 # Default: -1.
-deluge_core_max_connections_per_torrent: -1
+deluge_cfg_core_max_connections_per_torrent: -1
 
 # Maximum upload slots.
 #
@@ -81,7 +81,7 @@ deluge_core_max_connections_per_torrent: -1
 #   -1: unlimited upload slots.
 #
 # Default: -1.
-deluge_core_max_upload_slots_per_torrent: -1
+deluge_cfg_core_max_upload_slots_per_torrent: -1
 
 # Maximum download speed (KiB/s).
 #
@@ -89,7 +89,7 @@ deluge_core_max_upload_slots_per_torrent: -1
 #   -1: unlimited download speed.
 #
 # Default: -1.
-deluge_core_max_download_speed_per_torrent: -1
+deluge_cfg_core_max_download_speed_per_torrent: -1
 
 # Maximum upload speed (KiB/s).
 #
@@ -97,4 +97,4 @@ deluge_core_max_download_speed_per_torrent: -1
 #   -1: unlimited upload speed.
 #
 # Default: -1.
-deluge_core_max_upload_speed_per_torrent: -1
+deluge_cfg_core_max_upload_speed_per_torrent: -1

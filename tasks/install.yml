@@ -19,7 +19,7 @@
         apt_package_update_cache: true
   rescue:
     - name: 'Install | APT SOURCE REQUIRED ⚠'
-      when: not deluge_service_auto_add_apt_sources_enable
+      when: not deluge_srv_auto_add_apt_sources_enable.raw
       ansible.builtin.fail:
         msg: |
           ✘ Required packages could not be installed.
@@ -28,11 +28,11 @@
           * contrib
           * non-free
 
-          Enable deluge_service_auto_add_apt_sources_enable or manage APT
+          Enable deluge_srv_auto_add_apt_sources_enable or manage APT
           outside of this role.
 
     - name: 'Install | APT SOURCE REQUIRED ⚠'
-      when: not deluge_service_auto_add_apt_sources_enable
+      when: not deluge_srv_auto_add_apt_sources_enable.raw
       ansible.builtin.fail:
         msg: |
           ⚠ Required packages could not be installed.
@@ -41,12 +41,12 @@
           * contrib
           * non-free
 
-          deluge_service_auto_add_apt_sources_enable=true
+          deluge_srv_auto_add_apt_sources_enable=true
 
           Automatically adding required Debian components ...
 
     - name: 'Install | packages (modify APT debian repository)'
-      when: deluge_service_auto_add_apt_sources_enable
+      when: deluge_srv_auto_add_apt_sources_enable.raw
       ansible.builtin.include_role:
         name: 'r_pufky.deb.apt'
       vars:
@@ -54,3 +54,12 @@
           - '{{ deluge_role_packages }}'
         apt_sources: '{{ deluge_role_apt_debian_all }}'
         apt_package_update_cache: true
+
+- name: 'Install | stop services'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: 'stopped'
+  failed_when: false
+  loop:
+    - 'deluged.service'
+    - 'deluge-web.service'

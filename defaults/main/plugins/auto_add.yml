@@ -10,9 +10,9 @@
 # Reference:
 # * https://deluge-torrent.org/plugins/autoadd
 
-# deluge_plugins_auto_add:
+# deluge_cfg_plugins_auto_add:
 #     list of dict - directories to watch to auto add torrents. All paths must
-#         be accessible by deluge_user.
+#         be accessible by deluge_srv_user.
 #   - id: int - incremental directory id starting at 1, use contiguous IDs.
 #         Default: 1.
 #     abs_path: str - absolute path to watch directory.
@@ -102,10 +102,10 @@
 #     label: str - label torrent for Labels plugin.
 #         Default: ''.
 #
-# deluge_plugins_auto_add:
+# deluge_cfg_plugins_auto_add:
 #   - id: 1
-#     abs_path: '/var/lib/deluge'
+#     abs_path: '/opt/deluge'
 #     enabled: true
 #
 # Default: [].
-deluge_plugins_auto_add: []
+deluge_cfg_plugins_auto_add: []

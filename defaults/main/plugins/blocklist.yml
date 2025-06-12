@@ -10,7 +10,7 @@
 # Reference:
 # * https://deluge-torrent.org/plugins/blocklist
 
-# deluge_plugins_blocklist:
+# deluge_cfg_plugins_blocklist:
 #     dict - blocklist configuration.
 #   url: str - URL to retrieve blocklist from.
 #   check_after_days: int - interval to check for list updates (days).
@@ -27,7 +27,7 @@
 #         seeding of known bad IPs before initial blocklist sync.
 #       Default: '' (no blocklist until URL is queried).
 #
-# deluge_plugins_blocklist:
+# deluge_cfg_plugins_blocklist:
 #   url: 'http://hostex.de/1316700423'
 #   check_after_days: 7
 #   load_on_start: true
@@ -38,4 +38,4 @@
 #     001.036.132.226-001.036.132.226,116,[BD]PCCW/Netvigator kad
 #
 # Default: {}.
-deluge_plugins_blocklist: {}
+deluge_cfg_plugins_blocklist: {}

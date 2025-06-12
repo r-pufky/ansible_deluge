@@ -7,7 +7,7 @@
 # Reference:
 # * https://github.com/r-pufky/ansible_ufw
 
-deluge_ports:
+deluge_srv_ports:
   - proto: 'tcp'
     from_ip: 'any'
     to_port: 8112

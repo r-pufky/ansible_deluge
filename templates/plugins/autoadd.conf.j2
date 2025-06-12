@@ -2,10 +2,10 @@
     "file": 2,
     "format": 1
 }{
-{% if _deluge_plugins_auto_add is defined and _deluge_plugins_auto_add | length > 0 %}
-    "next_id": {{ _deluge_plugins_auto_add | length + 1 }},
+{% if deluge_cfg_plugins_auto_add.raw | length > 0 %}
+    "next_id": {{ deluge_cfg_plugins_auto_add.raw | length + 1 }},
     "watchdirs": {
-{% for auto in _deluge_plugins_auto_add %}
+{%   for auto in deluge_cfg_plugins_auto_add.raw %}
         "{{ auto.id }}": {
             "abspath": "{{ auto.abs_path }}",
             "path": "{{ auto.abs_path }}",
@@ -45,7 +45,7 @@
             "label_toggle": {{ auto.label_toggle | string | lower }},
             "label": "{{ auto.label }}"
         }
-{% endfor %}
+{%   endfor %}
 {% else %}
     "next_id": 1,
     "watchdirs": {}

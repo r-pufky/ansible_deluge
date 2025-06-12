@@ -2,15 +2,15 @@
     "file": 1,
     "format": 1
 }{
-{% if deluge_plugins_execute | length > 0 %}
+{% if deluge_cfg_plugins_execute.raw | length > 0 %}
     "commands": [
-{% for script in deluge_plugins_execute %}
+{%   for script in deluge_cfg_plugins_execute.raw %}
         [
             "{{ script.command | sha1 }}",
             "{{ script.event }}",
             "{{ script.command }}"
         ]{% if not loop.last %},{% endif %}
-{% endfor %}
+{%   endfor %}
 
     ]
 {% else %}

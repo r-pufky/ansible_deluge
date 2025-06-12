@@ -6,13 +6,13 @@
 # Existing web sessions will be expired when is applied.
 
 # Show session speed in titlebar? Default: False.
-deluge_web_show_session_speed: false
+deluge_cfg_web_show_session_speed: false
 
 # Show filters with zero torrents? Default: False.
-deluge_web_sidebar_show_zero: false
+deluge_cfg_web_sidebar_show_zero: false
 
 # Allow the use of multiple filters at once? Default: True.
-deluge_web_sidebar_multiple_filters: true
+deluge_cfg_web_sidebar_multiple_filters: true
 
 # WebUI language.
 #
@@ -20,46 +20,46 @@ deluge_web_sidebar_multiple_filters: true
 #   * Uses ISO639-1_ISO3166-1 identifiers (en_GB).
 #
 # Values:
-#   '': use system default.
+#   '': Use system default.
 #
 # Default: ''.
 #
 # Reference:
 # * https://en.wikipedia.org/wiki/ISO_639-1
 # * https://en.wikipedia.org/wiki/ISO_3166-1
-deluge_web_language: ''
-
+deluge_cfg_web_language: ''
 
 # WebUI session timeout (seconds). Default: 3600 (1 hour).
-deluge_web_session_timeout: 3600
+deluge_cfg_web_session_timeout: 3600
 
 # WebUI port. Default: 8112.
-deluge_web_port: 8112
+deluge_cfg_web_port: 8112
 
 # Enable HTTPS for WebUI? Default: False.
-deluge_web_https: false
+deluge_cfg_web_https: false
 
 # Path to public certificate (for HTTPS).
 #
 # Sourced from ansible controller; automatically placed in
-# deluge_service_config_dir/config/ssl/daemon.cert with correct permissions.
+# deluge_srv_config_dir/config/ssl/daemon.cert with correct permissions.
 # Deluge will be automatically configured to use the installed location.
 #
-# deluge_web_ssl_cert_path: 'host_vars/deluge.example.com/data/my_cert.cert'
+# deluge_cfg_web_ssl_cert_path:
+#   'host_vars/deluge.example.com/data/my_cert.cert'
 #
 # Default: '' (disabled).
-deluge_web_ssl_cert_path: ''
+deluge_cfg_web_ssl_cert_path: ''
 
-# Path to private key for HTTPS).
+# Path to private key (for HTTPS).
 #
 # Sourced from ansible controller; automatically placed in
-# deluge_service_config_dir/config/ssl/daemon.pkey with correct permissions.
+# deluge_srv_config_dir/config/ssl/daemon.pkey with correct permissions.
 # Deluge will be automatically configured to use the installed location.
 #
-# deluge_web_ssl_key_path: 'host_vars/deluge.example.com/data/my_cert.key'
+# deluge_cfg_web_ssl_key_path: 'host_vars/deluge.example.com/data/my_cert.key'
 #
 # Default: '' (disabled).
-deluge_web_ssl_key_path: ''
+deluge_cfg_web_ssl_key_path: ''
 
 ###############################################################################
 # Password (web.conf)
@@ -83,15 +83,15 @@ deluge_web_ssl_key_path: ''
 # WebUI password salt.
 #
 # Special Case:
-#   * salt must be 32 alphanumeric characters.
+#   * Salt must be 32 alphanumeric characters.
 #
 # Default: '' (disabled).
-deluge_web_pwd_salt: ''
+deluge_cfg_web_pwd_salt: ''
 
 # WebUI password hash.
 #
 # Default: '' (default password 'deluge').
-deluge_web_pwd_sha1: ''
+deluge_cfg_web_pwd_sha1: ''
 
 ###############################################################################
 # Non WebUI Options (web.conf)
@@ -102,30 +102,30 @@ deluge_web_pwd_sha1: ''
 # Deluge theme.
 #
 # Values:
-#   gray: default gray theme.
-#   default: default gray theme.
-#   access: dark theme with orange highlights.
+#      gray: Default gray theme.
+#   default: Default gray theme.
+#    access: Dark theme with orange highlights.
 #
 # Default: 'gray'.
-deluge_web_theme: 'gray'
+deluge_cfg_web_theme: 'gray'
 
 # Show sidebar for new user login? Default: True.
-deluge_web_show_sidebar: true
+deluge_cfg_web_show_sidebar: true
 
 # Immediately prompt for password change on login? Default: False.
-deluge_web_first_login: false
+deluge_cfg_web_first_login: false
 
 # Interface to serve WebUI (IPv4/6). Default '0.0.0.0' (auto detect).
-deluge_web_interface: '0.0.0.0'
+deluge_cfg_web_interface: '0.0.0.0'
 
 # Default daemon to connect to on login.
 #
 # Values:
-#   '': list detected daemons to connect to (default).
-#   {ID}: daemon ID from hostlist.conf (first field).
+#     '': List detected daemons to connect to (default).
+#   {ID}: Daemon ID from hostlist.conf (first field).
 #
 # Default: ''.
 #
 # Reference:
 # * https://deluge-torrent.org/faq/#how-do-i-auto-connect-to-a-specific-daemon
-deluge_web_default_daemon: ''
+deluge_cfg_web_default_daemon: ''

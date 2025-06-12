@@ -3,23 +3,23 @@
     "format": 1
 }{
     "labels": {
-{% if _deluge_plugins_label is defined and _deluge_plugins_label | length > 0 %}
-{% for label in _deluge_plugins_label %}
+{% if deluge_cfg_plugins_label.raw | length > 0 %}
+{%   for label in deluge_cfg_plugins_label.raw %}
         "{{ label.name }}": {
             "apply_max": {{ label.apply_max | string | lower  }},
             "apply_move_completed": {{ label.apply_move_completed | string | lower  }},
             "apply_queue": {{ label.apply_queue | string | lower  }},
             "auto_add": {{ label.auto_add | string | lower  }},
-{% if label.auto_add_trackers | length > 0 %}
+{%     if label.auto_add_trackers | length > 0 %}
             "auto_add_trackers": [
-{% for name in label.auto_add_trackers %}
+{%       for name in label.auto_add_trackers %}
                 "{{ name }}"{% if not loop.last %},{% endif %}
 
-{% endfor %}
+{%       endfor %}
             ],
-{% else %}
+{%     else %}
             "auto_add_trackers": [],
-{% endif %}
+{%     endif %}
             "is_auto_managed": {{ label.is_auto_managed | string | lower  }},
             "max_connections": {{ label.max_connections }},
             "max_download_speed": {{ label.max_download_speed }},
@@ -32,7 +32,7 @@
             "stop_at_ratio": {{ label.stop_at_ratio | string | lower  }},
             "stop_ratio": {{ label.stop_ratio }}
         }{% if not loop.last %},{% endif %}
-{% endfor %}
+{%   endfor %}
 {% endif %}
 
     },

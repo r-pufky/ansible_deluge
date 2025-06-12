@@ -23,7 +23,7 @@
 #          Toggle: Allows the users to set the session to either paused or
 #                  resumed. No additional configuration options.
 #
-# deluge_core_enabled_plugins:
+# deluge_cfg_core_enabled_plugins:
 #   - 'AutoAdd'
 #   - 'Blocklist'
 #
@@ -31,18 +31,18 @@
 #
 # Reference:
 # * https://deluge-torrent.org/plugins/
-deluge_core_enabled_plugins: []
+deluge_cfg_core_enabled_plugins: []
 
 # Path to deluge plugin eggs.
 #
 # Sourced from ansible controller; automatically placed in
-# deluge_service_config_dir/config/plugins/ with correct permissions. Deluge
+# deluge_srv_config_dir/config/plugins/ with correct permissions. Deluge
 # will be automatically configured to use the installed location.
 #
-# deluge_plugins_install: 'host_vars/deluge.example.com/data/plugins'
+# deluge_cfg_plugins_install: 'host_vars/deluge.example.com/data/plugins'
 #
 # Default: '' (disabled).
 #
 # Reference:
 # * https://deluge-torrent.org/plugins/
-deluge_core_install_plugins_source: ''
+deluge_cfg_core_install_plugins_source: ''

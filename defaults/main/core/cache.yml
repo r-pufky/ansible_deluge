@@ -4,7 +4,7 @@
 ###############################################################################
 
 # Cache size (16 KiB blocks). Default: 512.
-deluge_core_cache_size: 512
+deluge_cfg_core_cache_size: 512
 
 # Cache Expiry (seconds). Default: 60 (1 minute).
-deluge_core_cache_expiry: 60
+deluge_cfg_core_cache_expiry: 60

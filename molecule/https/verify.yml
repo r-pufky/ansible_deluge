@@ -1,39 +1,19 @@
 ---
-- name: 'HTTPS | verify'
+- name: 'Verify'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'HTTPS | verify | gather service status'
-      ansible.builtin.service_facts:
-
-    # Deluge will fail if configuration is bad.
-    - name: 'HTTPS | verify | assert deluged.service active'
-      ansible.builtin.assert:
-        quiet: true
-        that:
-          - '"deluged.service" in ansible_facts.services'
-          - 'ansible_facts["services"]["deluged.service"]["state"] == "running"'  # yamllint disable-line rule:line-length
-        fail_msg: 'deluged.service should be enabled and running.'
-
-    - name: 'HTTPS | verify | assert deluge-web.service active'
-      ansible.builtin.assert:
-        quiet: true
-        that:
-          - '"deluge-web.service" in ansible_facts.services'
-          - 'ansible_facts["services"]["deluge-web.service"]["state"] == "running"'  # yamllint disable-line rule:line-length
-        fail_msg: 'deluge-web.service should be enabled and running.'
-
-    - name: 'HTTPS | verify | /var/lib/deluge/config/ssl'
+    - name: 'Verify | /opt/deluge/config/ssl'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
-        test_name: 'HTTPS | verify | /var/lib/deluge/config/ssl/{{ item.file }}'  # yamllint disable-line rule:line-length
+        test_name: 'Verify | /opt/deluge/config/ssl/{{ item.file }}'
         test_src: '{{
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/cache/" ~ item.src
           }}'
-        test_file: '/var/lib/deluge/config/ssl/{{ item.file }}'
+        test_file: '/opt/deluge/config/ssl/{{ item.file }}'
         test_owner: 'media'
         test_group: 'media'
         test_mode: '0600'

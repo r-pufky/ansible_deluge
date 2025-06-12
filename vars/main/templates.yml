@@ -88,7 +88,7 @@ deluge_role_template_execute:
 
 # Plugin Extractor defaults:
 deluge_role_template_extractor:
-  extract_path: '{{ deluge_core_download_location }}'
+  extract_path: '{{ deluge_cfg_core_download_location }}'
   use_name_folder: true
 
 # Plugin Label defaults:

@@ -7,7 +7,7 @@
 # Tests:
 # * deluged.service active and running.
 # * deluge-web.service active and running.
-# * /var/lib/deluge/config/ssl/daemon.* set.
+# * /opt/deluge/config/ssl/daemon.* set.
 # * HTTPS enabled, with password 'test'.
 
 dependency:
@@ -25,17 +25,17 @@ provisioner:
   inventory:
     group_vars:
       all:
-        deluge_web_https: true
-        deluge_web_ssl_cert_path: '{{
+        deluge_cfg_web_https: true
+        deluge_cfg_web_ssl_cert_path: '{{
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/cache/test.pem"
           }}'
-        deluge_web_ssl_key_path: '{{
+        deluge_cfg_web_ssl_key_path: '{{
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
             "/molecule/cache/test.key"
           }}'
-        deluge_web_pwd_salt: 'e0156aa94ecff125dc48665acf3b6b5842588c11'
-        deluge_web_pwd_sha1: '75559193c309f82bedbd5d865d45ac16a90db577'
+        deluge_cfg_web_pwd_salt: 'e0156aa94ecff125dc48665acf3b6b5842588c11'
+        deluge_cfg_web_pwd_sha1: '75559193c309f82bedbd5d865d45ac16a90db577'
 platforms:
   - name: 'deluge-debian-12-https'
     image: 'ghcr.io/hifis-net/debian-systemd:12'

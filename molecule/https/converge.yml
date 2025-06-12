@@ -1,8 +1,8 @@
 ---
-- name: 'HTTPS | converge'
+- name: 'Converge'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'HTTPS | converge | apply r_pufky.srv.deluge'
+    - name: 'Converge | apply r_pufky.srv.deluge'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.deluge'

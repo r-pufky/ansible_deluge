@@ -11,7 +11,7 @@
 #    either: use any incoming connections.
 #
 # Default: 'force'.
-deluge_core_enc_in_policy: 'force'
+deluge_cfg_core_enc_in_policy: 'force'
 
 # Outgoing encryption.
 #
@@ -21,7 +21,7 @@ deluge_core_enc_in_policy: 'force'
 #    either: use any outgoing connections.
 #
 # Default: 0.
-deluge_core_enc_out_policy: 'force'
+deluge_cfg_core_enc_out_policy: 'force'
 
 # Encryption level for incoming and outgoing connections.
 #
@@ -31,4 +31,4 @@ deluge_core_enc_out_policy: 'force'
 #      either: use any encryption.
 #
 # Default: 'full'
-deluge_core_enc_level: 'full'
+deluge_cfg_core_enc_level: 'full'

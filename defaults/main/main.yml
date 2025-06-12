@@ -3,8 +3,13 @@
 # Deluge Service Configuration
 ###############################################################################
 
-# Deluge service config location. Default: '/var/log/deluge'.
-deluge_service_config_dir: '/var/lib/deluge'
+# Deluge service config location.
+#
+# Alternate default location to ensure deluge_user, deluge_group permissions do
+# interfere with APT package default user.
+#
+# Default: '/opt/deluge'.
+deluge_srv_config_dir: '/opt/deluge'
 
 # Deluge Logging level.
 #
@@ -14,11 +19,12 @@ deluge_service_config_dir: '/var/lib/deluge'
 #    warning: non-fatal warnings + error.
 #       info: informational messages + warning.
 #      debug: everything (includes torrent logs).
+#
 # Default: 'error'
 #
 # Reference:
 # * https://deluge-torrent.org/troubleshooting/#enable-deluge-logging
-deluge_service_log_level: 'error'
+deluge_srv_log_level: 'error'
 
 # Automatically add Debian APT sources if required?
 #
@@ -29,15 +35,14 @@ deluge_service_log_level: 'error'
 # Alternatively contrib, non-free must be manually added outside of this role.
 #
 # Default: True.
-deluge_service_auto_add_apt_sources_enable: true
+deluge_srv_auto_add_apt_sources_enable: true
 
 # Automatically restart Deluge daily?
 #
-# Restarting the Deluge service will automatically apply any downloaded auto
-# updates.
+# Set RuntimeMaxSec for systemd units; which may result in unclean restarts.
 #
 # Default: True.
-deluge_service_restart_daily_enable: true
+deluge_srv_restart_daily_enable: false
 
 ###############################################################################
 # Deluge User
@@ -45,21 +50,64 @@ deluge_service_restart_daily_enable: true
 
 # User that Deluge will run under.
 #
-# Enable deluge_create_user if this account is not externally managed.
+# Enable deluge_srv_create_user if this account is not externally managed.
 #
 # Default: 'media'.
-deluge_user: 'media'
+deluge_srv_user: 'media'
 
 # Group that Deluge will run under.
 #
-# Enable deluge_create_user if this group is not externally managed.
+# Enable deluge_srv_create_user if this group is not externally managed.
 #
 # Default: 'media'.
-deluge_group: 'media'
+deluge_srv_group: 'media'
 
-# Create deluge_user, deluge_group if not detected?
+# Create deluge_srv_user, deluge_srv_group if not detected?
 #
 # Applied via r_pufky.deb.users, see vars/main.yml for default user attributes.
 #
 # Default: True.
-deluge_create_user: true
+deluge_srv_create_user: true
+
+# Enable user management of data/media files?
+#
+# Use deluge_srv_user to execute data/media management commands. Role
+# applies media permissions using 'root' by default. For mounted data locations
+# (NFS with squashed mounts, mapped container mounts, etc) the local root user
+# will not have sufficient privileges to modify these files.
+#
+# Applies to:
+# * deluge_cfg_core_download_location
+# * deluge_cfg_core_move_completed_path
+# * deluge_cfg_core_torrentfiles_location
+#
+# Default: False.
+deluge_srv_user_data_manage_enable: false
+
+# Media folder permissions octal.
+#
+# Media folders affected by deluge_srv_user_data_manage_enable will always be
+# recursively set using deluge_srv_media_perms_folder, deluge_srv_user, and
+# deluge_srv_group.
+#
+# Default: '0750'.
+deluge_srv_media_perms_folder: '0750'
+
+# Enable setting of media file permissions?
+#
+# Set file permissions affected by deluge_srv_user_data_manage_enable using
+# deluge_srv_media_perms_file, deluge_srv_user, and deluge_srv_group. Large
+# sets of files may be slow to set permissions.
+#
+# Useful when first configuring to ensure service has access to all specified
+# media locations. Suggest applying with extra options:
+#
+#   ansible-playbook site.yml
+#       --tags Deluge
+#       -e 'deluge_srv_media_set_perms_file_enable=true'
+#
+# Default: False.
+deluge_srv_media_set_perms_file_enable: false
+
+# Media file permissions octal. Default: '0640'.
+deluge_srv_media_perms_file: '0640'

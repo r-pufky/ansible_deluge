@@ -2,21 +2,21 @@
     "file": 1,
     "format": 1
 }{
-    "check_after_days": {{ _deluge_plugins_blocklist.check_after_days }},
-    "last_update": {{ _deluge_plugins_blocklist.last_update }},
-    "list_compression": "{{ _deluge_plugins_blocklist.list_compression }}",
-    "list_size": {{ _deluge_plugins_blocklist.list_size }},
-    "list_type": "{{ _deluge_plugins_blocklist.list_type }}",
-    "load_on_start": {{ _deluge_plugins_blocklist.load_on_start | string | lower }},
-    "timeout": {{ _deluge_plugins_blocklist.timeout }},
-    "try_times": {{ _deluge_plugins_blocklist.try_times }},
-    "url": "{{ _deluge_plugins_blocklist.url }}",
-{% if _deluge_plugins_blocklist.whitelisted | length > 0 %}
+    "check_after_days": {{ deluge_cfg_plugins_blocklist.raw.check_after_days }},
+    "last_update": {{ deluge_cfg_plugins_blocklist.raw.last_update }},
+    "list_compression": "{{ deluge_cfg_plugins_blocklist.raw.list_compression }}",
+    "list_size": {{ deluge_cfg_plugins_blocklist.raw.list_size }},
+    "list_type": "{{ deluge_cfg_plugins_blocklist.raw.list_type }}",
+    "load_on_start": {{ deluge_cfg_plugins_blocklist.raw.load_on_start | string | lower }},
+    "timeout": {{ deluge_cfg_plugins_blocklist.raw.timeout }},
+    "try_times": {{ deluge_cfg_plugins_blocklist.raw.try_times }},
+    "url": "{{ deluge_cfg_plugins_blocklist.raw.url }}",
+{% if deluge_cfg_plugins_blocklist.raw.whitelisted | length > 0 %}
     "whitelisted": [
-{% for whitelist in _deluge_plugins_blocklist.whitelisted %}
+{%   for whitelist in deluge_cfg_plugins_blocklist.raw.whitelisted %}
         "{{ whitelist }}"{% if not loop.last %},{% endif %}
 
-{% endfor %}
+{%   endfor %}
     ]
 {% else %}
     "whitelisted": []

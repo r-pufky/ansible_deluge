@@ -4,49 +4,51 @@
 ###############################################################################
 
 # Queue to top (new torrents)? Default: False.
-deluge_core_queue_new_to_top: false
+deluge_cfg_core_queue_new_to_top: false
 
 ###############################################################################
 # Active Torrents
 ###############################################################################
 
 # Maximum active torrents. Default: 8.
-deluge_core_max_active_limit: 8
+deluge_cfg_core_max_active_limit: 8
 
 # Maximum downloading torrents. Default: 3.
-deluge_core_max_active_downloading: 3
+deluge_cfg_core_max_active_downloading: 3
 
 # Maximum seeding torrents. Default: 5.
-deluge_core_max_active_seeding: 5
+deluge_cfg_core_max_active_seeding: 5
 
 # Ignore slow torrents? Default: False.
-deluge_core_dont_count_slow_torrents: false
+deluge_cfg_core_dont_count_slow_torrents: false
 
 # Prefer seeding torrents? Default: False.
-deluge_core_auto_manage_prefer_seeds: false
+deluge_cfg_core_auto_manage_prefer_seeds: false
 
 ###############################################################################
 # Seeding Rotation
 ###############################################################################
 
 # Share Ratio (float). Default: 2.0.
-deluge_core_share_ratio_limit: 2.0
+deluge_cfg_core_share_ratio_limit: 2.0
 
 # Time Ratio (float). Default: 7.0.
-deluge_core_seed_time_ratio_limit: 7.0
+deluge_cfg_core_seed_time_ratio_limit: 7.0
 
 # Time to see (minutes). Default: 180.
-deluge_core_seed_time_limit: 180
+deluge_cfg_core_seed_time_limit: 180
 
 ###############################################################################
 # Share Ratio Reached
 ###############################################################################
 
-# Share Ratio (stop when deluge_core_stop_seed_ratio reached)? Default: False.
-deluge_core_stop_seed_at_ratio: false
+# Share Ratio (stop when deluge_cfg_core_stop_seed_ratio reached)?
+#
+# Default: False.
+deluge_cfg_core_stop_seed_at_ratio: false
 
 # Share ratio limit (float). Default: 2.0.
-deluge_core_stop_seed_ratio: 2.0
+deluge_cfg_core_stop_seed_ratio: 2.0
 
 # Remove torrent after seeing complete?
 #
@@ -55,4 +57,4 @@ deluge_core_stop_seed_ratio: 2.0
 #   False: pause torrent when seeding ratio met.
 #
 # Default: False.
-deluge_core_remove_seed_at_ratio: false
+deluge_cfg_core_remove_seed_at_ratio: false

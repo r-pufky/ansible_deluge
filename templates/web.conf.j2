@@ -2,39 +2,23 @@
     "file": 2,
     "format": 1
 }{
-    "base": "{{ _deluge_web.base}}",
-    "cert": "{{ _deluge_web.cert }}",
-    "default_daemon": "{{ _deluge_web.default_daemon }}",
-{% if _deluge_web.enabled_plugins | length > 0 %}
-    "enabled_plugins": [
-{% for plugin in _deluge_web.enabled_plugins %}
-        "{{ plugin }}"{% if not loop.last %},{% endif %}
+{% for section in _deluge_cfg_map | selectattr("value.section", "match", "Interface web.conf") | sort(attribute="value.order") %}
+{%   if not section.value.deprecated %}
+{%     if section.value.key == 'pwd_salt' or section.value.key == 'pwd_sha1' %}
+{%       if deluge_cfg_web_pwd_sha1.raw | length > 0 %}
+    "{{ section.value.key }}": {{ section.value.raw | to_json }}{% if not loop.last %},{% endif %}
 
-{% endfor %}
-    ],
-{% else %}
-    "enabled_plugins": [],
-{% endif %}
-    "first_login": {{ _deluge_web.first_login }},
-    "https": {{ _deluge_web.https }},
-    "interface": "{{ _deluge_web.interface }}",
-    "language": "{{ _deluge_web.language }}",
-    "pkey": "{{ _deluge_web.pkey }}",
-    "port": {{ _deluge_web.port }},
-{% if _deluge_web.pwd_salt | length > 0 %}
-    "pwd_salt": "{{ _deluge_web.pwd_salt }}",
-    "pwd_sha1": "{{ _deluge_web.pwd_sha1 }}",
-{% endif %}
-    "session_timeout": {{ _deluge_web.session_timeout }},
-    "sessions": {{ _deluge_web.sessions }},
-    "show_session_speed": {{ _deluge_web.show_session_speed }},
-    "show_sidebar": {{ _deluge_web.show_sidebar }},
-    "sidebar_multiple_filters": {{ _deluge_web.sidebar_multiple_filters }},
-    "sidebar_show_zero": {{ _deluge_web.sidebar_show_zero }},
-    "theme": "{{ _deluge_web.theme }}"{% if deluge_config_extensions_web | length > 0 %},
-{% for key, value in deluge_config_extensions_web.items() %}
-    "{{ key}}": {{ value }}{% if not loop.last %},{% endif %}
-{% endfor %}
-{% endif %}
+{%       endif %}
+{%     else %}
+{%       if section.value.hint == 'int' %}
+    "{{ section.value.key }}": {{ section.value.raw | int | to_json }}{% if not loop.last %},{% endif %}
+{%       elif section.value.hint == 'float' %}
+    "{{ section.value.key }}": {{ section.value.raw | float | to_json }}{% if not loop.last %},{% endif %}
+{%       else %}
+    "{{ section.value.key }}": {{ section.value.raw | to_json }}{% if not loop.last %},{% endif %}
+{%       endif %}
 
+{%     endif %}
+{%   endif %}
+{% endfor %}
 }

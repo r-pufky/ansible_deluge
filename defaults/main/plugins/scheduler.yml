@@ -10,7 +10,7 @@
 # Reference:
 # * https://deluge-torrent.org/plugins/#plugins-included
 
-# deluge_plugins_scheduler:
+# deluge_cfg_plugins_scheduler:
 #     dict - torrent scheduling.
 #   mon: list - per hour schedule limits for Monday.
 #       Special Case:
@@ -90,8 +90,8 @@
 #     Default: -1.
 #
 #
-# deluge_plugins_scheduler:
+# deluge_cfg_plugins_scheduler:
 #   mon: [1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,0,0,0,0,0,0,0,0]
 #   low_active: -1
 #
-deluge_plugins_scheduler: {}
+deluge_cfg_plugins_scheduler: {}

@@ -2,6 +2,26 @@
 ###############################################################################
 # Deluge Role Options
 ###############################################################################
+#
+# Updates:
+# * New MAJOR, MINOR releases should hard branch at version before starting
+#   (e.g. 3.0.x branch).
+# * Debian OS version is irrelevant (tied to APT package version).
+# * Keep a separate change log as changes are made, you will not remember all
+#   of them.
+# * Use debian docs to validate package/process changes. Reference source docs
+#   if needed.
+# * Update role defaults (includes updating defaults, tasks):
+#   * Use configuration docs to add new variables.
+#   * Use defaults/ to remove any changed/deprecated variables.
+# * Update tests for any changes.
+# * Standard role validation testing (yamllint, ansible-lint, todo, noqa).
+# * Tag with MAJOR.MINOR.PATCH[ROLE] version, with PATCH representing role
+#   change - e.g. Debian: 2.0.3 -> Role: 2.0.301  (01 role release).
+#
+# Reference:
+# * https://delugecom.github.io/#debian-repository
+# * https://deluge.com
 
 # Last time Deluge options were validated against a default configuration.
 deluge_role_validate_date: '2025-02-08'
