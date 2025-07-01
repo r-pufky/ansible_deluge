@@ -14,11 +14,11 @@ deluge_srv_config_dir: '/opt/deluge'
 # Deluge Logging level.
 #
 # Values:
-#       none: no logging.
-#      error: application errors + critical.
-#    warning: non-fatal warnings + error.
-#       info: informational messages + warning.
-#      debug: everything (includes torrent logs).
+#       none: No logging.
+#      error: Application errors + critical.
+#    warning: Non-fatal warnings + error.
+#       info: Informational messages + warning.
+#      debug: Everything (includes torrent logs).
 #
 # Default: 'error'
 #

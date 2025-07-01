@@ -14,6 +14,7 @@
         test_group: 'media'
         test_mode: '0750'
         test_state: 'directory'
+        test_diff: true
 
     - name: 'Verify | /opt/deluge/config'
       ansible.builtin.include_role:
@@ -26,6 +27,7 @@
         test_owner: 'media'
         test_group: 'media'
         test_mode: '0600'
+        test_diff: true
       loop:
         - 'autoadd.conf'
         - 'blocklist.conf'

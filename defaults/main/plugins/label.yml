@@ -11,48 +11,48 @@
 # * https://deluge-torrent.org/plugins/#plugins-included
 
 # deluge_cfg_plugins_label:
-#     list of dict - torrent labeling and classification.
-#   - name: str - label name.
-#     apply_max: bool - apply per torrent max settings?
+#     list of dict - Torrent labeling and classification.
+#   - name: str - Label name.
+#     apply_max: bool - Apply per torrent max settings?
 #         Default: False.
-#     max_download_speed: int - max download speed (KiB/s).
+#     max_download_speed: int - Max download speed (KiB/s).
 #         Special Case:
-#           -1: unlimited download speed.
+#           -1: Unlimited download speed.
 #         Default: -1.
-#     max_upload_speed: int - max upload speed (KiB/s).
+#     max_upload_speed: int - Max upload speed (KiB/s).
 #         Special Case:
-#           -1: unlimited upload speed.
+#           -1: Unlimited upload speed.
 #         Default: -1.
-#     max_upload_slots: int - max upload slots.
+#     max_upload_slots: int - Max upload slots.
 #         Special Case:
-#           -1: unlimited upload slots.
+#           -1: Unlimited upload slots.
 #         Default: -1.
-#     max_connections: int - max connections.
+#     max_connections: int - Max connections.
 #         Special Case:
-#           -1: unlimited connections.
+#           -1: Unlimited connections.
 #         Default: -1.
-#     apply_queue: bool - apply queue settings?
+#     apply_queue: bool - Apply queue settings?
 #         Default: False.
-#     is_auto_managed: bool - auto manage torrent?
+#     is_auto_managed: bool - Auto manage torrent?
 #         Default: False.
-#     stop_at_ratio: bool - stop seed at ratio?
+#     stop_at_ratio: bool - Stop seed at ratio?
 #         Default: False.
-#     stop_ratio: float - seed ratio.
+#     stop_ratio: float - Seed ratio.
 #         Default: 2.0
-#     remove_at_ratio: bool - remove torrent at ratio?
+#     remove_at_ratio: bool - Remove torrent at ratio?
 #         Default: False.
-#     apply_move_completed: bool - apply folder settings?
+#     apply_move_completed: bool - Apply folder settings?
 #         Default: False.
-#     move_completed: bool - move completed files to move_completed_path?
+#     move_completed: bool - Move completed files to move_completed_path?
 #         Default: False.
-#     move_completed_path: str - absolute path to move completed torrents to.
+#     move_completed_path: str - Absolute path to move completed torrents to.
 #         Default: ''.
-#     auto_add: bool - automatically apply labels (trackers)?
+#     auto_add: bool - Automatically apply labels (trackers)?
 #         Default: False.
-#     auto_add_trackers: list of str - labels to add. Labels can be used in
+#     auto_add_trackers: list of str - Labels to add. Labels can be used in
 #           other plugins to take specific actions.
 #         Default: [].
-#     prioritize_first_last: bool - prioritize first and last torrent pieces?
+#     prioritize_first_last: bool - Prioritize first and last torrent pieces?
 #         Default: False.
 #
 # deluge_cfg_plugins_label:

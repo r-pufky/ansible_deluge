@@ -21,11 +21,12 @@
 # * All data touched by user is in a standard, expected format.
 #
 # Annotated Defaults:
-# {VAR}: dict - Annotated and sanitized default variable.
+# _{VAR}: dict - Annotated and sanitized default variable.
 #   section: str - Section name.
 #   key: str - Config file key.
 #   raw: any - Raw config file value (set from defaults > role defaults).
 #   parsed: any - Processed raw config file value. Optional.
+#   role: any - Role specific config usage. Optional.
 #   hint: str - Value rendering type hint (docstring types).
 #   added: str - Release version variable added.
 #       Special Case:
@@ -35,10 +36,9 @@
 #   order: int - Order item should appear in rendered files.
 #
 # Generates:
-#   _deluge_config_map: list of dict - Annotated config map.
-#   _deluge_config_order: list of str - Config section order.
+#   _deluge_map: list of dict - Annotated config map.
+#   _deluge_order: list of str - Config section order.
 #
-# Reference:
 # Reference:
 # * https://deluge-torrent.org/
 # * https://deluge.readthedocs.io/en/latest
@@ -90,19 +90,19 @@
 
 - name: 'Annotate | merge remaining templates'
   ansible.builtin.set_fact:
-    deluge_cfg_plugins_blocklist: '{{
+    _deluge_cfg_plugins_blocklist: '{{
         deluge_role_template_blocklist | combine(deluge_cfg_plugins_blocklist)
       }}'
-    deluge_cfg_plugins_extractor: '{{
+    _deluge_cfg_plugins_extractor: '{{
         deluge_role_template_extractor | combine(deluge_cfg_plugins_extractor)
       }}'
-    deluge_cfg_plugins_scheduler: '{{
+    _deluge_cfg_plugins_scheduler: '{{
         deluge_role_template_scheduler | combine(deluge_cfg_plugins_scheduler)
       }}'
 
 - name: 'Annotate | sanitize & annotate service defaults'
   ansible.builtin.set_fact:
-    deluge_srv_config_dir: {
+    _deluge_srv_config_dir: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_config_dir | default("/var/lib/deluge") }}',
@@ -119,7 +119,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_srv_log_level: {
+    _deluge_srv_log_level: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_log_level | default("error") | lower }}',
@@ -129,7 +129,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_srv_auto_add_apt_sources_enable: {
+    _deluge_srv_auto_add_apt_sources_enable: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_auto_add_apt_sources_enable | default(true) }}',
@@ -139,7 +139,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_srv_restart_daily_enable: {
+    _deluge_srv_restart_daily_enable: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_restart_daily_enable | default(false) }}',
@@ -149,7 +149,7 @@
       deprecated: false,
       order: 4,
     }
-    deluge_srv_user: {
+    _deluge_srv_user: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_user | default("media") }}',
@@ -159,7 +159,7 @@
       deprecated: false,
       order: 5,
     }
-    deluge_srv_group: {
+    _deluge_srv_group: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_group | default("media") }}',
@@ -169,7 +169,7 @@
       deprecated: false,
       order: 6,
     }
-    deluge_srv_create_user: {
+    _deluge_srv_create_user: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_create_user | default(true) }}',
@@ -179,7 +179,7 @@
       deprecated: false,
       order: 7,
     }
-    deluge_srv_user_data_manage_enable: {
+    _deluge_srv_user_data_manage_enable: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_user_data_manage_enable | default(false) }}',
@@ -189,7 +189,7 @@
       deprecated: false,
       order: 8,
     }
-    deluge_srv_media_perms_folder: {
+    _deluge_srv_media_perms_folder: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_media_perms_folder | default("0750") }}',
@@ -199,7 +199,7 @@
       deprecated: false,
       order: 9,
     }
-    deluge_srv_media_set_perms_file_enable: {
+    _deluge_srv_media_set_perms_file_enable: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_media_set_perms_file_enable | default(false) }}',
@@ -209,7 +209,7 @@
       deprecated: false,
       order: 10,
     }
-    deluge_srv_media_perms_file: {
+    _deluge_srv_media_perms_file: {
       section: '',
       key: '',
       raw: '{{ deluge_srv_media_perms_file | default("0640") }}',
@@ -222,7 +222,7 @@
 
 - name: 'Annotate | sanitize & annotate config defaults'
   ansible.builtin.set_fact:
-    deluge_cfg_core_download_location: {
+    _deluge_cfg_core_download_location: {
       section: 'Downloads',
       key: 'download_location',
       raw: '{{
@@ -235,7 +235,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_download_location_paths_list: {
+    _deluge_cfg_core_download_location_paths_list: {
       section: 'Downloads',
       key: 'download_location_paths_list',
       raw: '{{ deluge_cfg_core_download_location_paths_list | default([]) }}',
@@ -245,7 +245,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_move_completed: {
+    _deluge_cfg_core_move_completed: {
       section: 'Downloads',
       key: 'move_completed',
       raw: '{{ deluge_cfg_core_move_completed | default(false) }}',
@@ -255,7 +255,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_core_move_completed_paths_list: {
+    _deluge_cfg_core_move_completed_paths_list: {
       section: 'Downloads',
       key: 'move_completed_paths_list',
       raw: '{{ deluge_cfg_core_move_completed_paths_list | default([]) }}',
@@ -265,7 +265,7 @@
       deprecated: false,
       order: 4,
     }
-    deluge_cfg_core_move_completed_path: {
+    _deluge_cfg_core_move_completed_path: {
       section: 'Downloads',
       key: 'move_completed_path',
       raw: '{{
@@ -278,7 +278,7 @@
       deprecated: false,
       order: 5,
     }
-    deluge_cfg_core_copy_torrent_file: {
+    _deluge_cfg_core_copy_torrent_file: {
       section: 'Downloads',
       key: 'copy_torrent_file',
       raw: '{{ deluge_cfg_core_copy_torrent_file | default(false) }}',
@@ -288,7 +288,7 @@
       deprecated: false,
       order: 6,
     }
-    deluge_cfg_core_torrentfiles_location: {
+    _deluge_cfg_core_torrentfiles_location: {
       section: 'Downloads',
       key: 'torrentfiles_location',
       raw: '{{
@@ -301,7 +301,7 @@
       deprecated: false,
       order: 7,
     }
-    deluge_cfg_core_prioritize_first_last_pieces: {
+    _deluge_cfg_core_prioritize_first_last_pieces: {
       section: 'Downloads',
       key: 'prioritize_first_last_pieces',
       raw:
@@ -312,7 +312,7 @@
       deprecated: false,
       order: 8,
     }
-    deluge_cfg_core_sequential_download: {
+    _deluge_cfg_core_sequential_download: {
       section: 'Downloads',
       key: 'sequential_download',
       raw: '{{ deluge_cfg_core_sequential_download | default(false) }}',
@@ -322,7 +322,7 @@
       deprecated: false,
       order: 9,
     }
-    deluge_cfg_core_add_paused: {
+    _deluge_cfg_core_add_paused: {
       section: 'Downloads',
       key: 'add_paused',
       raw: '{{ deluge_cfg_core_add_paused | default(false) }}',
@@ -332,7 +332,7 @@
       deprecated: false,
       order: 10,
     }
-    deluge_cfg_core_pre_allocate_storage: {
+    _deluge_cfg_core_pre_allocate_storage: {
       section: 'Downloads',
       key: 'pre_allocate_storage',
       raw: '{{ deluge_cfg_core_pre_allocate_storage | default(false) }}',
@@ -342,7 +342,7 @@
       deprecated: false,
       order: 11,
     }
-    deluge_cfg_core_del_copy_torrent_file: {
+    _deluge_cfg_core_del_copy_torrent_file: {
       section: 'Downloads',
       key: 'del_copy_torrent_file',
       raw: '{{ deluge_cfg_core_del_copy_torrent_file | default(false) }}',
@@ -352,7 +352,7 @@
       deprecated: false,
       order: 12,
     }
-    deluge_cfg_core_auto_managed: {
+    _deluge_cfg_core_auto_managed: {
       section: 'Downloads',
       key: 'auto_managed',
       raw: '{{ deluge_cfg_core_auto_managed | default(true) }}',
@@ -362,7 +362,7 @@
       deprecated: false,
       order: 13,
     }
-    deluge_cfg_core_shared: {
+    _deluge_cfg_core_shared: {
       section: 'Downloads',
       key: 'shared',
       raw: '{{ deluge_cfg_core_shared | default(false) }}',
@@ -372,7 +372,7 @@
       deprecated: false,
       order: 14,
     }
-    deluge_cfg_core_listen_interface: {
+    _deluge_cfg_core_listen_interface: {
       section: 'Network',
       key: 'listen_interface',
       raw: '{{ deluge_cfg_core_listen_interface | default("") }}',
@@ -382,7 +382,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_random_port: {
+    _deluge_cfg_core_random_port: {
       section: 'Network',
       key: 'random_port',
       raw: '{{ deluge_cfg_core_random_port | default(true) }}',
@@ -392,7 +392,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_listen_ports: {
+    _deluge_cfg_core_listen_ports: {
       section: 'Network',
       key: 'listen_ports',
       raw: '{{
@@ -408,7 +408,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_core_outgoing_interface: {
+    _deluge_cfg_core_outgoing_interface: {
       section: 'Network',
       key: 'outgoing_interface',
       raw: '{{ deluge_cfg_core_outgoing_interface | default("") }}',
@@ -418,7 +418,7 @@
       deprecated: false,
       order: 4,
     }
-    deluge_cfg_core_random_outgoing_ports: {
+    _deluge_cfg_core_random_outgoing_ports: {
       section: 'Network',
       key: 'random_outgoing_ports',
       raw: '{{ deluge_cfg_core_random_outgoing_ports | default(true) }}',
@@ -428,7 +428,7 @@
       deprecated: false,
       order: 5,
     }
-    deluge_cfg_core_outgoing_ports: {
+    _deluge_cfg_core_outgoing_ports: {
       section: 'Network',
       key: 'outgoing_ports',
       raw: '{{
@@ -444,7 +444,7 @@
       deprecated: false,
       order: 6,
     }
-    deluge_cfg_core_upnp: {
+    _deluge_cfg_core_upnp: {
       section: 'Network',
       key: 'upnp',
       raw: '{{ deluge_cfg_core_upnp | default(true) }}',
@@ -454,7 +454,7 @@
       deprecated: false,
       order: 5,
     }
-    deluge_cfg_core_natpmp: {
+    _deluge_cfg_core_natpmp: {
       section: 'Network',
       key: 'natpmp',
       raw: '{{ eluge_core_natpmp | default(true) }}',
@@ -464,7 +464,7 @@
       deprecated: false,
       order: 6,
     }
-    deluge_cfg_core_utpex: {
+    _deluge_cfg_core_utpex: {
       section: 'Network',
       key: 'utpex',
       raw: '{{ deluge_cfg_core_utpex | default(true) }}',
@@ -474,7 +474,7 @@
       deprecated: false,
       order: 7,
     }
-    deluge_cfg_core_lsd: {
+    _deluge_cfg_core_lsd: {
       section: 'Network',
       key: 'lsd',
       raw: '{{ deluge_cfg_core_lsd | default(true) }}',
@@ -484,7 +484,7 @@
       deprecated: false,
       order: 8,
     }
-    deluge_cfg_core_dht: {
+    _deluge_cfg_core_dht: {
       section: 'Network',
       key: 'dht',
       raw: '{{ deluge_cfg_core_dht | default(true) }}',
@@ -494,7 +494,7 @@
       deprecated: false,
       order: 9,
     }
-    deluge_cfg_core_peer_tos: {
+    _deluge_cfg_core_peer_tos: {
       section: 'Network',
       key: 'peer_tos',
       raw: '{{ deluge_cfg_core_peer_tos | default("0x00") }}',
@@ -504,7 +504,7 @@
       deprecated: false,
       order: 10,
     }
-    deluge_cfg_core_listen_random_port: {
+    _deluge_cfg_core_listen_random_port: {
       section: 'Network',
       key: 'listen_random_port',
       raw: '{{
@@ -516,7 +516,7 @@
       deprecated: false,
       order: 11,
     }
-    deluge_cfg_core_listen_reuse_port: {
+    _deluge_cfg_core_listen_reuse_port: {
       section: 'Network',
       key: 'listen_reuse_port',
       raw: '{{ deluge_cfg_core_listen_reuse_port | default(true) }}',
@@ -526,7 +526,7 @@
       deprecated: false,
       order: 12,
     }
-    deluge_cfg_core_listen_use_sys_port: {
+    _deluge_cfg_core_listen_use_sys_port: {
       section: 'Network',
       key: 'listen_use_sys_port',
       raw: '{{ deluge_cfg_core_listen_use_sys_port | default(false) }}',
@@ -536,7 +536,7 @@
       deprecated: false,
       order: 13,
     }
-    deluge_cfg_core_super_seeding: {
+    _deluge_cfg_core_super_seeding: {
       section: 'Network',
       key: 'super_seeding',
       raw: '{{ deluge_cfg_core_super_seeding | default(false) }}',
@@ -546,7 +546,7 @@
       deprecated: false,
       order: 14,
     }
-    deluge_cfg_core_enc_in_policy: {
+    _deluge_cfg_core_enc_in_policy: {
       section: 'Encryption',
       key: 'enc_in_policy',
       raw: '{{
@@ -560,7 +560,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_enc_out_policy: {
+    _deluge_cfg_core_enc_out_policy: {
       section: 'Encryption',
       key: 'enc_out_policy',
       raw: '{{
@@ -574,7 +574,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_enc_level: {
+    _deluge_cfg_core_enc_level: {
       section: 'Encryption',
       key: 'enc_level',
       raw: '{{
@@ -588,7 +588,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_core_max_connections_global: {
+    _deluge_cfg_core_max_connections_global: {
       section: 'Bandwidth',
       key: 'max_connections_global',
       raw: '{{ deluge_cfg_core_max_connections_global | default(200) }}',
@@ -598,7 +598,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_max_upload_slots_global: {
+    _deluge_cfg_core_max_upload_slots_global: {
       section: 'Bandwidth',
       key: 'max_upload_slots_global',
       raw: '{{ deluge_cfg_core_max_upload_slots_global | default(4) }}',
@@ -608,7 +608,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_max_download_speed: {
+    _deluge_cfg_core_max_download_speed: {
       section: 'Bandwidth',
       key: 'max_download_speed',
       raw: '{{ deluge_cfg_core_max_download_speed | default(-1) }}',
@@ -618,7 +618,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_core_max_upload_speed: {
+    _deluge_cfg_core_max_upload_speed: {
       section: 'Bandwidth',
       key: 'max_upload_speed',
       raw: '{{ deluge_cfg_core_max_upload_speed | default(-1) }}',
@@ -628,7 +628,7 @@
       deprecated: false,
       order: 4,
     }
-    deluge_cfg_core_max_half_open_connections: {
+    _deluge_cfg_core_max_half_open_connections: {
       section: 'Bandwidth',
       key: 'max_half_open_connections',
       raw: '{{ deluge_cfg_core_max_half_open_connections | default(50) }}',
@@ -638,7 +638,7 @@
       deprecated: false,
       order: 5,
     }
-    deluge_cfg_core_max_connections_per_second: {
+    _deluge_cfg_core_max_connections_per_second: {
       section: 'Bandwidth',
       key: 'max_connections_per_second',
       raw: '{{ deluge_cfg_core_max_connections_per_second | default(20) }}',
@@ -648,7 +648,7 @@
       deprecated: false,
       order: 6,
     }
-    deluge_cfg_core_ignore_limits_on_local_network: {
+    _deluge_cfg_core_ignore_limits_on_local_network: {
       section: 'Bandwidth',
       key: 'ignore_limits_on_local_network',
       raw:
@@ -659,7 +659,7 @@
       deprecated: false,
       order: 7,
     }
-    deluge_cfg_core_rate_limit_ip_overhead: {
+    _deluge_cfg_core_rate_limit_ip_overhead: {
       section: 'Bandwidth',
       key: 'rate_limit_ip_overhead',
       raw: '{{ deluge_cfg_core_rate_limit_ip_overhead | default(true) }}',
@@ -669,7 +669,7 @@
       deprecated: false,
       order: 8,
     }
-    deluge_cfg_core_max_connections_per_torrent: {
+    _deluge_cfg_core_max_connections_per_torrent: {
       section: 'Bandwidth',
       key: 'max_connections_per_torrent',
       raw: '{{ deluge_cfg_core_max_connections_per_torrent | default(-1) }}',
@@ -679,7 +679,7 @@
       deprecated: false,
       order: 9,
     }
-    deluge_cfg_core_max_upload_slots_per_torrent: {
+    _deluge_cfg_core_max_upload_slots_per_torrent: {
       section: 'Bandwidth',
       key: 'max_upload_slots_per_torrent',
       raw: '{{ deluge_cfg_core_max_upload_slots_per_torrent | default(-1) }}',
@@ -689,7 +689,7 @@
       deprecated: false,
       order: 10,
     }
-    deluge_cfg_core_max_download_speed_per_torrent: {
+    _deluge_cfg_core_max_download_speed_per_torrent: {
       section: 'Bandwidth',
       key: 'max_download_speed_per_torrent',
       raw:
@@ -700,7 +700,7 @@
       deprecated: false,
       order: 11,
     }
-    deluge_cfg_core_max_upload_speed_per_torrent: {
+    _deluge_cfg_core_max_upload_speed_per_torrent: {
       section: 'Bandwidth',
       key: 'max_upload_speed_per_torrent',
       raw: '{{ deluge_cfg_core_max_upload_speed_per_torrent | default(-1) }}',
@@ -710,7 +710,7 @@
       deprecated: false,
       order: 12,
     }
-    deluge_cfg_core_path_chooser_accelerator_string: {
+    _deluge_cfg_core_path_chooser_accelerator_string: {
       section: 'Interface',
       key: 'path_chooser_accelerator_string',
       raw: '{{
@@ -722,7 +722,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_path_chooser_auto_complete_enabled: {
+    _deluge_cfg_core_path_chooser_auto_complete_enabled: {
       section: 'Interface',
       key: 'path_chooser_auto_complete_enabled',
       raw: '{{
@@ -734,7 +734,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_path_chooser_max_popup_rows: {
+    _deluge_cfg_core_path_chooser_max_popup_rows: {
       section: 'Interface',
       key: 'path_chooser_max_popup_rows',
       raw:
@@ -745,7 +745,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_core_path_chooser_show_chooser_button_on_localhost: {
+    _deluge_cfg_core_path_chooser_show_chooser_button_on_localhost: {
       section: 'Interface',
       key: 'path_chooser_show_chooser_button_on_localhost',
       raw: '{{
@@ -758,7 +758,7 @@
       deprecated: false,
       order: 4,
     }
-    deluge_cfg_core_path_chooser_show_hidden_files: {
+    _deluge_cfg_core_path_chooser_show_hidden_files: {
       section: 'Interface',
       key: 'path_chooser_show_hidden_files',
       raw: '{{
@@ -770,7 +770,7 @@
       deprecated: false,
       order: 5,
     }
-    deluge_cfg_core_new_release_check: {
+    _deluge_cfg_core_new_release_check: {
       section: 'Other',
       key: 'new_release_check',
       raw: '{{ deluge_cfg_core_new_release_check | default(false) }}',
@@ -780,7 +780,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_send_info: {
+    _deluge_cfg_core_send_info: {
       section: 'Other',
       key: 'send_info',
       raw: '{{ deluge_cfg_core_send_info | default(false) }}',
@@ -790,7 +790,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_geoip_db_location: {
+    _deluge_cfg_core_geoip_db_location: {
       section: 'Other',
       key: 'geoip_db_location',
       raw: '{{
@@ -803,7 +803,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_core_info_sent: {
+    _deluge_cfg_core_info_sent: {
       section: 'Other',
       key: 'info_sent',
       raw: '{{ deluge_cfg_core_info_sent | default(0.0) }}',
@@ -813,7 +813,7 @@
       deprecated: false,
       order: 4,
     }
-    deluge_cfg_core_daemon_port: {
+    _deluge_cfg_core_daemon_port: {
       section: 'Daemon',
       key: 'daemon_port',
       raw: '{{ deluge_cfg_core_daemon_port | default(58846) }}',
@@ -823,7 +823,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_allow_remote: {
+    _deluge_cfg_core_allow_remote: {
       section: 'Daemon',
       key: 'allow_remote',
       raw: '{{ deluge_cfg_core_allow_remote | default(false) }}',
@@ -833,7 +833,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_queue_new_to_top: {
+    _deluge_cfg_core_queue_new_to_top: {
       section: 'Queue',
       key: 'queue_new_to_top',
       raw: '{{ deluge_cfg_core_queue_new_to_top | default(false) }}',
@@ -843,7 +843,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_max_active_limit: {
+    _deluge_cfg_core_max_active_limit: {
       section: 'Queue',
       key: 'max_active_limit',
       raw: '{{ deluge_cfg_core_max_active_limit | default(8) }}',
@@ -853,7 +853,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_max_active_downloading: {
+    _deluge_cfg_core_max_active_downloading: {
       section: 'Queue',
       key: 'max_active_downloading',
       raw: '{{ deluge_cfg_core_max_active_downloading | default(3) }}',
@@ -863,7 +863,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_core_max_active_seeding: {
+    _deluge_cfg_core_max_active_seeding: {
       section: 'Queue',
       key: 'max_active_seeding',
       raw: '{{ deluge_cfg_core_max_active_seeding | default(5) }}',
@@ -873,7 +873,7 @@
       deprecated: false,
       order: 4,
     }
-    deluge_cfg_core_dont_count_slow_torrents: {
+    _deluge_cfg_core_dont_count_slow_torrents: {
       section: 'Queue',
       key: 'dont_count_slow_torrents',
       raw: '{{ deluge_cfg_core_dont_count_slow_torrents | default(false) }}',
@@ -883,7 +883,7 @@
       deprecated: false,
       order: 5,
     }
-    deluge_cfg_core_auto_manage_prefer_seeds: {
+    _deluge_cfg_core_auto_manage_prefer_seeds: {
       section: 'Queue',
       key: 'auto_manage_prefer_seeds',
       raw: '{{ deluge_cfg_core_auto_manage_prefer_seeds | default(false) }}',
@@ -893,7 +893,7 @@
       deprecated: false,
       order: 6,
     }
-    deluge_cfg_core_share_ratio_limit: {
+    _deluge_cfg_core_share_ratio_limit: {
       section: 'Queue',
       key: 'share_ratio_limit',
       raw: '{{ deluge_cfg_core_share_ratio_limit | default(2.0) }}',
@@ -903,7 +903,7 @@
       deprecated: false,
       order: 7,
     }
-    deluge_cfg_core_seed_time_ratio_limit: {
+    _deluge_cfg_core_seed_time_ratio_limit: {
       section: 'Queue',
       key: 'seed_time_ratio_limit',
       raw: '{{ deluge_cfg_core_seed_time_ratio_limit | default(7.0) }}',
@@ -913,7 +913,7 @@
       deprecated: false,
       order: 8,
     }
-    deluge_cfg_core_seed_time_limit: {
+    _deluge_cfg_core_seed_time_limit: {
       section: 'Queue',
       key: 'seed_time_limit',
       raw: '{{ deluge_cfg_core_seed_time_limit | default(180) }}',
@@ -923,7 +923,7 @@
       deprecated: false,
       order: 9,
     }
-    deluge_cfg_core_stop_seed_at_ratio: {
+    _deluge_cfg_core_stop_seed_at_ratio: {
       section: 'Queue',
       key: 'stop_seed_at_ratio',
       raw: '{{ deluge_cfg_core_stop_seed_at_ratio | default(false) }}',
@@ -933,7 +933,7 @@
       deprecated: false,
       order: 10,
     }
-    deluge_cfg_core_stop_seed_ratio: {
+    _deluge_cfg_core_stop_seed_ratio: {
       section: 'Queue',
       key: 'stop_seed_ratio',
       raw: '{{ deluge_cfg_core_stop_seed_ratio | default(2.0) }}',
@@ -943,7 +943,7 @@
       deprecated: false,
       order: 11,
     }
-    deluge_cfg_core_remove_seed_at_ratio: {
+    _deluge_cfg_core_remove_seed_at_ratio: {
       section: 'Queue',
       key: 'remove_seed_at_ratio',
       raw: '{{ deluge_cfg_core_remove_seed_at_ratio | default(false) }}',
@@ -953,7 +953,7 @@
       deprecated: false,
       order: 12,
     }
-    deluge_cfg_core_type: {
+    _deluge_cfg_core_type: {
       section: 'Proxy',
       key: 'type',
       raw: '{{
@@ -967,7 +967,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_hostname: {
+    _deluge_cfg_core_hostname: {
       section: 'Proxy',
       key: 'hostname',
       raw: '{{ deluge_cfg_core_hostname | default("") }}',
@@ -977,7 +977,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_port: {
+    _deluge_cfg_core_port: {
       section: 'Proxy',
       key: 'port',
       raw: '{{ deluge_cfg_core_port | default(8080) }}',
@@ -987,7 +987,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_core_peer_connections: {
+    _deluge_cfg_core_peer_connections: {
       section: 'Proxy',
       key: 'proxy_peer_connections',
       raw: '{{ deluge_cfg_core_peer_connections | default(true) }}',
@@ -997,7 +997,7 @@
       deprecated: false,
       order: 4,
     }
-    deluge_cfg_core_proxy_tracker_connections: {
+    _deluge_cfg_core_proxy_tracker_connections: {
       section: 'Proxy',
       key: 'proxy_tracker_connections',
       raw: '{{ deluge_cfg_core_proxy_tracker_connections | default(true) }}',
@@ -1007,7 +1007,7 @@
       deprecated: false,
       order: 5,
     }
-    deluge_cfg_core_proxy_hostnames: {
+    _deluge_cfg_core_proxy_hostnames: {
       section: 'Proxy',
       key: 'proxy_hostnames',
       raw: '{{ deluge_cfg_core_proxy_hostnames | default(true) }}',
@@ -1017,7 +1017,7 @@
       deprecated: false,
       order: 6,
     }
-    deluge_cfg_core_username: {
+    _deluge_cfg_core_username: {
       section: 'Proxy',
       key: 'username',
       raw: '{{ deluge_cfg_core_username | default("") }}',
@@ -1027,7 +1027,7 @@
       deprecated: false,
       order: 7,
     }
-    deluge_cfg_core_password: {
+    _deluge_cfg_core_password: {
       section: 'Proxy',
       key: 'password',
       raw: '{{ deluge_cfg_core_password | default("") }}',
@@ -1037,7 +1037,7 @@
       deprecated: false,
       order: 8,
     }
-    deluge_cfg_core_force_proxy: {
+    _deluge_cfg_core_force_proxy: {
       section: 'Proxy',
       key: 'force_proxy',
       raw: '{{ deluge_cfg_core_force_proxy | default(false) }}',
@@ -1047,7 +1047,7 @@
       deprecated: false,
       order: 9,
     }
-    deluge_cfg_core_anonymous_mode: {
+    _deluge_cfg_core_anonymous_mode: {
       section: 'Proxy',
       key: 'anonymous_mode',
       raw: '{{ deluge_cfg_core_anonymous_mode | default(false) }}',
@@ -1057,7 +1057,7 @@
       deprecated: false,
       order: 10,
     }
-    deluge_cfg_core_cache_size: {
+    _deluge_cfg_core_cache_size: {
       section: 'Cache',
       key: 'cache_size',
       raw: '{{ deluge_cfg_core_cache_size | default(512) }}',
@@ -1067,7 +1067,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_cache_expiry: {
+    _deluge_cfg_core_cache_expiry: {
       section: 'Cache',
       key: 'cache_expiry',
       raw: '{{ deluge_cfg_core_cache_expiry | default(60) }}',
@@ -1077,7 +1077,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_enabled_plugins: {
+    _deluge_cfg_core_enabled_plugins: {
       section: 'Plugins',
       key: 'enabled_plugins',
       raw: '{{ deluge_cfg_core_enabled_plugins | default([]) }}',
@@ -1087,17 +1087,17 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_core_plugins_location: {
+    _deluge_cfg_core_plugins_location: {
       section: 'Plugins',
       key: 'plugins_location',  # Not user configurable.
-      raw: '{{ deluge_srv_config_dir.parsed ~ "plugins" }}',
+      raw: '{{ _deluge_srv_config_dir.parsed ~ "plugins" }}',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_core_install_plugins_source: {
+    _deluge_cfg_core_install_plugins_source: {
       section: '',
       key: '',  # Role only.
       raw: '{{ deluge_cfg_core_install_plugins_source | default("") }}',
@@ -1114,7 +1114,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_web_show_session_speed: {
+    _deluge_cfg_web_show_session_speed: {
       section: 'Interface web.conf',
       key: 'show_session_speed',
       raw: '{{ deluge_cfg_web_show_session_speed | default(false) }}',
@@ -1124,7 +1124,7 @@
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_web_sidebar_show_zero: {
+    _deluge_cfg_web_sidebar_show_zero: {
       section: 'Interface web.conf',
       key: 'sidebar_show_zero',
       raw: '{{ deluge_cfg_web_sidebar_show_zero | default(false) }}',
@@ -1134,7 +1134,7 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_web_sidebar_multiple_filters: {
+    _deluge_cfg_web_sidebar_multiple_filters: {
       section: 'Interface web.conf',
       key: 'sidebar_multiple_filters',
       raw: '{{ deluge_cfg_web_sidebar_multiple_filters | default(true) }}',
@@ -1144,7 +1144,7 @@
       deprecated: false,
       order: 3,
     }
-    deluge_cfg_web_language: {
+    _deluge_cfg_web_language: {
       section: 'Interface web.conf',
       key: 'language',
       raw: '{{ deluge_cfg_web_language | default("") }}',
@@ -1154,7 +1154,7 @@
       deprecated: false,
       order: 4,
     }
-    deluge_cfg_web_session_timeout: {
+    _deluge_cfg_web_session_timeout: {
       section: 'Interface web.conf',
       key: 'session_timeout',
       raw: '{{ deluge_cfg_web_session_timeout | default(3600) }}',
@@ -1164,7 +1164,7 @@
       deprecated: false,
       order: 5,
     }
-    deluge_cfg_web_port: {
+    _deluge_cfg_web_port: {
       section: 'Interface web.conf',
       key: 'port',
       raw: '{{ deluge_cfg_web_port | default(8112) }}',
@@ -1174,7 +1174,7 @@
       deprecated: false,
       order: 6,
     }
-    deluge_cfg_web_https: {
+    _deluge_cfg_web_https: {
       section: 'Interface web.conf',
       key: 'https',
       raw: '{{ deluge_cfg_web_https | default(false) }}',
@@ -1184,11 +1184,11 @@
       deprecated: false,
       order: 7,
     }
-    deluge_cfg_web_ssl_cert_path: {
+    _deluge_cfg_web_ssl_cert_path: {
       section: 'Interface web.conf',
       key: 'cert',
       raw: '{{
-        deluge_srv_config_dir.parsed ~ "ssl/daemon.cert"
+        _deluge_srv_config_dir.parsed ~ "ssl/daemon.cert"
         if deluge_cfg_web_https | default(false) else
         ""
       }}',  # Disabled HTTPS sets no path in config.
@@ -1199,11 +1199,11 @@
       deprecated: false,
       order: 8,
     }
-    deluge_cfg_web_ssl_key_path: {
+    _deluge_cfg_web_ssl_key_path: {
       section: 'Interface web.conf',
       key: 'pkey',
       raw: '{{
-        deluge_srv_config_dir.parsed ~ "ssl/daemon.pkey"
+        _deluge_srv_config_dir.parsed ~ "ssl/daemon.pkey"
         if deluge_cfg_web_https | default(false) else
         ""
       }}',  # Disabled HTTPS sets no path in config.
@@ -1216,7 +1216,7 @@
     }
     # Only set key:value in config if configured. Empty strings will be
     # interpreted as a password and cause a lockout.
-    deluge_cfg_web_pwd_salt: {
+    _deluge_cfg_web_pwd_salt: {
       section: 'Interface web.conf',
       key: 'pwd_salt',
       raw: '{{ deluge_cfg_web_pwd_salt | default("") }}',
@@ -1228,7 +1228,7 @@
     }
     # Only set key:value in config if configured. Empty strings will be
     # interpreted as a password and cause a lockout.
-    deluge_cfg_web_pwd_sha1: {
+    _deluge_cfg_web_pwd_sha1: {
       section: 'Interface web.conf',
       key: 'pwd_sha1',
       raw: '{{ deluge_cfg_web_pwd_sha1 | default("") }}',
@@ -1238,7 +1238,7 @@
       deprecated: false,
       order: 11,
     }
-    deluge_cfg_web_theme: {
+    _deluge_cfg_web_theme: {
       section: 'Interface web.conf',
       key: 'theme',
       raw: '{{ deluge_cfg_web_theme | default("gray") }}',
@@ -1248,7 +1248,7 @@
       deprecated: false,
       order: 12,
     }
-    deluge_cfg_web_show_sidebar: {
+    _deluge_cfg_web_show_sidebar: {
       section: 'Interface web.conf',
       key: 'show_sidebar',
       raw: '{{ deluge_cfg_web_show_sidebar | default(true) }}',
@@ -1258,7 +1258,7 @@
       deprecated: false,
       order: 13,
     }
-    deluge_cfg_web_first_login: {
+    _deluge_cfg_web_first_login: {
       section: 'Interface web.conf',
       key: 'first_login',
       raw: '{{ deluge_cfg_web_first_login | default(false) }}',
@@ -1268,7 +1268,7 @@
       deprecated: false,
       order: 14,
     }
-    deluge_cfg_web_interface: {
+    _deluge_cfg_web_interface: {
       section: 'Interface web.conf',
       key: 'interface',
       raw: '{{ deluge_cfg_web_interface | default("0.0.0.0") }}',
@@ -1278,7 +1278,7 @@
       deprecated: false,
       order: 15,
     }
-    deluge_cfg_web_default_daemon: {
+    _deluge_cfg_web_default_daemon: {
       section: 'Interface web.conf',
       key: 'default_daemon',
       raw: '{{ deluge_cfg_web_default_daemon | default("") }}',
@@ -1289,7 +1289,7 @@
       order: 16,
     }
     # Defined from deluge_cfg_core_enabled_plugins and must be same.
-    deluge_cfg_web_enabled_plugins: {
+    _deluge_cfg_web_enabled_plugins: {
       section: 'Interface web.conf',
       key: 'enabled_plugins',  # Not user configurable.
       raw: '{{ deluge_cfg_core_enabled_plugins | default([]) }}',
@@ -1299,7 +1299,7 @@
       deprecated: false,
       order: 17,
     }
-    deluge_cfg_web_sessions: {
+    _deluge_cfg_web_sessions: {
       section: 'Interface web.conf',
       key: 'sessions',  # Not user configurable.
       raw: '{{ {} }}',  # always reset sessions on role application.
@@ -1309,7 +1309,7 @@
       deprecated: false,
       order: 18,
     }
-    deluge_cfg_web_base: {
+    _deluge_cfg_web_base: {
       section: 'Interface web.conf',
       key: 'base',  # Not user configurable.
       raw: '/',  # WebUI URI base.
@@ -1322,7 +1322,7 @@
 
 - name: 'Annotate | sanitize & annotate plugins'
   ansible.builtin.set_fact:
-    deluge_cfg_plugins_auto_add: {
+    _deluge_cfg_plugins_auto_add: {
       section: 'AutoAdd Plugin',
       key: '',
       raw: '{{ _deluge_cfg_plugins_auto_add | default([]) }}',
@@ -1332,18 +1332,17 @@
       deprecated: false,
       order: 1,
     }
-    _deluge_cfg_plugins_auto_add: []
-    deluge_cfg_plugins_blocklist: {
+    _deluge_cfg_plugins_blocklist: {
       section: 'Blocklist Plugin',
       key: '',
-      raw: '{{ deluge_cfg_plugins_blocklist | default({}) }}',
+      raw: '{{ _deluge_cfg_plugins_blocklist | default({}) }}',
       hint: 'dict',
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_plugins_execute: {
+    _deluge_cfg_plugins_execute: {
       section: 'Execute Plugin',
       key: '',
       raw: '{{ _deluge_cfg_plugins_execute | default([]) }}',
@@ -1353,14 +1352,15 @@
       deprecated: false,
       order: 1,
     }
-    _deluge_cfg_plugins_execute: []
-    deluge_cfg_plugins_execute_source: {
+    _deluge_cfg_plugins_execute_source: {
       section: 'Execute Plugin',
       key: '',
       raw: '{{ deluge_cfg_plugins_execute_source | default("") }}',
       parsed: '{{
         deluge_cfg_plugins_execute_source | default("")
-        if (deluge_cfg_plugins_execute_source | default("")).endswith("/") else
+        if
+        (deluge_cfg_plugins_execute_source | default("")).endswith("/")
+        else
         deluge_cfg_plugins_execute_source ~ "/"
       }}',
       hint: 'str',
@@ -1369,17 +1369,17 @@
       deprecated: false,
       order: 2,
     }
-    deluge_cfg_plugins_extractor: {
+    _deluge_cfg_plugins_extractor: {
       section: 'Extractor Plugin',
       key: '',
-      raw: '{{ deluge_cfg_plugins_extractor | default({}) }}',
+      raw: '{{ _deluge_cfg_plugins_extractor | default({}) }}',
       hint: 'dict',
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
       order: 1,
     }
-    deluge_cfg_plugins_label: {
+    _deluge_cfg_plugins_label: {
       section: 'Label Plugin',
       key: '',
       raw: '{{ _deluge_cfg_plugins_label | default([]) }}',
@@ -1389,11 +1389,10 @@
       deprecated: false,
       order: 1,
     }
-    _deluge_cfg_plugins_label: []
-    deluge_cfg_plugins_scheduler: {
+    _deluge_cfg_plugins_scheduler: {
       section: 'Scheduler Plugin',
       key: '',
-      raw: '{{ deluge_cfg_plugins_scheduler | default({}) }}',
+      raw: '{{ _deluge_cfg_plugins_scheduler | default({}) }}',
       hint: 'dict',
       added: '0.0.0',
       sensitive: false,
@@ -1403,11 +1402,11 @@
 
 - name: 'Annotate | generate config map'
   ansible.builtin.set_fact:
-    _deluge_cfg_map: '{{
+    _deluge_map: '{{
         hostvars[inventory_hostname] | dict2items |
-        selectattr("key", "match", "deluge_cfg_*")
+        selectattr("key", "match", "_deluge_cfg_*")
       }}'
-    _deluge_cfg_order:
+    _deluge_order:
       - 'Downloads'
       - 'Network'
       - 'Encryption'

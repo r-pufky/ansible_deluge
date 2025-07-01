@@ -2,9 +2,9 @@
     "file": 1,
     "format": 1
 }{
-{% if deluge_cfg_plugins_execute.raw | length > 0 %}
+{% if _deluge_cfg_plugins_execute.raw | length > 0 %}
     "commands": [
-{%   for script in deluge_cfg_plugins_execute.raw %}
+{%   for script in _deluge_cfg_plugins_execute.raw %}
         [
             "{{ script.command | sha1 }}",
             "{{ script.event }}",

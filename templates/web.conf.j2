@@ -2,10 +2,10 @@
     "file": 2,
     "format": 1
 }{
-{% for section in _deluge_cfg_map | selectattr("value.section", "match", "Interface web.conf") | sort(attribute="value.order") %}
+{% for section in _deluge_map | selectattr("value.section", "match", "Interface web.conf") | sort(attribute="value.order") %}
 {%   if not section.value.deprecated %}
-{%     if section.value.key == 'pwd_salt' or section.value.key == 'pwd_sha1' %}
-{%       if deluge_cfg_web_pwd_sha1.raw | length > 0 %}
+{%     if section.value.key in ['pwd_salt', 'pwd_sha1'] %}
+{%       if _deluge_cfg_web_pwd_sha1.raw | length > 0 %}
     "{{ section.value.key }}": {{ section.value.raw | to_json }}{% if not loop.last %},{% endif %}
 
 {%       endif %}

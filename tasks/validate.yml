@@ -19,8 +19,3 @@
   loop:
     - 'deluged.service'
     - 'deluge-web.service'
-
-- name: 'Validate | cleanup data'
-  ansible.builtin.set_fact:
-    _deluge_cfg_map: '{{ {} }}'
-    _deluge_cfg_order: '{{ [] }}'

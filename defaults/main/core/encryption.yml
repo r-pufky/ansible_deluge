@@ -6,9 +6,9 @@
 # Incoming encryption.
 #
 # Values:
-#     force: use only encrypted incoming connections.
-#   disable: use only unencrypted incoming connections.
-#    either: use any incoming connections.
+#     force: Use only encrypted incoming connections.
+#   disable: Use only unencrypted incoming connections.
+#    either: Use any incoming connections.
 #
 # Default: 'force'.
 deluge_cfg_core_enc_in_policy: 'force'
@@ -16,9 +16,9 @@ deluge_cfg_core_enc_in_policy: 'force'
 # Outgoing encryption.
 #
 # Values:
-#     force: use only encrypted outgoing connections.
-#   disable: use only unencrypted outgoing connections.
-#    either: use any outgoing connections.
+#     force: Use only encrypted outgoing connections.
+#   disable: Use only unencrypted outgoing connections.
+#    either: Use any outgoing connections.
 #
 # Default: 0.
 deluge_cfg_core_enc_out_policy: 'force'
@@ -26,9 +26,9 @@ deluge_cfg_core_enc_out_policy: 'force'
 # Encryption level for incoming and outgoing connections.
 #
 # Values:
-#   handshake: use encryption for initial handshakes.
-#        full: encrypt all traffic.
-#      either: use any encryption.
+#   handshake: Use encryption for initial handshakes.
+#        full: Encrypt all traffic.
+#      either: Use any encryption.
 #
 # Default: 'full'
 deluge_cfg_core_enc_level: 'full'

@@ -33,18 +33,18 @@
 # yamllint enable rule:line-length
 
 - name: 'Prep | assert SSL requirements'
-  when: deluge_cfg_web_https.raw
+  when: _deluge_cfg_web_https.raw
   ansible.builtin.assert:
     quiet: true
     that:
-      - deluge_cfg_web_ssl_cert_path.raw | length > 0
-      - deluge_cfg_web_ssl_key_path.raw | length > 0
+      - _deluge_cfg_web_ssl_cert_path.raw | length > 0
+      - _deluge_cfg_web_ssl_key_path.raw | length > 0
     fail_msg: >
       ✘ deluge_cfg_web_https=true requires deluge_cfg_web_ssl_cert_path and
       deluge_cfg_web_ssl_key_path set.
 
 - name: 'Prep | manage users'
-  when: deluge_srv_create_user.raw
+  when: _deluge_srv_create_user.raw
   ansible.builtin.include_role:
     name: 'r_pufky.deb.users'
     tasks_from: 'role_account_add.yml'
@@ -52,9 +52,9 @@
     users_role_user: '{{ deluge_role_user }}'
     users_role_group: '{{ deluge_role_group }}'
 
-- name: 'Prep | enumerate system user {{ deluge_srv_user.raw }}'
+- name: 'Prep | enumerate system user {{ _deluge_srv_user.raw }}'
   ansible.builtin.user:
-    name: '{{ deluge_srv_user.raw }}'
+    name: '{{ _deluge_srv_user.raw }}'
   check_mode: true
   changed_when: false
   register: _deluge_srv_user_query
@@ -66,11 +66,11 @@
 
 - name: 'Prep | parse system user UID/GID'
   ansible.builtin.set_fact:
-    deluge_srv_user: '{{
-        deluge_srv_user |
+    _deluge_srv_user: '{{
+        _deluge_srv_user |
         combine({"parsed": _deluge_srv_user_query.uid})
       }}'
-    deluge_srv_group: '{{
-        deluge_srv_group |
+    _deluge_srv_group: '{{
+        _deluge_srv_group |
         combine({"parsed": _deluge_srv_user_query.group})
       }}'

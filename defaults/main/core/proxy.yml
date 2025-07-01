@@ -6,7 +6,7 @@
 # Proxy type.
 #
 # Values:
-#            '': no proxy (default).
+#            '': No proxy (default).
 #        socks4: Socks4 proxy.
 #        socks5: Socks5 proxy.
 #   socks5_auth: Socks5 proxy with authentication.

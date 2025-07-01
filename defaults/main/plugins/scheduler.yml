@@ -11,82 +11,82 @@
 # * https://deluge-torrent.org/plugins/#plugins-included
 
 # deluge_cfg_plugins_scheduler:
-#     dict - torrent scheduling.
-#   mon: list - per hour schedule limits for Monday.
+#     dict - Torrent scheduling.
+#   mon: list - Per hour schedule limits for Monday.
 #       Special Case:
-#         * must be 24 elements (starting at 0000 - midnight).
+#         * Must be 24 elements (starting at 0000 - midnight).
 #       Values:
-#         0: no schedule (default).
-#         1: throttled.
-#         2: paused.
+#         0: No schedule (default).
+#         1: Throttled.
+#         2: Paused.
 #       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
-#   tue: list - per hour schedule limits for Tuesday.
+#   tue: list - Per hour schedule limits for Tuesday.
 #       Special Case:
-#         * must be 24 elements (starting at 0000 - midnight).
+#         * Must be 24 elements (starting at 0000 - midnight).
 #       Values:
-#         0: no schedule (default).
-#         1: throttled.
-#         2: paused.
+#         0: No schedule (default).
+#         1: Throttled.
+#         2: Paused.
 #       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
-#   wed: list - per hour schedule limits for Wednesday.
+#   wed: list - Per hour schedule limits for Wednesday.
 #       Special Case:
-#         * must be 24 elements (starting at 0000 - midnight).
+#         * Must be 24 elements (starting at 0000 - midnight).
 #       Values:
-#         0: no schedule (default).
-#         1: throttled.
-#         2: paused.
+#         0: No schedule (default).
+#         1: Throttled.
+#         2: Paused.
 #       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
-#   thr: list - per hour schedule limits for Thursday.
+#   thr: list - Per hour schedule limits for Thursday.
 #       Special Case:
-#         * must be 24 elements (starting at 0000 - midnight).
+#         * Must be 24 elements (starting at 0000 - midnight).
 #       Values:
-#         0: no schedule (default).
-#         1: throttled.
-#         2: paused.
+#         0: No schedule (default).
+#         1: Throttled.
+#         2: Paused.
 #       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
-#   fri: list - per hour schedule limits for Friday.
+#   fri: list - Per hour schedule limits for Friday.
 #       Special Case:
-#         * must be 24 elements (starting at 0000 - midnight).
+#         * Must be 24 elements (starting at 0000 - midnight).
 #       Values:
-#         0: no schedule (default).
-#         1: throttled.
-#         2: paused.
+#         0: No schedule (default).
+#         1: Throttled.
+#         2: Paused.
 #       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
-#   sat: list - per hour schedule limits for Saturday.
+#   sat: list - Per hour schedule limits for Saturday.
 #       Special Case:
-#         * must be 24 elements (starting at 0000 - midnight).
+#         * Must be 24 elements (starting at 0000 - midnight).
 #       Values:
-#         0: no schedule (default).
-#         1: throttled.
-#         2: paused.
+#         0: No schedule (default).
+#         1: Throttled.
+#         2: Paused.
 #       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
-#   sun: list - per hour schedule limits for Sunday.
+#   sun: list - Per hour schedule limits for Sunday.
 #       Special Case:
-#         * must be 24 elements (starting at 0000 - midnight).
+#         * Must be 24 elements (starting at 0000 - midnight).
 #       Values:
-#         0: no schedule (default).
-#         1: throttled.
-#         2: paused.
+#         0: No schedule (default).
+#         1: Throttled.
+#         2: Paused.
 #       Default: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0].
-#   low_active: int - maximum number of active torrents.
+#   low_active: Int - maximum number of active torrents.
 #     Special Case:
-#       -1: unlimited active torrents.
+#       -1: Unlimited active torrents.
 #     Default: 8.
-#   low_active_down: int - maximum number of downloading torrents.
+#   low_active_down: int - Maximum number of downloading torrents.
 #     Special Case:
-#       -1: unlimited active downloading torrents to low_active.
+#       -1: Unlimited active downloading torrents to low_active.
 #     Default: 3.
-#   low_active_up: int - maximum number of uploading torrents.
+#   low_active_up: int - Maximum number of uploading torrents.
 #     Special Case:
-#       -1: unlimited active uploading torrents to low_active.
+#       -1: Unlimited active uploading torrents to low_active.
 #     Default: 5.
-#   low_down: int - maximum download speed (KiB/s).
+#   low_down: int - Maximum download speed (KiB/s).
 #     Special Case:
-#       -1: unlimited download speed.
+#       -1: Unlimited download speed.
 #     Default: -1.
-#   low_up:  int - maximum upload speed (KiB/s).
+#   low_up: int - Maximum upload speed (KiB/s).
 #     Special Case:
-#       -1: unlimited upload speed.
+#       -1: Unlimited upload speed.
 #     Default: -1.
 #
 #

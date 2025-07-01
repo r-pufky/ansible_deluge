@@ -11,10 +11,10 @@
 # * https://deluge-torrent.org/plugins/#plugins-included
 
 # deluge_cfg_plugins_extractor:
-#     dict - auto extract torrent plugin.
-#   extract_path: str - absolute path to extract torrents to.
+#     dict - Auto extract torrent plugin.
+#   extract_path: str - Absolute path to extract torrents to.
 #       Default: deluge_cfg_core_download_location.
-#   use_name_folder: bool - create a torrent named sub-folder?
+#   use_name_folder: bool - Create a torrent named sub-folder?
 #       Default: True.
 #
 # deluge_cfg_plugins_extractor:

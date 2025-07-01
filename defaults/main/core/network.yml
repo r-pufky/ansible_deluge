@@ -20,7 +20,7 @@ deluge_cfg_core_random_port: true
 # Incoming (listen) ports.
 #
 # deluge_cfg_core_listen_ports:
-#     dict - listen port range.
+#     dict - Listen port range.
 #   start: int - Staring port.
 #   end: int - Ending port, use start value for single listen port.
 #
@@ -52,9 +52,9 @@ deluge_cfg_core_random_outgoing_ports: true
 # Outgoing ports.
 #
 # deluge_cfg_core_outgoing_ports:
-#     dict - outgoing port range.
-#   start: int - staring port.
-#   end: int - ending port, use start value for single outgoing port.
+#     dict - Outgoing port range.
+#   start: int - Staring port.
+#   end: int - Ending port, use start value for single outgoing port.
 #
 # deluge_cfg_core_outgoing_ports:
 #   start: 0
@@ -118,8 +118,8 @@ deluge_cfg_core_dht: true
 # DSCP supersedes TOS but are equivalent. Sets DSCP IP Header.
 #
 # Value:
-#   0x00: no heading (default).
-#   0x04: lower effort.
+#   0x00: No heading (default).
+#   0x04: Lower effort.
 #
 # Default: '0x00'.
 #

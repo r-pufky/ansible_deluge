@@ -15,13 +15,13 @@
 # Requires: deluge_cfg_plugins_execute_source set.
 #
 # deluge_cfg_plugins_execute:
-#     list of dict - script execution on torrent files.
-#    - event: str - torrent event.
+#     list of dict - Script execution on torrent files.
+#    - event: str - Torrent event.
 #          Values:
-#               added: torrent added.
-#            complete: torrent complete.
-#             removed: torrent removed.
-#      command: str - script name to execute.
+#               added: Torrent added.
+#            complete: Torrent complete.
+#             removed: Torrent removed.
+#      command: str - Script name to execute.
 #          Special Case:
 #            * deluge_cfg_plugins_execute_source scripts will be placed in
 #              /opt/deluge/config/scripts and set executable.

@@ -17,6 +17,7 @@
         test_owner: 'media'
         test_group: 'media'
         test_mode: '0600'
+        test_diff: true
       loop:
         - {src: 'test.pem', file: 'daemon.cert'}
         - {src: 'test.key', file: 'daemon.pkey'}

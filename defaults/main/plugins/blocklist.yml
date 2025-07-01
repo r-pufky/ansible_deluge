@@ -11,19 +11,19 @@
 # * https://deluge-torrent.org/plugins/blocklist
 
 # deluge_cfg_plugins_blocklist:
-#     dict - blocklist configuration.
+#     dict - Blocklist configuration.
 #   url: str - URL to retrieve blocklist from.
-#   check_after_days: int - interval to check for list updates (days).
+#   check_after_days: int - Interval to check for list updates (days).
 #       Default: 4.
-#   load_on_start: bool - import list from URL on startup?
+#   load_on_start: bool - Import list from URL on startup?
 #       Default: False.
-#   timeout: int - connection timeout limit (seconds).
+#   timeout: int - Connection timeout limit (seconds).
 #       Default: 180.
-#   try_times: int - number of times to retry connections before failing.
+#   try_times: int - Number of times to retry connections before failing.
 #       Default: 3.
 #   whitelisted: list of str - IP addresses to whitelist.
 #       Default: []
-#   blocklist: str - set initial blocklist before the URL is queried; allows
+#   blocklist: str - Set initial blocklist before the URL is queried; allows
 #         seeding of known bad IPs before initial blocklist sync.
 #       Default: '' (no blocklist until URL is queried).
 #

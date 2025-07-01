@@ -3,8 +3,8 @@
     "format": 1
 }{
     "labels": {
-{% if deluge_cfg_plugins_label.raw | length > 0 %}
-{%   for label in deluge_cfg_plugins_label.raw %}
+{% if _deluge_cfg_plugins_label.raw | length > 0 %}
+{%   for label in _deluge_cfg_plugins_label.raw %}
         "{{ label.name }}": {
             "apply_max": {{ label.apply_max | string | lower  }},
             "apply_move_completed": {{ label.apply_move_completed | string | lower  }},

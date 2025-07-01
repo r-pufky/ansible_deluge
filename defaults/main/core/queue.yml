@@ -53,8 +53,8 @@ deluge_cfg_core_stop_seed_ratio: 2.0
 # Remove torrent after seeing complete?
 #
 # Values:
-#    True: remove torrent when seeding ratio met.
-#   False: pause torrent when seeding ratio met.
+#    True: Remove torrent when seeding ratio met.
+#   False: Pause torrent when seeding ratio met.
 #
 # Default: False.
 deluge_cfg_core_remove_seed_at_ratio: false
