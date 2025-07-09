@@ -182,11 +182,3 @@
         exec:
           user: '{{ _deluge_srv_user.raw }}'
           group: '{{ _deluge_srv_group.raw }}'
-
-- name: 'Config | start Deluge'
-  ansible.builtin.systemd:
-    name: '{{ item }}'
-    state: 'restarted'
-  loop:
-    - 'deluged.service'
-    - 'deluge-web.service'

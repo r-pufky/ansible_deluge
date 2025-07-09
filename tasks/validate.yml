@@ -5,8 +5,15 @@
 # Start Deluge services and confirm they are active and running.
 
 - name: 'Validate | start services'
-  notify: 'Handlers | restart deluge'
-  ansible.builtin.meta: 'flush_handlers'
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+    daemon_reload: true
+    state: 'started'
+  failed_when: false
+  loop:
+    - 'deluged.service'
+    - 'deluge-web.service'
 
 - name: 'Validate | query service status'
   ansible.builtin.service_facts:
