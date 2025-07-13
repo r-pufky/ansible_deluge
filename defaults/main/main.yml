@@ -2,6 +2,15 @@
 ###############################################################################
 # Deluge Service Configuration
 ###############################################################################
+# Install size: ~13MB
+#          deluged: 89kB
+#   deluge-console: 521kB
+#       deluge-web: 3.7MB
+#            rsync: 780kB
+#            unrar: 333kB
+#            unzip: 379kB
+#             7zip: 2.6MB
+#       p7zip-full: 4.6MB
 
 # Deluge service config location.
 #
