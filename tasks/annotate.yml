@@ -72,7 +72,7 @@
   ansible.builtin.set_fact:
     _deluge_cfg_plugins_execute: '{{
         _deluge_cfg_plugins_execute | default([]) +
-        [deluge_cfg_plugins_execute | combine(item)]
+        [deluge_role_template_execute | combine(item)]
       }}'
   loop: '{{ deluge_cfg_plugins_execute }}'
   loop_control:

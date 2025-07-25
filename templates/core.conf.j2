@@ -6,7 +6,7 @@
 {%   set header_loop = loop %}
 {%   if header == 'Proxy' %}
     "proxy": {
-{%     for section in _deluge_map | selectattr("value.section", "match", header) | sort(attribute="value.order") %}
+{%     for section in _deluge_map | selectattr('value.section', '==', header) | sort(attribute='value.order') %}
 {%       if not section.value.deprecated %}
 {%         if section.value.hint == 'int' %}
         "{{ section.value.key }}": {{ section.value.raw | int | to_json }}{% if not loop.last %},{% endif %}
@@ -20,7 +20,7 @@
 {%     endfor %}
     },
 {%   else %}
-{%     for section in _deluge_map | selectattr("value.section", "match", header) | sort(attribute="value.order") %}
+{%     for section in _deluge_map | selectattr('value.section', '==', header) | sort(attribute='value.order') %}
 {%       if not section.value.deprecated %}
 {%         if section.value.hint == 'int' %}
     "{{ section.value.key }}": {{ section.value.raw | int | to_json }}{% if not header_loop.last or not loop.last %},{% endif %}
