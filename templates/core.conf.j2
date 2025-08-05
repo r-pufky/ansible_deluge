@@ -22,7 +22,11 @@
 {%   else %}
 {%     for section in _deluge_map | selectattr('value.section', '==', header) | sort(attribute='value.order') %}
 {%       if not section.value.deprecated %}
-{%         if section.value.hint == 'int' %}
+{%         if section.value.hint == 'list of int' %}
+    "{{ section.value.key }}": {{ section.value.data | to_json }}{% if not header_loop.last %},{% endif %}
+{%         elif section.value.hint == 'template int' %}
+    "{{ section.value.key }}": {{ section.value.data | int | to_json }}{% if not header_loop.last %},{% endif %}
+{%         elif section.value.hint == 'int' %}
     "{{ section.value.key }}": {{ section.value.raw | int | to_json }}{% if not header_loop.last or not loop.last %},{% endif %}
 {%         elif section.value.hint == 'float' %}
     "{{ section.value.key }}": {{ section.value.raw | float | to_json }}{% if not header_loop.last or not loop.last %},{% endif %}

@@ -22,8 +22,8 @@
 # default templates.
 #
 # Reference:
-# * https://delugecom.github.io/#debian-repository
-# * https://deluge.com
+# * https://deluge-torrent.org/
+# * https://git.deluge-torrent.org/deluge
 
 - name: 'Config | lock Deluge package user'
   when: _deluge_srv_user.raw != 'debian-deluged'
@@ -35,9 +35,9 @@
 # Permissions determined from vanilla service start
 - name: 'Config | manage config directories'
   ansible.builtin.file:
-    path: '{{ _deluge_srv_config_dir.parsed ~ item.path }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_user.parsed }}'
+    path: '{{ _deluge_srv_config_dir.role_config_dir ~ item.path }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '{{ item.mode }}'
     recurse: true
     state: 'directory'
@@ -60,36 +60,35 @@
 - name: 'Config | manage media directories'
   ansible.builtin.file:
     path: '{{ item }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_group.parsed }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '{{ _deluge_srv_media_perms_folder.raw }}'
     state: 'directory'
-  become:
-    '{{ true if _deluge_srv_user_data_manage_enable.raw else omit }}'
+  become: true
   become_user: '{{
       _deluge_srv_user.raw
       if _deluge_srv_user_data_manage_enable.raw else
-      omit
+      "root"
     }}'
   loop:
     - '{{ _deluge_cfg_core_download_location.raw }}'
     - '{{ _deluge_cfg_core_move_completed_path.raw }}'
     - '{{ _deluge_cfg_core_torrentfiles_location.raw }}'
 
+# yamllint disable rule:line-length
 - name: 'Config | set media file permissions'
   when: _deluge_srv_media_set_perms_file_enable.raw
   ansible.builtin.shell: >-
     find '{{ item }}'
     -type f
     -exec chmod {{ _deluge_srv_media_perms_file.raw }} {};
-      chown {{ _deluge_srv_user.parsed }}:{{ _deluge_srv_group.parsed }} {} \;
+      chown {{ _deluge_srv_user.role_uid }}:{{ _deluge_srv_group.role_gid }} {} \;
   changed_when: false
-  become:
-    '{{ true if _deluge_srv_user_data_manage_enable.raw else omit }}'
+  become: true
   become_user: '{{
       _deluge_srv_user.raw
       if _deluge_srv_user_data_manage_enable.raw else
-      omit
+      "root"
     }}'
   loop:
     - '{{ _deluge_cfg_core_download_location.raw }}'
@@ -99,10 +98,10 @@
 - name: 'Config | set daemon HTTPS certs'
   when: _deluge_cfg_web_https.raw
   ansible.builtin.copy:
-    src: '{{ item.parsed }}'
-    dest: '{{ item.raw }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_group.parsed }}'
+    src: '{{ item.raw }}'
+    dest: '{{ item.role_dest }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'
     force: true
   loop:
@@ -115,28 +114,28 @@
 - name: 'Config | remove daemon HTTPS certs'
   when: not _deluge_cfg_web_https.raw
   ansible.builtin.file:
-    dest: '{{ item }}'
+    dest: '{{ item.role_dest }}'
     state: 'absent'
   loop:
-    - '{{ _deluge_cfg_web_ssl_cert_path.parsed }}'
-    - '{{ _deluge_cfg_web_ssl_key_path.parsed }}'
+    - '{{ _deluge_cfg_web_ssl_cert_path }}'
+    - '{{ _deluge_cfg_web_ssl_key_path }}'
   loop_control:
-    label: '{{ item }}'
+    label: '{{ item.role_dest }}'
 
 - name: 'Config | set core.conf'
   ansible.builtin.template:
     src: 'core.conf.j2'
-    dest: '{{ _deluge_srv_config_dir.parsed ~ "core.conf" }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_group.parsed }}'
+    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "core.conf" }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'
 
 - name: 'Config | set web.conf'
   ansible.builtin.template:
     src: 'web.conf.j2'
-    dest: '{{ _deluge_srv_config_dir.parsed ~ "web.conf" }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_group.parsed }}'
+    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "web.conf" }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'
 
 - name: 'Config | configure plugins'
@@ -157,7 +156,7 @@
             - >-
               /usr/bin/deluged -d
               --loglevel {{ _deluge_srv_log_level.raw }}
-              --config "{{ _deluge_srv_config_dir.parsed }}"
+              --config "{{ _deluge_srv_config_dir.role_config_dir }}"
           restart: 'always'  # Always restart for periodic service restarts.
           runtime_max_sec: '{{
               "1d" if _deluge_srv_restart_daily_enable.raw else "infinity"
@@ -174,7 +173,7 @@
             - >-
               /usr/bin/deluge-web -d
               --loglevel {{ _deluge_srv_log_level.raw }}
-              --config "{{ _deluge_srv_config_dir.parsed }}"
+              --config "{{ _deluge_srv_config_dir.role_config_dir }}"
           restart: 'always'  # Always restart for periodic service restarts.
           runtime_max_sec: '{{
               "1d" if _deluge_srv_restart_daily_enable.raw else "infinity"

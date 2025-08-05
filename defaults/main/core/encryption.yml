@@ -7,8 +7,8 @@
 #
 # Values:
 #     force: Use only encrypted incoming connections.
+#   enabled: Use encrypted if available.
 #   disable: Use only unencrypted incoming connections.
-#    either: Use any incoming connections.
 #
 # Default: 'force'.
 deluge_cfg_core_enc_in_policy: 'force'
@@ -17,8 +17,8 @@ deluge_cfg_core_enc_in_policy: 'force'
 #
 # Values:
 #     force: Use only encrypted outgoing connections.
+#   enabled: Use encrypted if available.
 #   disable: Use only unencrypted outgoing connections.
-#    either: Use any outgoing connections.
 #
 # Default: 0.
 deluge_cfg_core_enc_out_policy: 'force'

@@ -68,9 +68,9 @@
   ansible.builtin.set_fact:
     _deluge_srv_user: '{{
         _deluge_srv_user |
-        combine({"parsed": _deluge_srv_user_query.uid})
+        combine({"role_uid": _deluge_srv_user_query.uid})
       }}'
     _deluge_srv_group: '{{
         _deluge_srv_group |
-        combine({"parsed": _deluge_srv_user_query.group})
+        combine({"role_gid": _deluge_srv_user_query.group})
       }}'

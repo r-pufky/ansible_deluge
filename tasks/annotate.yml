@@ -20,20 +20,21 @@
 # * Simplified role updates for variable changes.
 # * All data touched by user is in a standard, expected format.
 #
-# Annotated Defaults:
+# Annotated Defaults (2.0):
 # _{VAR}: dict - Annotated and sanitized default variable.
 #   section: str - Section name.
 #   key: str - Config file key.
-#   raw: any - Raw config file value (set from defaults > role defaults).
-#   parsed: any - Processed raw config file value. Optional.
-#   role: any - Role specific config usage. Optional.
+#   raw: any - Raw value from user, defaults, or role defaults.
+#   data: any - Processed raw value for use in rendering. Optional.
+#   default: any - Role default (testing for changed defaults).
 #   hint: str - Value rendering type hint (docstring types).
+#   role_*: any - Role specific usage. Optional.
 #   added: str - Release version variable added.
 #       Special Case:
 #         0.0.0: Unknown or since role inception.
 #   sensitive: bool - True for PII/SPII data that should not be logged.
 #   deprecated: bool - True if no longer used in current role release.
-#   order: int - Order item should appear in rendered files.
+#   order: int - Order item should appear in templated files.
 #
 # Generates:
 #   _deluge_map: list of dict - Annotated config map.
@@ -105,14 +106,10 @@
     _deluge_srv_config_dir: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_config_dir | default("/var/lib/deluge") }}',
-      parsed: '{{
-        deluge_srv_config_dir | default("/var/lib/deluge") ~ "config/"
-        if
-        (deluge_srv_config_dir | default("/var/lib/deluge")).endswith("/")
-        else
-        deluge_srv_config_dir | default("/var/lib/deluge") ~ "/config/"
-      }}',
+      raw: '{{ deluge_srv_config_dir }}',
+      default: '/opt/deluge',
+      role_config_dir:
+        "{{ deluge_srv_config_dir | regex_replace('\\/$', '') ~ '/config/' }}",
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -122,7 +119,8 @@
     _deluge_srv_log_level: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_log_level | default("error") | lower }}',
+      raw: '{{ deluge_srv_log_level | lower }}',
+      default: 'error',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -132,7 +130,8 @@
     _deluge_srv_auto_add_apt_sources_enable: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_auto_add_apt_sources_enable | default(true) }}',
+      raw: '{{ deluge_srv_auto_add_apt_sources_enable }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -142,7 +141,8 @@
     _deluge_srv_restart_daily_enable: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_restart_daily_enable | default(false) }}',
+      raw: '{{ deluge_srv_restart_daily_enable }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -152,8 +152,10 @@
     _deluge_srv_user: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_user | default("media") }}',
-      hint: 'str',  # Updated with UID when determined in prep.
+      raw: '{{ deluge_srv_user }}',
+      default: 'media',
+      role_uid: '',  # (str) UID.
+      hint: 'str',
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
@@ -162,8 +164,10 @@
     _deluge_srv_group: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_group | default("media") }}',
-      hint: 'str',  # Updated with GID when determined in prep.
+      raw: '{{ deluge_srv_group }}',
+      default: 'media',
+      role_gid: '',  # (str) GID.
+      hint: 'str',
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
@@ -172,7 +176,8 @@
     _deluge_srv_create_user: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_create_user | default(true) }}',
+      raw: '{{ deluge_srv_create_user }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -182,7 +187,8 @@
     _deluge_srv_user_data_manage_enable: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_user_data_manage_enable | default(false) }}',
+      raw: '{{ deluge_srv_user_data_manage_enable }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -192,7 +198,8 @@
     _deluge_srv_media_perms_folder: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_media_perms_folder | default("0750") }}',
+      raw: '{{ deluge_srv_media_perms_folder }}',
+      default: '0750',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -202,7 +209,8 @@
     _deluge_srv_media_set_perms_file_enable: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_media_set_perms_file_enable | default(false) }}',
+      raw: '{{ deluge_srv_media_set_perms_file_enable }}',
+      default: false,
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -212,7 +220,8 @@
     _deluge_srv_media_perms_file: {
       section: '',
       key: '',
-      raw: '{{ deluge_srv_media_perms_file | default("0640") }}',
+      raw: '{{ deluge_srv_media_perms_file }}',
+      default: '0640',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -225,10 +234,8 @@
     _deluge_cfg_core_download_location: {
       section: 'Downloads',
       key: 'download_location',
-      raw: '{{
-        deluge_cfg_core_download_location |
-        default("/var/lib/deluge/Downloads")
-      }}',
+      raw: '{{ deluge_cfg_core_download_location }}',
+      default: '/opt/deluge/Downloads',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -238,7 +245,8 @@
     _deluge_cfg_core_download_location_paths_list: {
       section: 'Downloads',
       key: 'download_location_paths_list',
-      raw: '{{ deluge_cfg_core_download_location_paths_list | default([]) }}',
+      raw: '{{ deluge_cfg_core_download_location_paths_list }}',
+      default: [],
       hint: 'list of str',
       added: '0.0.0',
       sensitive: false,
@@ -248,7 +256,8 @@
     _deluge_cfg_core_move_completed: {
       section: 'Downloads',
       key: 'move_completed',
-      raw: '{{ deluge_cfg_core_move_completed | default(false) }}',
+      raw: '{{ deluge_cfg_core_move_completed }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -258,7 +267,8 @@
     _deluge_cfg_core_move_completed_paths_list: {
       section: 'Downloads',
       key: 'move_completed_paths_list',
-      raw: '{{ deluge_cfg_core_move_completed_paths_list | default([]) }}',
+      raw: '{{ deluge_cfg_core_move_completed_paths_list }}',
+      default: [],
       hint: 'list of str',
       added: '0.0.0',
       sensitive: false,
@@ -268,10 +278,8 @@
     _deluge_cfg_core_move_completed_path: {
       section: 'Downloads',
       key: 'move_completed_path',
-      raw: '{{
-        deluge_cfg_core_move_completed_path |
-        default("/var/lib/deluge/Downloads")
-      }}',
+      raw: '{{ deluge_cfg_core_move_completed_path }}',
+      default: '/opt/deluge/Downloads',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -281,7 +289,8 @@
     _deluge_cfg_core_copy_torrent_file: {
       section: 'Downloads',
       key: 'copy_torrent_file',
-      raw: '{{ deluge_cfg_core_copy_torrent_file | default(false) }}',
+      raw: '{{ deluge_cfg_core_copy_torrent_file }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -291,10 +300,8 @@
     _deluge_cfg_core_torrentfiles_location: {
       section: 'Downloads',
       key: 'torrentfiles_location',
-      raw: '{{
-        deluge_cfg_core_torrentfiles_location |
-        default("/var/lib/deluge/Downloads")
-      }}',
+      raw: '{{ deluge_cfg_core_torrentfiles_location }}',
+      default: '/opt/deluge/Downloads',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -304,8 +311,8 @@
     _deluge_cfg_core_prioritize_first_last_pieces: {
       section: 'Downloads',
       key: 'prioritize_first_last_pieces',
-      raw:
-        '{{ deluge_cfg_core_prioritize_first_last_pieces | default(false) }}',
+      raw: '{{ deluge_cfg_core_prioritize_first_last_pieces }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -315,7 +322,8 @@
     _deluge_cfg_core_sequential_download: {
       section: 'Downloads',
       key: 'sequential_download',
-      raw: '{{ deluge_cfg_core_sequential_download | default(false) }}',
+      raw: '{{ deluge_cfg_core_sequential_download }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -325,7 +333,8 @@
     _deluge_cfg_core_add_paused: {
       section: 'Downloads',
       key: 'add_paused',
-      raw: '{{ deluge_cfg_core_add_paused | default(false) }}',
+      raw: '{{ deluge_cfg_core_add_paused }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -335,7 +344,8 @@
     _deluge_cfg_core_pre_allocate_storage: {
       section: 'Downloads',
       key: 'pre_allocate_storage',
-      raw: '{{ deluge_cfg_core_pre_allocate_storage | default(false) }}',
+      raw: '{{ deluge_cfg_core_pre_allocate_storage }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -345,7 +355,8 @@
     _deluge_cfg_core_del_copy_torrent_file: {
       section: 'Downloads',
       key: 'del_copy_torrent_file',
-      raw: '{{ deluge_cfg_core_del_copy_torrent_file | default(false) }}',
+      raw: '{{ deluge_cfg_core_del_copy_torrent_file }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -355,7 +366,8 @@
     _deluge_cfg_core_auto_managed: {
       section: 'Downloads',
       key: 'auto_managed',
-      raw: '{{ deluge_cfg_core_auto_managed | default(true) }}',
+      raw: '{{ deluge_cfg_core_auto_managed }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -365,7 +377,8 @@
     _deluge_cfg_core_shared: {
       section: 'Downloads',
       key: 'shared',
-      raw: '{{ deluge_cfg_core_shared | default(false) }}',
+      raw: '{{ deluge_cfg_core_shared }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -375,7 +388,8 @@
     _deluge_cfg_core_listen_interface: {
       section: 'Network',
       key: 'listen_interface',
-      raw: '{{ deluge_cfg_core_listen_interface | default("") }}',
+      raw: '{{ deluge_cfg_core_listen_interface }}',
+      default: '',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -385,7 +399,8 @@
     _deluge_cfg_core_random_port: {
       section: 'Network',
       key: 'random_port',
-      raw: '{{ deluge_cfg_core_random_port | default(true) }}',
+      raw: '{{ deluge_cfg_core_random_port }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -395,13 +410,12 @@
     _deluge_cfg_core_listen_ports: {
       section: 'Network',
       key: 'listen_ports',
-      raw: '{{
+      raw: '{{ deluge_cfg_core_listen_ports }}',
+      data: '{{
         [deluge_cfg_core_listen_ports.start | default(6881),
          deluge_cfg_core_listen_ports.end | default(6891)]
       }}',
-      parsed: '{{
-        deluge_cfg_core_listen_ports | default({"start": 6881, "end": 6891})
-       }}',
+      default: {'start': 6881, 'end': 6891},
       hint: 'list of int',
       added: '0.0.0',
       sensitive: false,
@@ -411,7 +425,8 @@
     _deluge_cfg_core_outgoing_interface: {
       section: 'Network',
       key: 'outgoing_interface',
-      raw: '{{ deluge_cfg_core_outgoing_interface | default("") }}',
+      raw: '{{ deluge_cfg_core_outgoing_interface }}',
+      default: '',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -421,7 +436,8 @@
     _deluge_cfg_core_random_outgoing_ports: {
       section: 'Network',
       key: 'random_outgoing_ports',
-      raw: '{{ deluge_cfg_core_random_outgoing_ports | default(true) }}',
+      raw: '{{ deluge_cfg_core_random_outgoing_ports }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -431,13 +447,12 @@
     _deluge_cfg_core_outgoing_ports: {
       section: 'Network',
       key: 'outgoing_ports',
-      raw: '{{
+      raw: '{{ deluge_cfg_core_outgoing_ports }}',
+      data: '{{
         [deluge_cfg_core_outgoing_ports.start,
          deluge_cfg_core_outgoing_ports.end]
       }}',
-      parsed: '{{
-        deluge_cfg_core_outgoing_ports | default({"start": 0, "end": 0})
-      }}',
+      default: {'start': 0, 'end': 0},
       hint: 'list of int',
       added: '0.0.0',
       sensitive: false,
@@ -447,7 +462,8 @@
     _deluge_cfg_core_upnp: {
       section: 'Network',
       key: 'upnp',
-      raw: '{{ deluge_cfg_core_upnp | default(true) }}',
+      raw: '{{ deluge_cfg_core_upnp }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -457,7 +473,8 @@
     _deluge_cfg_core_natpmp: {
       section: 'Network',
       key: 'natpmp',
-      raw: '{{ eluge_core_natpmp | default(true) }}',
+      raw: '{{ deluge_cfg_core_natpmp }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -467,7 +484,8 @@
     _deluge_cfg_core_utpex: {
       section: 'Network',
       key: 'utpex',
-      raw: '{{ deluge_cfg_core_utpex | default(true) }}',
+      raw: '{{ deluge_cfg_core_utpex }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -477,7 +495,8 @@
     _deluge_cfg_core_lsd: {
       section: 'Network',
       key: 'lsd',
-      raw: '{{ deluge_cfg_core_lsd | default(true) }}',
+      raw: '{{ deluge_cfg_core_lsd }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -487,7 +506,8 @@
     _deluge_cfg_core_dht: {
       section: 'Network',
       key: 'dht',
-      raw: '{{ deluge_cfg_core_dht | default(true) }}',
+      raw: '{{ deluge_cfg_core_dht }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -497,7 +517,8 @@
     _deluge_cfg_core_peer_tos: {
       section: 'Network',
       key: 'peer_tos',
-      raw: '{{ deluge_cfg_core_peer_tos | default("0x00") }}',
+      raw: '{{ deluge_cfg_core_peer_tos }}',
+      default: '0x00',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -507,9 +528,8 @@
     _deluge_cfg_core_listen_random_port: {
       section: 'Network',
       key: 'listen_random_port',
-      raw: '{{
-        deluge_cfg_core_listen_random_port | default(49152 + (16373 | random))
-      }}',
+      raw: '{{ deluge_cfg_core_listen_random_port }}',
+      default: '{{ (49152 + (16373 | random)) }}',
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -519,7 +539,8 @@
     _deluge_cfg_core_listen_reuse_port: {
       section: 'Network',
       key: 'listen_reuse_port',
-      raw: '{{ deluge_cfg_core_listen_reuse_port | default(true) }}',
+      raw: '{{ deluge_cfg_core_listen_reuse_port }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -529,7 +550,8 @@
     _deluge_cfg_core_listen_use_sys_port: {
       section: 'Network',
       key: 'listen_use_sys_port',
-      raw: '{{ deluge_cfg_core_listen_use_sys_port | default(false) }}',
+      raw: '{{ deluge_cfg_core_listen_use_sys_port }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -539,7 +561,8 @@
     _deluge_cfg_core_super_seeding: {
       section: 'Network',
       key: 'super_seeding',
-      raw: '{{ deluge_cfg_core_super_seeding | default(false) }}',
+      raw: '{{ deluge_cfg_core_super_seeding }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -549,12 +572,12 @@
     _deluge_cfg_core_enc_in_policy: {
       section: 'Encryption',
       key: 'enc_in_policy',
-      raw: '{{
+      raw: '{{ deluge_cfg_core_enc_in_policy }}',
+      data: '{{
         deluge_role_template_encryption[deluge_cfg_core_enc_in_policy |
                                         default("force")]
       }}',
-      parsed: '{{ deluge_cfg_core_enc_in_policy | default("force") }}',
-      hint: 'int',
+      hint: 'template int',
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
@@ -563,12 +586,12 @@
     _deluge_cfg_core_enc_out_policy: {
       section: 'Encryption',
       key: 'enc_out_policy',
-      raw: '{{
+      raw: '{{ deluge_cfg_core_enc_out_policy }}',
+      data: '{{
         deluge_role_template_encryption[deluge_cfg_core_enc_out_policy |
                                         default("force")]
       }}',
-      parsed: '{{ deluge_cfg_core_enc_out_policy | default("force") }}',
-      hint: 'int',
+      hint: 'template int',
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
@@ -577,12 +600,12 @@
     _deluge_cfg_core_enc_level: {
       section: 'Encryption',
       key: 'enc_level',
-      raw: '{{
+      raw: '{{ deluge_cfg_core_enc_level }}',
+      data: '{{
         deluge_role_template_encryption[deluge_cfg_core_enc_level |
                                         default("full")]
       }}',
-      parsed: '{{ deluge_cfg_core_enc_level | default("full") }}',
-      hint: 'int',
+      hint: 'template int',
       added: '0.0.0',
       sensitive: false,
       deprecated: false,
@@ -591,7 +614,8 @@
     _deluge_cfg_core_max_connections_global: {
       section: 'Bandwidth',
       key: 'max_connections_global',
-      raw: '{{ deluge_cfg_core_max_connections_global | default(200) }}',
+      raw: '{{ deluge_cfg_core_max_connections_global }}',
+      default: 200,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -601,7 +625,8 @@
     _deluge_cfg_core_max_upload_slots_global: {
       section: 'Bandwidth',
       key: 'max_upload_slots_global',
-      raw: '{{ deluge_cfg_core_max_upload_slots_global | default(4) }}',
+      raw: '{{ deluge_cfg_core_max_upload_slots_global }}',
+      default: 4,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -611,7 +636,8 @@
     _deluge_cfg_core_max_download_speed: {
       section: 'Bandwidth',
       key: 'max_download_speed',
-      raw: '{{ deluge_cfg_core_max_download_speed | default(-1) }}',
+      raw: '{{ deluge_cfg_core_max_download_speed }}',
+      default: -1,
       hint: 'float',  # WebUI is int, config stores as float.
       added: '0.0.0',
       sensitive: false,
@@ -621,7 +647,8 @@
     _deluge_cfg_core_max_upload_speed: {
       section: 'Bandwidth',
       key: 'max_upload_speed',
-      raw: '{{ deluge_cfg_core_max_upload_speed | default(-1) }}',
+      raw: '{{ deluge_cfg_core_max_upload_speed }}',
+      default: -1,
       hint: 'float',
       added: '0.0.0',
       sensitive: false,
@@ -631,7 +658,8 @@
     _deluge_cfg_core_max_half_open_connections: {
       section: 'Bandwidth',
       key: 'max_half_open_connections',
-      raw: '{{ deluge_cfg_core_max_half_open_connections | default(50) }}',
+      raw: '{{ deluge_cfg_core_max_half_open_connections }}',
+      default: 50,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -641,7 +669,8 @@
     _deluge_cfg_core_max_connections_per_second: {
       section: 'Bandwidth',
       key: 'max_connections_per_second',
-      raw: '{{ deluge_cfg_core_max_connections_per_second | default(20) }}',
+      raw: '{{ deluge_cfg_core_max_connections_per_second }}',
+      default: 20,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -651,8 +680,8 @@
     _deluge_cfg_core_ignore_limits_on_local_network: {
       section: 'Bandwidth',
       key: 'ignore_limits_on_local_network',
-      raw:
-        '{{ deluge_cfg_core_ignore_limits_on_local_network | default(true) }}',
+      raw: '{{ deluge_cfg_core_ignore_limits_on_local_network }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -662,7 +691,8 @@
     _deluge_cfg_core_rate_limit_ip_overhead: {
       section: 'Bandwidth',
       key: 'rate_limit_ip_overhead',
-      raw: '{{ deluge_cfg_core_rate_limit_ip_overhead | default(true) }}',
+      raw: '{{ deluge_cfg_core_rate_limit_ip_overhead }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -672,7 +702,8 @@
     _deluge_cfg_core_max_connections_per_torrent: {
       section: 'Bandwidth',
       key: 'max_connections_per_torrent',
-      raw: '{{ deluge_cfg_core_max_connections_per_torrent | default(-1) }}',
+      raw: '{{ deluge_cfg_core_max_connections_per_torrent }}',
+      default: -1,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -682,7 +713,8 @@
     _deluge_cfg_core_max_upload_slots_per_torrent: {
       section: 'Bandwidth',
       key: 'max_upload_slots_per_torrent',
-      raw: '{{ deluge_cfg_core_max_upload_slots_per_torrent | default(-1) }}',
+      raw: '{{ deluge_cfg_core_max_upload_slots_per_torrent }}',
+      default: -1,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -692,8 +724,8 @@
     _deluge_cfg_core_max_download_speed_per_torrent: {
       section: 'Bandwidth',
       key: 'max_download_speed_per_torrent',
-      raw:
-        '{{ deluge_cfg_core_max_download_speed_per_torrent | default(-1) }}',
+      raw: '{{ deluge_cfg_core_max_download_speed_per_torrent }}',
+      default: -1,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -703,7 +735,8 @@
     _deluge_cfg_core_max_upload_speed_per_torrent: {
       section: 'Bandwidth',
       key: 'max_upload_speed_per_torrent',
-      raw: '{{ deluge_cfg_core_max_upload_speed_per_torrent | default(-1) }}',
+      raw: '{{ deluge_cfg_core_max_upload_speed_per_torrent }}',
+      default: -1,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -713,9 +746,8 @@
     _deluge_cfg_core_path_chooser_accelerator_string: {
       section: 'Interface',
       key: 'path_chooser_accelerator_string',
-      raw: '{{
-        deluge_cfg_core_path_chooser_accelerator_string | default("Tab")
-      }}',
+      raw: '{{ deluge_cfg_core_path_chooser_accelerator_string }}',
+      default: 'Tab',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -725,9 +757,8 @@
     _deluge_cfg_core_path_chooser_auto_complete_enabled: {
       section: 'Interface',
       key: 'path_chooser_auto_complete_enabled',
-      raw: '{{
-        deluge_cfg_core_path_chooser_auto_complete_enabled | default(true)
-      }}',
+      raw: '{{ deluge_cfg_core_path_chooser_auto_complete_enabled }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -737,8 +768,8 @@
     _deluge_cfg_core_path_chooser_max_popup_rows: {
       section: 'Interface',
       key: 'path_chooser_max_popup_rows',
-      raw:
-        '{{ deluge_cfg_core_path_chooser_max_popup_rows | default(20) }}',
+      raw: '{{ deluge_cfg_core_path_chooser_max_popup_rows }}',
+      default: 20,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -748,10 +779,9 @@
     _deluge_cfg_core_path_chooser_show_chooser_button_on_localhost: {
       section: 'Interface',
       key: 'path_chooser_show_chooser_button_on_localhost',
-      raw: '{{
-        deluge_cfg_core_path_chooser_show_chooser_button_on_localhost |
-        default(true)
-      }}',
+      raw:
+        '{{ deluge_cfg_core_path_chooser_show_chooser_button_on_localhost }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -761,9 +791,8 @@
     _deluge_cfg_core_path_chooser_show_hidden_files: {
       section: 'Interface',
       key: 'path_chooser_show_hidden_files',
-      raw: '{{
-        deluge_cfg_core_path_chooser_show_hidden_files | default(false)
-      }}',
+      raw: '{{ deluge_cfg_core_path_chooser_show_hidden_files }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -773,7 +802,8 @@
     _deluge_cfg_core_new_release_check: {
       section: 'Other',
       key: 'new_release_check',
-      raw: '{{ deluge_cfg_core_new_release_check | default(false) }}',
+      raw: '{{ deluge_cfg_core_new_release_check }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -783,7 +813,8 @@
     _deluge_cfg_core_send_info: {
       section: 'Other',
       key: 'send_info',
-      raw: '{{ deluge_cfg_core_send_info | default(false) }}',
+      raw: '{{ deluge_cfg_core_send_info }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -793,10 +824,8 @@
     _deluge_cfg_core_geoip_db_location: {
       section: 'Other',
       key: 'geoip_db_location',
-      raw: '{{
-        deluge_cfg_core_geoip_db_location |
-        default("/usr/share/GeoIP/GeoIP.dat")
-      }}',
+      raw: '{{ deluge_cfg_core_geoip_db_location }}',
+      default: '/usr/share/GeoIP/GeoIP.dat',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -806,7 +835,8 @@
     _deluge_cfg_core_info_sent: {
       section: 'Other',
       key: 'info_sent',
-      raw: '{{ deluge_cfg_core_info_sent | default(0.0) }}',
+      raw: '{{ deluge_cfg_core_info_sent }}',
+      default: 0.0,
       hint: 'float',
       added: '0.0.0',
       sensitive: false,
@@ -816,7 +846,8 @@
     _deluge_cfg_core_daemon_port: {
       section: 'Daemon',
       key: 'daemon_port',
-      raw: '{{ deluge_cfg_core_daemon_port | default(58846) }}',
+      raw: '{{ deluge_cfg_core_daemon_port }}',
+      default: 58846,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -826,7 +857,8 @@
     _deluge_cfg_core_allow_remote: {
       section: 'Daemon',
       key: 'allow_remote',
-      raw: '{{ deluge_cfg_core_allow_remote | default(false) }}',
+      raw: '{{ deluge_cfg_core_allow_remote }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -836,7 +868,8 @@
     _deluge_cfg_core_queue_new_to_top: {
       section: 'Queue',
       key: 'queue_new_to_top',
-      raw: '{{ deluge_cfg_core_queue_new_to_top | default(false) }}',
+      raw: '{{ deluge_cfg_core_queue_new_to_top }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -846,7 +879,8 @@
     _deluge_cfg_core_max_active_limit: {
       section: 'Queue',
       key: 'max_active_limit',
-      raw: '{{ deluge_cfg_core_max_active_limit | default(8) }}',
+      raw: '{{ deluge_cfg_core_max_active_limit }}',
+      default: 8,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -856,7 +890,8 @@
     _deluge_cfg_core_max_active_downloading: {
       section: 'Queue',
       key: 'max_active_downloading',
-      raw: '{{ deluge_cfg_core_max_active_downloading | default(3) }}',
+      raw: '{{ deluge_cfg_core_max_active_downloading }}',
+      default: 3,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -866,7 +901,8 @@
     _deluge_cfg_core_max_active_seeding: {
       section: 'Queue',
       key: 'max_active_seeding',
-      raw: '{{ deluge_cfg_core_max_active_seeding | default(5) }}',
+      raw: '{{ deluge_cfg_core_max_active_seeding }}',
+      default: 5,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -876,7 +912,8 @@
     _deluge_cfg_core_dont_count_slow_torrents: {
       section: 'Queue',
       key: 'dont_count_slow_torrents',
-      raw: '{{ deluge_cfg_core_dont_count_slow_torrents | default(false) }}',
+      raw: '{{ deluge_cfg_core_dont_count_slow_torrents }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -886,7 +923,8 @@
     _deluge_cfg_core_auto_manage_prefer_seeds: {
       section: 'Queue',
       key: 'auto_manage_prefer_seeds',
-      raw: '{{ deluge_cfg_core_auto_manage_prefer_seeds | default(false) }}',
+      raw: '{{ deluge_cfg_core_auto_manage_prefer_seeds }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -896,7 +934,8 @@
     _deluge_cfg_core_share_ratio_limit: {
       section: 'Queue',
       key: 'share_ratio_limit',
-      raw: '{{ deluge_cfg_core_share_ratio_limit | default(2.0) }}',
+      raw: '{{ deluge_cfg_core_share_ratio_limit }}',
+      default: 2.0,
       hint: 'float',
       added: '0.0.0',
       sensitive: false,
@@ -906,7 +945,8 @@
     _deluge_cfg_core_seed_time_ratio_limit: {
       section: 'Queue',
       key: 'seed_time_ratio_limit',
-      raw: '{{ deluge_cfg_core_seed_time_ratio_limit | default(7.0) }}',
+      raw: '{{ deluge_cfg_core_seed_time_ratio_limit }}',
+      default: 7.0,
       hint: 'float',
       added: '0.0.0',
       sensitive: false,
@@ -916,7 +956,8 @@
     _deluge_cfg_core_seed_time_limit: {
       section: 'Queue',
       key: 'seed_time_limit',
-      raw: '{{ deluge_cfg_core_seed_time_limit | default(180) }}',
+      raw: '{{ deluge_cfg_core_seed_time_limit }}',
+      default: 180,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -926,7 +967,8 @@
     _deluge_cfg_core_stop_seed_at_ratio: {
       section: 'Queue',
       key: 'stop_seed_at_ratio',
-      raw: '{{ deluge_cfg_core_stop_seed_at_ratio | default(false) }}',
+      raw: '{{ deluge_cfg_core_stop_seed_at_ratio }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -936,7 +978,8 @@
     _deluge_cfg_core_stop_seed_ratio: {
       section: 'Queue',
       key: 'stop_seed_ratio',
-      raw: '{{ deluge_cfg_core_stop_seed_ratio | default(2.0) }}',
+      raw: '{{ deluge_cfg_core_stop_seed_ratio }}',
+      default: 2.0,
       hint: 'float',
       added: '0.0.0',
       sensitive: false,
@@ -946,7 +989,8 @@
     _deluge_cfg_core_remove_seed_at_ratio: {
       section: 'Queue',
       key: 'remove_seed_at_ratio',
-      raw: '{{ deluge_cfg_core_remove_seed_at_ratio | default(false) }}',
+      raw: '{{ deluge_cfg_core_remove_seed_at_ratio }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -956,11 +1000,10 @@
     _deluge_cfg_core_type: {
       section: 'Proxy',
       key: 'type',
-      raw: '{{
-        deluge_role_template_proxy_type[deluge_cfg_core_type | default("")] |
-        default(0)
+      raw: '{{ deluge_cfg_core_type }}',
+      data: '{{
+        deluge_role_template_proxy_type[deluge_cfg_core_type] | default(0)
       }}',
-      parsed: '{{ deluge_cfg_core_type | default("") }}',
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -970,7 +1013,8 @@
     _deluge_cfg_core_hostname: {
       section: 'Proxy',
       key: 'hostname',
-      raw: '{{ deluge_cfg_core_hostname | default("") }}',
+      raw: '{{ deluge_cfg_core_hostname }}',
+      default: '',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -980,7 +1024,8 @@
     _deluge_cfg_core_port: {
       section: 'Proxy',
       key: 'port',
-      raw: '{{ deluge_cfg_core_port | default(8080) }}',
+      raw: '{{ deluge_cfg_core_port }}',
+      default: 8080,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -990,7 +1035,8 @@
     _deluge_cfg_core_peer_connections: {
       section: 'Proxy',
       key: 'proxy_peer_connections',
-      raw: '{{ deluge_cfg_core_peer_connections | default(true) }}',
+      raw: '{{ deluge_cfg_core_peer_connections }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -1000,7 +1046,8 @@
     _deluge_cfg_core_proxy_tracker_connections: {
       section: 'Proxy',
       key: 'proxy_tracker_connections',
-      raw: '{{ deluge_cfg_core_proxy_tracker_connections | default(true) }}',
+      raw: '{{ deluge_cfg_core_proxy_tracker_connections }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -1010,7 +1057,8 @@
     _deluge_cfg_core_proxy_hostnames: {
       section: 'Proxy',
       key: 'proxy_hostnames',
-      raw: '{{ deluge_cfg_core_proxy_hostnames | default(true) }}',
+      raw: '{{ deluge_cfg_core_proxy_hostnames }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -1020,7 +1068,8 @@
     _deluge_cfg_core_username: {
       section: 'Proxy',
       key: 'username',
-      raw: '{{ deluge_cfg_core_username | default("") }}',
+      raw: '{{ deluge_cfg_core_username }}',
+      default: '',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1030,7 +1079,8 @@
     _deluge_cfg_core_password: {
       section: 'Proxy',
       key: 'password',
-      raw: '{{ deluge_cfg_core_password | default("") }}',
+      raw: '{{ deluge_cfg_core_password }}',
+      default: '',
       hint: 'str',
       added: '0.0.0',
       sensitive: true,
@@ -1040,7 +1090,8 @@
     _deluge_cfg_core_force_proxy: {
       section: 'Proxy',
       key: 'force_proxy',
-      raw: '{{ deluge_cfg_core_force_proxy | default(false) }}',
+      raw: '{{ deluge_cfg_core_force_proxy }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -1050,7 +1101,8 @@
     _deluge_cfg_core_anonymous_mode: {
       section: 'Proxy',
       key: 'anonymous_mode',
-      raw: '{{ deluge_cfg_core_anonymous_mode | default(false) }}',
+      raw: '{{ deluge_cfg_core_anonymous_mode }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -1060,7 +1112,8 @@
     _deluge_cfg_core_cache_size: {
       section: 'Cache',
       key: 'cache_size',
-      raw: '{{ deluge_cfg_core_cache_size | default(512) }}',
+      raw: '{{ deluge_cfg_core_cache_size }}',
+      default: 512,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -1070,7 +1123,8 @@
     _deluge_cfg_core_cache_expiry: {
       section: 'Cache',
       key: 'cache_expiry',
-      raw: '{{ deluge_cfg_core_cache_expiry | default(60) }}',
+      raw: '{{ deluge_cfg_core_cache_expiry }}',
+      default: 60,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -1080,7 +1134,8 @@
     _deluge_cfg_core_enabled_plugins: {
       section: 'Plugins',
       key: 'enabled_plugins',
-      raw: '{{ deluge_cfg_core_enabled_plugins | default([]) }}',
+      raw: '{{ deluge_cfg_core_enabled_plugins }}',
+      default: [],
       hint: 'list of str',
       added: '0.0.0',
       sensitive: false,
@@ -1090,7 +1145,7 @@
     _deluge_cfg_core_plugins_location: {
       section: 'Plugins',
       key: 'plugins_location',  # Not user configurable.
-      raw: '{{ _deluge_srv_config_dir.parsed ~ "plugins" }}',
+      raw: '{{ _deluge_srv_config_dir.role_config_dir ~ "plugins" }}',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1100,14 +1155,12 @@
     _deluge_cfg_core_install_plugins_source: {
       section: '',
       key: '',  # Role only.
-      raw: '{{ deluge_cfg_core_install_plugins_source | default("") }}',
-      parsed: '{{
-        deluge_cfg_core_install_plugins_source | default("")
-        if
-        (deluge_cfg_core_install_plugins_source | default("")).endswith("/")
-        else
-        (deluge_cfg_core_install_plugins_source | default("")) ~ "/"
-      }}',
+      raw: '{{ deluge_cfg_core_install_plugins_source }}',
+      default: '',
+      role_src: "{{
+        deluge_cfg_core_install_plugins_source |
+        regex_replace('\\/$', '') ~ '/'
+      }}",
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1117,7 +1170,8 @@
     _deluge_cfg_web_show_session_speed: {
       section: 'Interface web.conf',
       key: 'show_session_speed',
-      raw: '{{ deluge_cfg_web_show_session_speed | default(false) }}',
+      raw: '{{ deluge_cfg_web_show_session_speed }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -1127,7 +1181,8 @@
     _deluge_cfg_web_sidebar_show_zero: {
       section: 'Interface web.conf',
       key: 'sidebar_show_zero',
-      raw: '{{ deluge_cfg_web_sidebar_show_zero | default(false) }}',
+      raw: '{{ deluge_cfg_web_sidebar_show_zero }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -1137,7 +1192,8 @@
     _deluge_cfg_web_sidebar_multiple_filters: {
       section: 'Interface web.conf',
       key: 'sidebar_multiple_filters',
-      raw: '{{ deluge_cfg_web_sidebar_multiple_filters | default(true) }}',
+      raw: '{{ deluge_cfg_web_sidebar_multiple_filters }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -1147,7 +1203,8 @@
     _deluge_cfg_web_language: {
       section: 'Interface web.conf',
       key: 'language',
-      raw: '{{ deluge_cfg_web_language | default("") }}',
+      raw: '{{ deluge_cfg_web_language }}',
+      default: '',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1157,7 +1214,8 @@
     _deluge_cfg_web_session_timeout: {
       section: 'Interface web.conf',
       key: 'session_timeout',
-      raw: '{{ deluge_cfg_web_session_timeout | default(3600) }}',
+      raw: '{{ deluge_cfg_web_session_timeout }}',
+      default: 3600,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -1167,7 +1225,8 @@
     _deluge_cfg_web_port: {
       section: 'Interface web.conf',
       key: 'port',
-      raw: '{{ deluge_cfg_web_port | default(8112) }}',
+      raw: '{{ deluge_cfg_web_port }}',
+      default: 8112,
       hint: 'int',
       added: '0.0.0',
       sensitive: false,
@@ -1177,7 +1236,8 @@
     _deluge_cfg_web_https: {
       section: 'Interface web.conf',
       key: 'https',
-      raw: '{{ deluge_cfg_web_https | default(false) }}',
+      raw: '{{ deluge_cfg_web_https }}',
+      default: false,
       hint: 'bool',
       added: '0.0.0',
       sensitive: false,
@@ -1187,12 +1247,11 @@
     _deluge_cfg_web_ssl_cert_path: {
       section: 'Interface web.conf',
       key: 'cert',
-      raw: '{{
-        _deluge_srv_config_dir.parsed ~ "ssl/daemon.cert"
-        if deluge_cfg_web_https | default(false) else
-        ""
+      raw: '{{ deluge_cfg_web_ssl_cert_path }}',
+      default: '',
+      role_dest: '{{
+        _deluge_srv_config_dir.role_config_dir ~ "ssl/daemon.cert"
       }}',  # Disabled HTTPS sets no path in config.
-      parsed: '{{ deluge_cfg_web_ssl_cert_path | default("") }}',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1202,12 +1261,11 @@
     _deluge_cfg_web_ssl_key_path: {
       section: 'Interface web.conf',
       key: 'pkey',
-      raw: '{{
-        _deluge_srv_config_dir.parsed ~ "ssl/daemon.pkey"
-        if deluge_cfg_web_https | default(false) else
-        ""
+      raw: '{{ deluge_cfg_web_ssl_key_path }}',
+      default: '',
+      role_dest: '{{
+        _deluge_srv_config_dir.role_config_dir ~ "ssl/daemon.pkey"
       }}',  # Disabled HTTPS sets no path in config.
-      parsed: '{{ deluge_cfg_web_ssl_key_path | default("") }}',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1219,7 +1277,8 @@
     _deluge_cfg_web_pwd_salt: {
       section: 'Interface web.conf',
       key: 'pwd_salt',
-      raw: '{{ deluge_cfg_web_pwd_salt | default("") }}',
+      raw: '{{ deluge_cfg_web_pwd_salt }}',
+      default: '',
       hint: 'str',
       added: '0.0.0',
       sensitive: true,
@@ -1231,7 +1290,8 @@
     _deluge_cfg_web_pwd_sha1: {
       section: 'Interface web.conf',
       key: 'pwd_sha1',
-      raw: '{{ deluge_cfg_web_pwd_sha1 | default("") }}',
+      raw: '{{ deluge_cfg_web_pwd_sha1 }}',
+      default: '',
       hint: 'str',
       added: '0.0.0',
       sensitive: true,
@@ -1241,7 +1301,8 @@
     _deluge_cfg_web_theme: {
       section: 'Interface web.conf',
       key: 'theme',
-      raw: '{{ deluge_cfg_web_theme | default("gray") }}',
+      raw: '{{ deluge_cfg_web_theme }}',
+      default: 'gray',
       hint: 'str',
       added: '0.0.0',
       sensitive: true,
@@ -1251,7 +1312,8 @@
     _deluge_cfg_web_show_sidebar: {
       section: 'Interface web.conf',
       key: 'show_sidebar',
-      raw: '{{ deluge_cfg_web_show_sidebar | default(true) }}',
+      raw: '{{ deluge_cfg_web_show_sidebar }}',
+      default: true,
       hint: 'bool',
       added: '0.0.0',
       sensitive: true,
@@ -1261,7 +1323,8 @@
     _deluge_cfg_web_first_login: {
       section: 'Interface web.conf',
       key: 'first_login',
-      raw: '{{ deluge_cfg_web_first_login | default(false) }}',
+      raw: '{{ deluge_cfg_web_first_login }}',
+      default: false,
       hint: 'str',
       added: '0.0.0',
       sensitive: true,
@@ -1271,7 +1334,8 @@
     _deluge_cfg_web_interface: {
       section: 'Interface web.conf',
       key: 'interface',
-      raw: '{{ deluge_cfg_web_interface | default("0.0.0.0") }}',
+      raw: '{{ deluge_cfg_web_interface }}',
+      default: '0.0.0.0',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1281,7 +1345,8 @@
     _deluge_cfg_web_default_daemon: {
       section: 'Interface web.conf',
       key: 'default_daemon',
-      raw: '{{ deluge_cfg_web_default_daemon | default("") }}',
+      raw: '{{ deluge_cfg_web_default_daemon }}',
+      default: '',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1292,7 +1357,8 @@
     _deluge_cfg_web_enabled_plugins: {
       section: 'Interface web.conf',
       key: 'enabled_plugins',  # Not user configurable.
-      raw: '{{ deluge_cfg_core_enabled_plugins | default([]) }}',
+      raw: '{{ deluge_cfg_core_enabled_plugins }}',
+      default: [],
       hint: 'list of str',
       added: '0.0.0',
       sensitive: false,
@@ -1302,7 +1368,8 @@
     _deluge_cfg_web_sessions: {
       section: 'Interface web.conf',
       key: 'sessions',  # Not user configurable.
-      raw: '{{ {} }}',  # always reset sessions on role application.
+      raw: {},  # always reset sessions on role application.
+      default: {},
       hint: 'dict',
       added: '0.0.0',
       sensitive: false,
@@ -1313,6 +1380,7 @@
       section: 'Interface web.conf',
       key: 'base',  # Not user configurable.
       raw: '/',  # WebUI URI base.
+      default: '/',
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1326,6 +1394,7 @@
       section: 'AutoAdd Plugin',
       key: '',
       raw: '{{ _deluge_cfg_plugins_auto_add | default([]) }}',
+      default: [],
       hint: 'list of dict',
       added: '0.0.0',
       sensitive: false,
@@ -1335,7 +1404,8 @@
     _deluge_cfg_plugins_blocklist: {
       section: 'Blocklist Plugin',
       key: '',
-      raw: '{{ _deluge_cfg_plugins_blocklist | default({}) }}',
+      raw: '{{ _deluge_cfg_plugins_blocklist | default([]) }}',
+      default: [],
       hint: 'dict',
       added: '0.0.0',
       sensitive: false,
@@ -1346,6 +1416,7 @@
       section: 'Execute Plugin',
       key: '',
       raw: '{{ _deluge_cfg_plugins_execute | default([]) }}',
+      default: [],
       hint: 'list of dict',
       added: '0.0.0',
       sensitive: false,
@@ -1355,14 +1426,11 @@
     _deluge_cfg_plugins_execute_source: {
       section: 'Execute Plugin',
       key: '',
-      raw: '{{ deluge_cfg_plugins_execute_source | default("") }}',
-      parsed: '{{
-        deluge_cfg_plugins_execute_source | default("")
-        if
-        (deluge_cfg_plugins_execute_source | default("")).endswith("/")
-        else
-        deluge_cfg_plugins_execute_source ~ "/"
-      }}',
+      raw: '{{ deluge_cfg_plugins_execute_source }}',
+      default: '',
+      role_src: "{{
+        deluge_cfg_plugins_execute_source | regex_replace('\\/$', '') ~ '/'
+      }}",
       hint: 'str',
       added: '0.0.0',
       sensitive: false,
@@ -1373,6 +1441,7 @@
       section: 'Extractor Plugin',
       key: '',
       raw: '{{ _deluge_cfg_plugins_extractor | default({}) }}',
+      default: {},
       hint: 'dict',
       added: '0.0.0',
       sensitive: false,
@@ -1383,6 +1452,7 @@
       section: 'Label Plugin',
       key: '',
       raw: '{{ _deluge_cfg_plugins_label | default([]) }}',
+      default: [],
       hint: 'list of dict',
       added: '0.0.0',
       sensitive: false,
@@ -1393,6 +1463,7 @@
       section: 'Scheduler Plugin',
       key: '',
       raw: '{{ _deluge_cfg_plugins_scheduler | default({}) }}',
+      default: {},
       hint: 'dict',
       added: '0.0.0',
       sensitive: false,

@@ -10,11 +10,12 @@
 
 # Template encryption values.
 deluge_role_template_encryption:
-  force: 0
-  disable: 1
-  either: 2
-  handshake: 0
-  full: 1
+  force: 0  # in/out
+  handshake: 0  # level
+  enable: 1  # in/out
+  full: 1  # level
+  disable: 2  # in/out
+  either: 2  # level
 
 # Template proxy types.
 deluge_role_template_proxy_type:

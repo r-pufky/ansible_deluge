@@ -9,7 +9,7 @@
 # Deluge service config location.
 #
 # Alternate default location to ensure deluge_user, deluge_group permissions do
-# interfere with APT package default user.
+# NOT interfere with APT package default user.
 #
 # Default: '/opt/deluge'.
 deluge_srv_config_dir: '/opt/deluge'

@@ -20,7 +20,7 @@
   block:
     - name: 'Plugins | copy custom plugins | copy'
       ansible.posix.synchronize:
-        src: '{{ _deluge_cfg_core_install_plugins_source.parsed }}'
+        src: '{{ _deluge_cfg_core_install_plugins_source.role_src }}'
         dest: '{{ _deluge_cfg_core_plugins_location.raw }}'
         delete: true
         recursive: true
@@ -29,7 +29,7 @@
 
     - name: 'Plugins | copy custom plugins | set permissions'
       ansible.builtin.shell:
-        chown -R {{ _deluge_srv_user.parsed }}:{{ _deluge_srv_group.parsed }} '{{ _deluge_cfg_core_plugins_location.raw }}' &&
+        chown -R {{ _deluge_srv_user.role_uid }}:{{ _deluge_srv_group.role_gid }} '{{ _deluge_cfg_core_plugins_location.raw }}' &&
         find '{{ _deluge_cfg_core_plugins_location.raw }}' -type d -exec chmod 0770 {} \; &&
         find '{{ _deluge_cfg_core_plugins_location.raw }}' -type f -exec chmod 0660 {} \;
       changed_when: false
@@ -38,9 +38,9 @@
 - name: 'Plugins | set autoadd.conf'
   ansible.builtin.template:
     src: 'plugins/autoadd.conf.j2'
-    dest: '{{ _deluge_srv_config_dir.parsed ~ "autoadd.conf" }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_group.parsed }}'
+    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "autoadd.conf" }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'
 
 # Blocklist plugins set in root config directory.
@@ -48,21 +48,23 @@
   when: _deluge_cfg_plugins_blocklist.raw | length > 0
   ansible.builtin.template:
     src: '{{ item.src }}'
-    dest: '{{ _deluge_srv_config_dir.parsed ~ item.dest }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_group.parsed }}'
+    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ item.dest }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'
   loop:
     - {src: 'plugins/blocklist.conf.j2', dest: 'blocklist.conf'}
     - {src: 'plugins/blocklist.download.j2', dest: 'blocklist.download'}
+  loop_control:
+    label: '{{ item.dest }}'
 
 - name: 'Plugins | execute'
   when: _deluge_cfg_plugins_execute_source.raw | length > 0
   block:
     - name: 'Plugins | execute | copy scripts'
       ansible.posix.synchronize:
-        src: '{{ _deluge_cfg_plugins_execute_source.parsed }}'
-        dest: '{{ _deluge_srv_config_dir.parsed ~ "scripts" }}'
+        src: '{{ _deluge_cfg_plugins_execute_source.role_src }}'
+        dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "scripts" }}'
         delete: true
         recursive: true
         archive: false
@@ -70,42 +72,42 @@
 
     - name: 'Plugins | execute | set permissions'
       ansible.builtin.shell:
-        chown -R {{ _deluge_srv_user.parsed }}:{{ _deluge_srv_group.parsed }} '{{ _deluge_srv_config_dir.parsed ~ "scripts" }}' &&
-        find '{{ _deluge_srv_config_dir.parsed ~ "scripts" }}' -type f -exec chmod 0750 {} \;
+        chown -R {{ _deluge_srv_user.role_uid }}:{{ _deluge_srv_group.role_gid }} '{{ _deluge_srv_config_dir.role_config_dir ~ "scripts" }}' &&
+        find '{{ _deluge_srv_config_dir.role_config_dir ~ "scripts" }}' -type f -exec chmod 0750 {} \;
       changed_when: false
 
     # Execute plugin set in root config directory.
     - name: 'Plugins | execute | set execute.conf'
       ansible.builtin.template:
         src: 'plugins/execute.conf.j2'
-        dest: '{{ _deluge_srv_config_dir.parsed ~ "execute.conf" }}'
-        owner: '{{ _deluge_srv_user.parsed }}'
-        group: '{{ _deluge_srv_group.parsed }}'
+        dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "execute.conf" }}'
+        owner: '{{ _deluge_srv_user.role_uid }}'
+        group: '{{ _deluge_srv_group.role_gid }}'
         mode: '0600'
 
 - name: 'Plugins | set extractor.conf'
   when: _deluge_cfg_plugins_extractor.raw | length > 0
   ansible.builtin.template:
     src: 'plugins/extractor.conf.j2'
-    dest: '{{ _deluge_srv_config_dir.parsed ~ "extractor.conf" }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_group.parsed }}'
+    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "extractor.conf" }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'
 
 - name: 'Plugins | set label.conf'
   when: _deluge_cfg_plugins_label.raw | length > 0
   ansible.builtin.template:
     src: 'plugins/label.conf.j2'
-    dest: '{{ _deluge_srv_config_dir.parsed ~ "label.conf" }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_group.parsed }}'
+    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "label.conf" }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'
 
 - name: 'Plugins | set scheduler.conf'
   when: _deluge_cfg_plugins_scheduler | length > 0
   ansible.builtin.template:
     src: 'plugins/scheduler.conf.j2'
-    dest: '{{ _deluge_srv_config_dir.parsed ~ "scheduler.conf" }}'
-    owner: '{{ _deluge_srv_user.parsed }}'
-    group: '{{ _deluge_srv_group.parsed }}'
+    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "scheduler.conf" }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'
