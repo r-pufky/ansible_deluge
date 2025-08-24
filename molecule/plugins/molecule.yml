@@ -70,9 +70,24 @@ provisioner:
                 2, 2, 2, 2, 2, 2, 2, 2,
                 0, 0, 0, 0, 0, 0, 0, 0]
           low_active: -1
+        deluge_cfg_plugins_notifications:
+          smtp_enabled: true
+          smtp_from: 'test@exmaple.com'
+          smtp_host: 'localhost'
+          smtp_user: 'test'
+          smtp_pass: 'test'
+          smtp_recipients:
+            - 'recip1@exmaple.com'
+            - 'recip2@exmaple.com'
+          smtp_tls: true
+          autoadd_options_changed_event: true
+          execute_command_added_event: true
+          execute_command_removed_event: true
+          scheduler_event: true
+          torrent_finished_event: true
 platforms:
-  - name: 'deluge-debian-12-plugins'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'deluge-debian-13-plugins'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'

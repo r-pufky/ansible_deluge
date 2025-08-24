@@ -1,0 +1,59 @@
+---
+###############################################################################
+# Notifications Plugin
+###############################################################################
+# Documented usage here reflect code, installer, and WebUI analysis. These may
+# change over time and should be re-validated from time to time.
+#
+# Send e-mail notifications to recipients.
+#
+# Reference:
+# * https://deluge-torrent.org/plugins
+
+# deluge_cfg_plugins_notifications:
+#      dict - E-mail notifications settings.
+#    smtp_enabled: bool - Enable e-mail notifications.
+#        Default: True.
+#    smtp_from: str - From e-mail address.
+#        Default: ''.
+#    smtp_host: str - SMTP server host address.
+#        Default: '',
+#    smtp_user: str - SMTP user.
+#        Default: '',
+#    smtp_pass: str - SMTP user password.
+#        Default: '',
+#    smtp_port: int - SMTP server port.
+#        Default: 25,
+#    smtp_recipients: list of str - E-mail recipients.
+#        Default: [],
+#    smtp_tls: bool - Enable TLS?
+#        Default: False.
+#    autoadd_options_changed_event: bool - Enable AutoAdd changed alerts.
+#        Default: False.
+#    execute_command_added_event: bool - Enable Execute command added alerts.
+#        Default: False.
+#    execute_command_removed_event: bool - Enable Execute command removed
+#          alerts.
+#        Default: False.
+#    scheduler_event: bool - Enable scheduler event alerts.
+#        Default: False.
+#    torrent_finished_event: bool - Enable finished torrent alerts.
+#        Default: False.
+#
+# deluge_cfg_plugins_notifications:
+#    smtp_enabled: true
+#    smtp_from: 'test@exmaple.com'
+#    smtp_host: 'localhost'
+#    smtp_user: 'test'
+#    smtp_pass: 'test'
+#    smtp_recipients:
+#      - 'recip1@exmaple.com'
+#      - 'recip2@exmaple.com'
+#    autoadd_options_changed_event: true
+#    execute_command_added_event: true
+#    execute_command_removed_event: true
+#    scheduler_event: true
+#    torrent_finished_event: true
+#
+# Default: [].
+deluge_cfg_plugins_notifications: []

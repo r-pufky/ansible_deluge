@@ -28,11 +28,11 @@ provisioner:
       pipelining: false
   inventory:
     host_vars:
-      deluge-debian-12-user_data:
+      deluge-debian-13-user_data:
         deluge_srv_user_data_manage_enable: true
 platforms:
-  - name: 'deluge-debian-12-default'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'deluge-debian-13-default'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
@@ -40,8 +40,8 @@ platforms:
     pre_build_image: true
     published_ports:
       - '8112/tcp'
-  - name: 'deluge-debian-12-user_data'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'deluge-debian-13-user_data'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'

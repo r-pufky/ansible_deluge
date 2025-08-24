@@ -44,21 +44,6 @@
 # * https://deluge-torrent.org/
 # * https://deluge.readthedocs.io/en/latest
 
-# TODO(2.0.4): Remove variable renaming check on next major deluge release.
-- name: 'Annotate | check deprecated variable usage'
-  when: >
-    hostvars[inventory_hostname] | dict2items |
-    selectattr("key", "match", "deluge_config_*") | length > 0 or
-    hostvars[inventory_hostname] | dict2items |
-    selectattr("key", "match", "deluge_service_*") | length > 0
-  ansible.builtin.fail:
-    msg: |
-      ✘ Role variables have migrated. Read defaults and update.
-
-      deluge_config_* -> deluge_cfg_*
-      deluge_service_* -> deluge_srv_*
-      deluge_* -> deluge_srv_*
-
 - name: 'Annotate | merge template deluge_cfg_plugins_auto_add'
   ansible.builtin.set_fact:
     _deluge_cfg_plugins_auto_add: '{{
@@ -99,6 +84,10 @@
       }}'
     _deluge_cfg_plugins_scheduler: '{{
         deluge_role_template_scheduler | combine(deluge_cfg_plugins_scheduler)
+      }}'
+    _deluge_cfg_plugins_notifications: '{{
+        deluge_role_template_notifications |
+        combine(deluge_cfg_plugins_notifications)
       }}'
 
 - name: 'Annotate | sanitize & annotate service defaults'
@@ -1466,6 +1455,40 @@
       default: {},
       hint: 'dict',
       added: '0.0.0',
+      sensitive: false,
+      deprecated: false,
+      order: 1,
+    }
+    _deluge_cfg_plugins_notifications: {
+      section: 'Notification Plugin',
+      key: '',
+      raw: '{{ _deluge_cfg_plugins_notifications | default({}) }}',
+      default: {},
+      role_subscriptions: '{{
+          ["AutoaddOptionsChangedEvent"
+           if
+             _deluge_cfg_plugins_notifications.autoadd_options_changed_event
+           else
+           "",
+           "ExecuteCommandAddedEvent"
+           if
+             _deluge_cfg_plugins_notifications.execute_command_added_event
+           else
+           "",
+           "ExecuteCommandRemovedEvent"
+           if
+             _deluge_cfg_plugins_notifications.execute_command_removed_event
+           else
+           "",
+           "SchedulerEvent"
+           if _deluge_cfg_plugins_notifications.scheduler_event else
+           "",
+           "TorrentFinishedEvent"
+           if _deluge_cfg_plugins_notifications.torrent_finished_event else
+           ""] | select | list
+        }}',  # (list of str) toggled options.
+      hint: 'dict',
+      added: '2.2.0',
       sensitive: false,
       deprecated: false,
       order: 1,

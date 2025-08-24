@@ -1,0 +1,35 @@
+{
+    "file": 1,
+    "format": 1
+}{
+    "smtp_enabled": {{ _deluge_cfg_plugins_notifications.raw.smtp_enabled | string | lower }},
+    "smtp_from": "{{ _deluge_cfg_plugins_notifications.raw.smtp_from }}",
+    "smtp_host": "{{ _deluge_cfg_plugins_notifications.raw.smtp_host }}",
+    "smtp_pass": "{{ _deluge_cfg_plugins_notifications.raw.smtp_pass }}",
+    "smtp_port": {{ _deluge_cfg_plugins_notifications.raw.smtp_port }},
+{% if _deluge_cfg_plugins_notifications.raw.smtp_recipients | length > 0 %}
+    "smtp_recipients": [
+{%   for recipient in _deluge_cfg_plugins_notifications.raw.smtp_recipients %}
+        "{{ recipient }}"{% if not loop.last %},{% endif %}
+
+{%   endfor %}
+    ]
+{% else %}
+    "smtp_recipients": []
+{% endif %}
+    "smtp_tls": {{ _deluge_cfg_plugins_notifications.raw.smtp_tls | string | lower }},
+    "smtp_user": "{{ _deluge_cfg_plugins_notifications.raw.smtp_user }}",
+{% if _deluge_cfg_plugins_notifications.role_subscriptions | length > 0 %}
+    "subscriptions": {
+        "email": [
+{%   for subscription in _deluge_cfg_plugins_notifications.role_subscriptions %}
+            "{{ subscription }}"{% if not loop.last %},{% endif %}
+
+{%   endfor %}
+        ]
+{% else %}
+    "subscriptions": {
+        "email": []
+{% endif %}
+    }
+}

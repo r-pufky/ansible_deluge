@@ -25,6 +25,7 @@
         - 'extractor.conf'
         - 'label.conf'
         - 'scheduler.conf'
+        - 'notifications-core.conf'
 
     - name: 'Verify | /opt/deluge/config/scripts/test'
       ansible.builtin.include_role:

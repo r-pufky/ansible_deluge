@@ -10,7 +10,9 @@
 
 {%       endif %}
 {%     else %}
-{%       if section.value.hint == 'int' %}
+{%     if section.value.key in ['cert', 'pkey'] and section.value.raw != section.value.default %}
+    "{{ section.value.key }}": {{ section.value.role_dest }}{% if not loop.last %},{% endif %}
+{%     elif section.value.hint == 'int' %}
     "{{ section.value.key }}": {{ section.value.raw | int | to_json }}{% if not loop.last %},{% endif %}
 {%       elif section.value.hint == 'float' %}
     "{{ section.value.key }}": {{ section.value.raw | float | to_json }}{% if not loop.last %},{% endif %}

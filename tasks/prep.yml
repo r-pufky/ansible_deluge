@@ -39,9 +39,15 @@
     that:
       - _deluge_cfg_web_ssl_cert_path.raw | length > 0
       - _deluge_cfg_web_ssl_key_path.raw | length > 0
-    fail_msg: >
-      ✘ deluge_cfg_web_https=true requires deluge_cfg_web_ssl_cert_path and
-      deluge_cfg_web_ssl_key_path set.
+    fail_msg: |
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │                     SSL Requirements NOT met.                     │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ deluge_cfg_web_https=true requires:
+      │ * deluge_cfg_web_ssl_cert_path set
+      │ * deluge_cfg_web_ssl_key_path set
 
 - name: 'Prep | manage users'
   when: _deluge_srv_create_user.raw

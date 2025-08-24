@@ -128,3 +128,19 @@ deluge_role_template_scheduler:
   low_down: -1
   low_up: -1
   # only executed if it is set, no template render check needed.
+
+# Plugin notifications defaults:
+deluge_role_template_notifications:
+  smtp_enabled: true
+  smtp_from: ''
+  smtp_host: ''
+  smtp_user: ''
+  smtp_pass: ''
+  smtp_port: 25
+  smtp_recipients: []
+  smtp_tls: false
+  autoadd_options_changed_event: false
+  execute_command_added_event: false
+  execute_command_removed_event: false
+  scheduler_event: false
+  torrent_finished_event: false

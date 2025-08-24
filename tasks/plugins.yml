@@ -8,8 +8,6 @@
 #
 # WebUI plugin not supported (deluge-web is the WebUI plugin).
 #
-# TODO(2.0.4): Implement notifications plugin when module is fixed.
-#
 # Leaving plugin configurations after being disabled does not affect Deluge.
 #
 # Reference:
@@ -34,7 +32,6 @@
         find '{{ _deluge_cfg_core_plugins_location.raw }}' -type f -exec chmod 0660 {} \;
       changed_when: false
 
-# Autoadd plugins set in root config directory. Always set.
 - name: 'Plugins | set autoadd.conf'
   ansible.builtin.template:
     src: 'plugins/autoadd.conf.j2'
@@ -43,7 +40,6 @@
     group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'
 
-# Blocklist plugins set in root config directory.
 - name: 'Plugins | set blocklist.conf'
   when: _deluge_cfg_plugins_blocklist.raw | length > 0
   ansible.builtin.template:
@@ -108,6 +104,14 @@
   ansible.builtin.template:
     src: 'plugins/scheduler.conf.j2'
     dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "scheduler.conf" }}'
+    owner: '{{ _deluge_srv_user.role_uid }}'
+    group: '{{ _deluge_srv_group.role_gid }}'
+    mode: '0600'
+
+- name: 'Plugins | set notifications-core.conf'
+  ansible.builtin.template:
+    src: 'plugins/notifications-core.conf.j2'
+    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "notifications-core.conf" }}'
     owner: '{{ _deluge_srv_user.role_uid }}'
     group: '{{ _deluge_srv_group.role_gid }}'
     mode: '0600'

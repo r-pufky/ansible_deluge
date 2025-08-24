@@ -4,9 +4,10 @@
 ###############################################################################
 #
 # Updates:
-# * New MAJOR, MINOR releases should hard branch at version before starting
-#   (e.g. 3.0.x branch).
-# * Debian OS version is irrelevant (tied to APT package version).
+# * New MAJOR, MINOR releases should hard branch at Debian version before
+#   starting (e.g. 13.0.x branch).
+# * Package OS version is irrelevant (tied to Debian version).
+# * Validated package version tracked in role variable.
 # * Keep a separate change log as changes are made, you will not remember all
 #   of them.
 # * Use debian docs to validate package/process changes. Reference source docs
@@ -17,16 +18,16 @@
 # * Update tests for any changes.
 # * Standard role validation testing (yamllint, ansible-lint, todo, noqa).
 # * Tag with MAJOR.MINOR.PATCH[ROLE] version, with PATCH representing role
-#   change - e.g. Debian: 2.0.3 -> Role: 2.0.301  (01 role release).
+#   change - e.g. Debian: 12.x.x -> Role: 12.0.1  (1 role release).
 #
 # Reference:
 # * https://delugecom.github.io/#debian-repository
 # * https://deluge.com
 
 # Last time Deluge options were validated against a default configuration.
-deluge_role_validate_date: '2025-02-08'
-deluge_role_validate_release: 'bookworm'
-deluge_role_validate_version: '2.0.3'
+deluge_role_validate_date: '2025-08-24'
+deluge_role_validate_release: 'trixie'
+deluge_role_validate_version: '2.2.0'
 
 ###############################################################################
 # APT Packages
@@ -50,9 +51,9 @@ deluge_role_apt_debian_all:
       - 'deb-src'
     uris: 'http://deb.debian.org/debian'
     suites:
-      - 'bookworm'
-      - 'bookworm-updates'
-      - 'bookworm-backports'
+      - 'trixie'
+      - 'trixie-updates'
+      - 'trixie-backports'
     components:
       - 'main'
       - 'contrib'
@@ -65,7 +66,7 @@ deluge_role_apt_debian_all:
       - 'deb-src'
     uris: 'http://deb.debian.org/debian-security'
     suites:
-      - 'bookworm-security'
+      - 'trixie-security'
     components:
       - 'main'
       - 'contrib'

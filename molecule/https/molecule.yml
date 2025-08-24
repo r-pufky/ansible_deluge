@@ -37,8 +37,8 @@ provisioner:
         deluge_cfg_web_pwd_salt: 'e0156aa94ecff125dc48665acf3b6b5842588c11'
         deluge_cfg_web_pwd_sha1: '75559193c309f82bedbd5d865d45ac16a90db577'
 platforms:
-  - name: 'deluge-debian-12-https'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'deluge-debian-13-https'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
