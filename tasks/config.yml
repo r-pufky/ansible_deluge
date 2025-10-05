@@ -35,9 +35,9 @@
 # Permissions determined from vanilla service start
 - name: 'Config | manage config directories'
   ansible.builtin.file:
-    path: '{{ _deluge_srv_config_dir.role_config_dir ~ item.path }}'
-    owner: '{{ _deluge_srv_user.role_uid }}'
-    group: '{{ _deluge_srv_group.role_gid }}'
+    path: '{{ _deluge_srv_config_dir._config_dir ~ item.path }}'
+    owner: '{{ _deluge_srv_user._uid }}'
+    group: '{{ _deluge_srv_group._gid }}'
     mode: '{{ item.mode }}'
     recurse: true
     state: 'directory'
@@ -60,8 +60,8 @@
 - name: 'Config | manage media directories'
   ansible.builtin.file:
     path: '{{ item }}'
-    owner: '{{ _deluge_srv_user.role_uid }}'
-    group: '{{ _deluge_srv_group.role_gid }}'
+    owner: '{{ _deluge_srv_user._uid }}'
+    group: '{{ _deluge_srv_group._gid }}'
     mode: '{{ _deluge_srv_media_perms_folder.raw }}'
     state: 'directory'
   become: true
@@ -82,7 +82,7 @@
     find '{{ item }}'
     -type f
     -exec chmod {{ _deluge_srv_media_perms_file.raw }} {};
-      chown {{ _deluge_srv_user.role_uid }}:{{ _deluge_srv_group.role_gid }} {} \;
+      chown {{ _deluge_srv_user._uid }}:{{ _deluge_srv_group._gid }} {} \;
   changed_when: false
   become: true
   become_user: '{{
@@ -99,9 +99,9 @@
   when: _deluge_cfg_web_https.raw
   ansible.builtin.copy:
     src: '{{ item.raw }}'
-    dest: '{{ item.role_dest }}'
-    owner: '{{ _deluge_srv_user.role_uid }}'
-    group: '{{ _deluge_srv_group.role_gid }}'
+    dest: '{{ item._dest }}'
+    owner: '{{ _deluge_srv_user._uid }}'
+    group: '{{ _deluge_srv_group._gid }}'
     mode: '0600'
     force: true
   loop:
@@ -114,28 +114,28 @@
 - name: 'Config | remove daemon HTTPS certs'
   when: not _deluge_cfg_web_https.raw
   ansible.builtin.file:
-    dest: '{{ item.role_dest }}'
+    dest: '{{ item._dest }}'
     state: 'absent'
   loop:
     - '{{ _deluge_cfg_web_ssl_cert_path }}'
     - '{{ _deluge_cfg_web_ssl_key_path }}'
   loop_control:
-    label: '{{ item.role_dest }}'
+    label: '{{ item._dest }}'
 
 - name: 'Config | set core.conf'
   ansible.builtin.template:
     src: 'core.conf.j2'
-    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "core.conf" }}'
-    owner: '{{ _deluge_srv_user.role_uid }}'
-    group: '{{ _deluge_srv_group.role_gid }}'
+    dest: '{{ _deluge_srv_config_dir._config_dir ~ "core.conf" }}'
+    owner: '{{ _deluge_srv_user._uid }}'
+    group: '{{ _deluge_srv_group._gid }}'
     mode: '0600'
 
 - name: 'Config | set web.conf'
   ansible.builtin.template:
     src: 'web.conf.j2'
-    dest: '{{ _deluge_srv_config_dir.role_config_dir ~ "web.conf" }}'
-    owner: '{{ _deluge_srv_user.role_uid }}'
-    group: '{{ _deluge_srv_group.role_gid }}'
+    dest: '{{ _deluge_srv_config_dir._config_dir ~ "web.conf" }}'
+    owner: '{{ _deluge_srv_user._uid }}'
+    group: '{{ _deluge_srv_group._gid }}'
     mode: '0600'
 
 - name: 'Config | configure plugins'
@@ -156,7 +156,7 @@
             - >-
               /usr/bin/deluged -d
               --loglevel {{ _deluge_srv_log_level.raw }}
-              --config "{{ _deluge_srv_config_dir.role_config_dir }}"
+              --config "{{ _deluge_srv_config_dir._config_dir }}"
           restart: 'always'  # Always restart for periodic service restarts.
           runtime_max_sec: '{{
               "1d" if _deluge_srv_restart_daily_enable.raw else "infinity"
@@ -173,7 +173,7 @@
             - >-
               /usr/bin/deluge-web -d
               --loglevel {{ _deluge_srv_log_level.raw }}
-              --config "{{ _deluge_srv_config_dir.role_config_dir }}"
+              --config "{{ _deluge_srv_config_dir._config_dir }}"
           restart: 'always'  # Always restart for periodic service restarts.
           runtime_max_sec: '{{
               "1d" if _deluge_srv_restart_daily_enable.raw else "infinity"

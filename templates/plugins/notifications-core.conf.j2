@@ -19,10 +19,10 @@
 {% endif %}
     "smtp_tls": {{ _deluge_cfg_plugins_notifications.raw.smtp_tls | string | lower }},
     "smtp_user": "{{ _deluge_cfg_plugins_notifications.raw.smtp_user }}",
-{% if _deluge_cfg_plugins_notifications.role_subscriptions | length > 0 %}
+{% if _deluge_cfg_plugins_notifications._subscriptions | length > 0 %}
     "subscriptions": {
         "email": [
-{%   for subscription in _deluge_cfg_plugins_notifications.role_subscriptions %}
+{%   for subscription in _deluge_cfg_plugins_notifications._subscriptions %}
             "{{ subscription }}"{% if not loop.last %},{% endif %}
 
 {%   endfor %}

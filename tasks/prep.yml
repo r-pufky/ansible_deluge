@@ -67,16 +67,11 @@
 
 - name: 'Prep | parse system user UID/GID'
   ansible.builtin.set_fact:
-    _deluge_uid: '{{ _deluge_srv_user_query.uid }}'
-    _deluge_gid: '{{ _deluge_srv_user_query.group }}'
-
-- name: 'Prep | parse system user UID/GID'
-  ansible.builtin.set_fact:
     _deluge_srv_user: '{{
         _deluge_srv_user |
-        combine({"role_uid": _deluge_srv_user_query.uid})
+        combine({"_uid": _deluge_srv_user_query.uid})
       }}'
     _deluge_srv_group: '{{
         _deluge_srv_group |
-        combine({"role_gid": _deluge_srv_user_query.group})
+        combine({"_gid": _deluge_srv_user_query.group})
       }}'
