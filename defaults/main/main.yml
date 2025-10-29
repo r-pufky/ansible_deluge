@@ -107,7 +107,7 @@ deluge_srv_media_perms_folder: '0750'
 #
 #   ansible-playbook site.yml
 #       --tags Deluge
-#       -e 'deluge_srv_media_set_perms_file_enable=true'
+#       -e '{"deluge_srv_media_set_perms_file_enable": true}'
 #
 # Default: False.
 deluge_srv_media_set_perms_file_enable: false
