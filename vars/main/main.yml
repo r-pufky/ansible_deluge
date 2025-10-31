@@ -2,23 +2,19 @@
 ###############################################################################
 # Deluge Role Options
 ###############################################################################
+# Use debian package for installation.
 #
 # Updates:
-# * New MAJOR, MINOR releases should hard branch at Debian version before
-#   starting (e.g. 13.0.x branch).
-# * Package OS version is irrelevant (tied to Debian version).
-# * Validated package version tracked in role variable.
-# * Keep a separate change log as changes are made, you will not remember all
-#   of them.
-# * Use debian docs to validate package/process changes. Reference source docs
-#   if needed.
+# * Branch for new Debian releases.
+# * KEEP a separate change log as changes are made.
+# * Use debian docs to validate package/process changes.
+#   * Reference source deluge docs if needed.
 # * Update role defaults (includes updating defaults, tasks):
 #   * Use configuration docs to add new variables.
-#   * Use defaults/ to remove any changed/deprecated variables.
+#   * Use defaults to remove any changed/deprecated variables.
 # * Update tests for any changes.
-# * Standard role validation testing (yamllint, ansible-lint, todo, noqa).
-# * Tag with MAJOR.MINOR.PATCH[ROLE] version, with PATCH representing role
-#   change - e.g. Debian: 12.x.x -> Role: 12.0.1  (1 role release).
+# * Standard role validation testing (yamllint, ansible-lint, to-do, no-qa).
+# * Tag with OS-APP-ROLE version.
 #
 # Reference:
 # * https://delugecom.github.io/#debian-repository
@@ -34,14 +30,14 @@ deluge_role_validate_version: '2.2.0'
 ###############################################################################
 
 deluge_role_packages:
-  - 'deluged'  # daemon (required).
+  - 'deluged'  # Daemon (required).
   - 'deluge-console'  # CLI interface (required).
   - 'deluge-web'  # WebUI (required).
   - 'rsync'  # ansible.builtin.synchronize.
-  - 'unrar'  # requires: contrib, non-free.
-  - 'unzip'
-  - '7zip'  # provides: 7zz.
-  - 'p7zip-full'  # provides: 7za.
+  - 'unrar'  # Requires: contrib, non-free.
+  - 'unzip'  # Provides: zip.
+  - '7zip'  # Provides: 7zz.
+  - 'p7zip-full'  # Provides: 7za.
 
 # Debian APT sources to use if package install fails.
 deluge_role_apt_debian_all:
