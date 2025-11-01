@@ -2,13 +2,13 @@
 ###############################################################################
 # Deluge Role Options
 ###############################################################################
-# Use debian package for installation.
+# Use Debian package for installation.
 #
 # Updates:
 # * Branch for new Debian releases.
 # * KEEP a separate change log as changes are made.
-# * Use debian docs to validate package/process changes.
-#   * Reference source deluge docs if needed.
+# * Use Debian docs to validate package/process changes.
+#   * Reference source docs if needed.
 # * Update role defaults (includes updating defaults, tasks):
 #   * Use configuration docs to add new variables.
 #   * Use defaults to remove any changed/deprecated variables.

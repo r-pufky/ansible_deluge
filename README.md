@@ -14,7 +14,7 @@ All ports and protocols have been defined for the role.
 
 ## Dependencies
 **galaxy-ng** roles cannot be used independently. Part of
-[r_pufky.srv](https://github.com/r-pufky/ansible_collection_srv) collection.
+[r_pufky.arr](https://github.com/r-pufky/ansible_collection_arr) collection.
 
 ## Example Playbook
 Read defaults documentation. Integrated and external plugins are supported.
@@ -25,7 +25,7 @@ site.yml
   hosts: 'deluge.example.com'
   become: true
   roles:
-     - 'r_pufky.srv.deluge'
+     - 'r_pufky.arr.deluge'
   vars:
     deluge_cfg_web_pwd_salt: '{{ vault_deluge_salt }}'
     deluge_cfg_web_pwd_sha1: '{{ vault_deluge_sha1 }}'
@@ -74,9 +74,9 @@ Release format: **{OS}-{SERVICE}-{ROLE}**
 Each type inherits the versioning system used; defaulting to schematic
 versioning.
 
-`12.0.0-2.0.3-1.0.0`
+`12-2.0.3-1.0.0`
 
-* 12.0.0 - Debian 12 (bookworm).
+* 12 - Debian 12 (bookworm).
 * 2.0.3 - Service/app version.
 * 1.0.0 - Role version.
 
