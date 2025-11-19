@@ -19,6 +19,8 @@ All ports and protocols have been defined for the role.
 ## Example Playbook
 Read defaults documentation. Integrated and external plugins are supported.
 
+[Additional documentation](http://r-pufky.github.io/r-pufky/docs/arr/deluge).
+
 site.yml
 ``` yaml
 - name: 'Deluge server'
