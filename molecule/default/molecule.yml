@@ -27,37 +27,32 @@ provisioner:
     ssh_connection:
       pipelining: false
   inventory:
-    host_vars:
-      deluge-debian-13-user_data:
-        deluge_srv_user_data_manage_enable: true
+    group_vars:
+      all:
+        deluge_flg_config: true
+        deluge_flg_perms: true
+        deluge_cfg_dir: '{{
+            lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
+            "/files/default"
+          }}'
 platforms:
-  - name: 'deluge-debian-13-default'
+  - name: 'deluge-default'
     image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
     command: '/lib/systemd/systemd'
-    pre_build_image: true
     published_ports:
       - '8112:8112/tcp'
-  - name: 'deluge-debian-13-user_data'
-    image: 'ghcr.io/hifis-net/debian-systemd:13'
-    systemd: 'always'
-    volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    command: '/lib/systemd/systemd'
     pre_build_image: true
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
     - 'destroy'
     - 'syntax'
     - 'create'
+    - 'prepare'
     - 'converge'
     - 'verify'
     - 'destroy'

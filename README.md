@@ -1,91 +1,88 @@
 # Deluge
 Deluge bittorrent client.
 
-## Requirements
-[supported platforms](https://github.com/r-pufky/ansible_deluge/blob/main/meta/main.yml)
+## [Requirements][i]
+Requires [r_pufky.arr][g] galaxy-ng collection. See
+[reference documentation][h] for troubleshooting and config variables.
+
+Install size: ~13MB
+
+Use absolute paths for directories in core.conf. Default is
+**/var/opt/deluge**.
 
 ## Role Variables
-[defaults](https://github.com/r-pufky/ansible_deluge/tree/main/defaults/main)
+Detailed variable use documented in defaults. See usage for role operation.
 
-### Ports
-All ports and protocols have been defined for the role.
+* [defaults][j] - User configurable options.
 
-[defaults/ports.yml](https://github.com/r-pufky/ansible_deluge/blob/main/defaults/main/ports.yml)
+* [ports][k] - Ports are **not** managed (defined for external use).
 
-## Dependencies
-**galaxy-ng** roles cannot be used independently. Part of
-[r_pufky.arr](https://github.com/r-pufky/ansible_collection_arr) collection.
+## Usage
+> NOTE:
+> Deluge will silently fail parsing configuration files and continue
+> starting - leading to a partially configured state.
+>
+> May be expressed as 'working' but not all set options configured or work;
+> these will all occur after the parsing error. This applies to all configs.
+>
+> Debugging requires working backwards in the config until the errors are
+> found.
 
-## Example Playbook
-Read defaults documentation. Integrated and external plugins are supported.
+### Feature Flags
+Tasks are gated by feature flags and executed in the following order.
 
-[Additional documentation](http://r-pufky.github.io/r-pufky/docs/arr/deluge).
+  Step | Flag                   | Notes
+ ------|------------------------|-------
+  1    | deluge_flg_apt_sources | Force required APT sources.
+  2    | deluge_flg_install     | Install deluge.
+  3    | deluge_flg_config      | Deploy configuration files.
+  4    | deluge_flg_perms       | Set permissions based on core.conf.
 
-site.yml
+### Example Playbooks
+
+#### New Deployments
+[A minimal config][m] will be deployed if no configuration is specified. This
+will deploy a working Deluge install.
+
 ``` yaml
-- name: 'Deluge server'
-  hosts: 'deluge.example.com'
-  become: true
-  roles:
-     - 'r_pufky.arr.deluge'
+# Main directory: /var/opt/deluge.
+- name: 'Deluge default install.'
+  ansible.builtin.include_role:
+    name: 'r_pufky.arr.deluge'
+```
+
+#### Existing Deployments
+Configuration directory deployed as templates, allowing for vault use of
+sensitive information. File permissions can be set based on the configured
+directories in **core.conf** to ensure the service can manage the files.
+
+``` yaml
+- name: 'Set custom config, and ensure file permissions set.'
+  ansible.builtin.include_role:
+    name: 'r_pufky.arr.deluge'
   vars:
-    deluge_cfg_web_pwd_salt: '{{ vault_deluge_salt }}'
-    deluge_cfg_web_pwd_sha1: '{{ vault_deluge_sha1 }}'
-    deluge_cfg_core_enabled_plugins:
-      - 'AutoAdd'
-      - 'Blocklist'
-      - 'Extractor'
-      - 'Label'
-      - 'Scheduler'
-      - 'Toggle'
-    deluge_cfg_plugins_auto_add:
-      - id: 1
-        abs_path: '/data/downloads'
-        enabled: true
-    deluge_cfg_plugins_blocklist:
-      url: 'http://example.com/blocklist'
-      load_on_start: true
-      whitelisted:
-        - '172.31.234.32'
-    deluge_cfg_plugins_extractor:
-      extract_path: '/tmp'
-      use_name_folder: true
-    deluge_cfg_plugins_label:
-      - name: 'isos'
-        apply_max: true
-        auto_add: true
-        auto_add_trackers:
-          - 'os'
-        prioritize_first_last: true
-    deluge_cfg_plugins_scheduler:
-      mon: [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0]
-      low_active: -1
+    deluge_flg_config: true
+    deluge_flg_perms: true
+    deluge_cfg_dir: 'host_vars/deluge.example.com/config'
 ```
 
 ## Development
-Configure [environment](https://r-pufky.github.io/ansible_collection_docs/ansible/environment)
+Configure [environment][a].
 
-Run all unit tests:
 ``` bash
+# Run all tests.
 molecule test --all
 ```
 
-### Releases
-Release format: **{OS}-{SERVICE}-{ROLE}**
+### [Releases][b]
 
-Each type inherits the versioning system used; defaulting to schematic
-versioning.
-
-`12-2.0.3-1.0.0`
-
-* 12 - Debian 12 (bookworm).
-* 2.0.3 - Service/app version.
-* 1.0.0 - Role version.
-
-Releases are branched on Debian releases:
-
-* **[13.x.x](https://github.com/r-pufky/ansible_deluge)**: 13 Trixie.
-* **[12.x.x](https://github.com/r-pufky/ansible_deluge/tree/12.x)**: 12 Bookworm.
+ Release | Debian | Ansible | Notes
+---------|--------|---------|-------
+ 5.x.x   | 13     | 2.20    | Ansible 2.20, feature flags, and semantic versioning.
+ 4.x.x   | 12     | 2.18    | Migrate to r_pufky.arr.
+ 3.x.x   | 13     | 2.18    | Migrate to Debian Trixie.
+ 2.x.x   | 12     | 2.18    | Use libraries for common operations.
+ 1.x.x   | 12     | 2.11    | Migration from private repository.
 
 ## Issues
 Create a bug and provide as much information as possible.
@@ -93,9 +90,22 @@ Create a bug and provide as much information as possible.
 Associate pull requests with a submitted bug.
 
 ## License
-[AGPL-3.0 License](https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0)
- [(direct link)](https://github.com/r-pufky/ansible_deluge/blob/main/LICENSE)
+[AGPL-3.0 License][c] | [direct link][f]
 
 ## Author Information
-PGP Fingerprint: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9](https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9)
-| [github gist](https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22)
+PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
+
+
+[a]: https://r-pufky.github.io/ansible_docs
+[b]: https://semver.org/spec/v2.0.0
+[c]: https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0
+[d]: https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9
+[e]: https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22
+
+[f]: https://github.com/r-pufky/ansible_deluge/blob/main/LICENSE
+[g]: https://github.com/r-pufky/ansible_collection_arr
+[h]: https://r-pufky.github.io/docs/arr/deluge
+[i]: https://github.com/r-pufky/ansible_deluge/blob/main/meta/main.yml
+[j]: https://github.com/r-pufky/ansible_deluge/tree/main/defaults/main/main.yml
+[k]: https://github.com/r-pufky/ansible_deluge/blob/main/defaults/main/ports.yml
+[m]: https://github.com/r-pufky/ansible_deluge/blob/main/files/default/core.conf

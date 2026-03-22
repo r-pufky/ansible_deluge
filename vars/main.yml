@@ -5,42 +5,48 @@
 # Use Debian package for installation.
 #
 # Updates:
-# * Branch for new Debian releases.
+# * Version is determined by build version on release page (see all updates).
 # * KEEP a separate change log as changes are made.
-# * Use Debian docs to validate package/process changes.
-#   * Reference source docs if needed.
-# * Update role defaults (includes updating defaults, tasks):
-#   * Use configuration docs to add new variables.
-#   * Use defaults to remove any changed/deprecated variables.
+# * Use bare-metal docs to validate package/process changes.
+# * Update defaults.
 # * Update tests for any changes.
-# * Standard role validation testing (yamllint, ansible-lint, to-do, no-qa).
-# * Tag with OS-APP-ROLE version.
+# * Standard validation testing (yamllint, ansible-lint, to-do, no-qa).
 #
 # Reference:
 # * https://delugecom.github.io/#debian-repository
 # * https://deluge.com
 
-# Last time Deluge options were validated against a default configuration.
-deluge_role_validate_date: '2025-08-24'
-deluge_role_validate_release: 'trixie'
-deluge_role_validate_version: '2.2.0'
+deluge___release: "{{ {} | r_pufky.data.v3(
+
+    _date='2026-03-22',
+    _debian='trixie',
+    _app='2.2.0',
+  ) }}"
+
+deluge___app: "{{ {} | r_pufky.data.v3(
+
+    _etc_dir='/etc/opt/deluge',
+    _var_dir='/var/opt/deluge',
+    _cfg='/var/opt/deluge/config/core.conf',
+    _cfg_dir='/var/opt/deluge/config',
+    _srv_drop_in='/etc/systemd/system/deluged.service.d/override.conf',
+    _web_drop_in='/etc/systemd/system/deluge-web.service.d/override.conf',
+  ) }}"
 
 ###############################################################################
 # APT Packages
 ###############################################################################
 
-deluge_role_packages:
+deluge___packages:
   - 'deluged'  # Daemon (required).
   - 'deluge-console'  # CLI interface (required).
   - 'deluge-web'  # WebUI (required).
-  - 'rsync'  # ansible.builtin.synchronize.
   - 'unrar'  # Requires: contrib, non-free.
   - 'unzip'  # Provides: zip.
   - '7zip'  # Provides: 7zz.
   - 'p7zip-full'  # Provides: 7za.
 
-# Debian APT sources to use if package install fails.
-deluge_role_apt_debian_all:
+deluge___apt_debian_all:
   - name: 'debian'
     types:
       - 'deb'
@@ -74,11 +80,11 @@ deluge_role_apt_debian_all:
 # Default Deluge User/Group
 ###############################################################################
 
-deluge_role_group:
+deluge___group:
   name: 'media'
   gid: 5555
 
-deluge_role_user:
+deluge___user:
   name: 'media'
   group: 'media'
   uid: 5555

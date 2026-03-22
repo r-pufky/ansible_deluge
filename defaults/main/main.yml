@@ -1,18 +1,56 @@
 ---
 ###############################################################################
-# Deluge Service Configuration
+# Feature Flags
 ###############################################################################
-# Install size: ~13MB
-#     Deluge: ~4.3MB.
-#   Packages: ~8.7MB.
 
-# Deluge service config location.
+# 1. Automatically add Debian APT sources?
 #
-# Alternate default location to ensure deluge_user, deluge_group permissions do
-# NOT interfere with APT package default user.
+# Additional APT components (contrib, non-free, non-free-firmware) are required
+# for deluge installation. Original sources.list is disabled.
 #
-# Default: '/opt/deluge'.
-deluge_srv_config_dir: '/opt/deluge'
+# Alternatively all sources must be manually added outside of this role.
+#
+# Default: True.
+deluge_flg_apt_sources: true
+
+# 2. Install application?
+#
+# Creates required default directories, users, install packages, download
+# software, set minimal deluge.conf if not specified, update and start
+# services.
+#
+# Default: True.
+deluge_flg_install: true
+
+# 3. Set configuration files?
+#
+# Files set using deluge_cfg_*. Stops service and deploys user configuration,
+# updates and starts services.
+#
+# Default: False.
+deluge_flg_config: false
+
+# 4. Set permissions?
+#
+# Recursively create & set permissions for directories in core.conf:
+# * download_location
+# * move_completed_path
+# * plugins_location
+# * torrentfiles_location
+#
+# Special Case:
+# * Always use absolute paths.
+# * Must be modifiable by root user (e.g. NFS squashed mounts may fail).
+# * Locations in /var/opt/deluge will always be set to specified service user.
+#
+# Disable to managed these directories outside of this role.
+#
+# Default: False.
+deluge_flg_perms: false
+
+###############################################################################
+# Service
+###############################################################################
 
 # Deluge Logging level.
 #
@@ -29,88 +67,42 @@ deluge_srv_config_dir: '/opt/deluge'
 # * https://deluge-torrent.org/troubleshooting/#enable-deluge-logging
 deluge_srv_log_level: 'error'
 
-# Automatically add Debian APT sources if required?
-#
-# Additional APT components (contrib, non-free) are required for Deluge
-# installation. If package install fails, automatically add APT configuration
-# enabling all components to ensure role is applied successfully.
-#
-# Alternatively contrib, non-free must be manually added outside of this role.
-#
-# Default: True.
-deluge_srv_auto_add_apt_sources_enable: true
-
-# Automatically restart Deluge daily?
-#
-# Set RuntimeMaxSec for systemd units; which may result in unclean restarts.
-#
-# Default: True.
-deluge_srv_restart_daily_enable: false
-
-###############################################################################
-# Deluge User
-###############################################################################
-
 # User that Deluge will run under.
 #
-# Enable deluge_srv_create_user if this account is not externally managed.
+# 'media' will automatically be created using vars/main.yml if required.
+# All other accounts are checked for existence.
 #
 # Default: 'media'.
 deluge_srv_user: 'media'
 
 # Group that Deluge will run under.
 #
-# Enable deluge_srv_create_user if this group is not externally managed.
+# 'media' will automatically be created using vars/main.yml if required.
+# All other accounts are checked for existence.
 #
 # Default: 'media'.
 deluge_srv_group: 'media'
 
-# Create deluge_srv_user, deluge_srv_group if not detected?
-#
-# Applied via r_pufky.deb.users, see vars/main.yml for default user attributes.
-#
-# Default: True.
-deluge_srv_create_user: true
+###############################################################################
+# Config
+###############################################################################
 
-# Enable user management of data/media files?
+# Deluge configuration to set.
 #
-# Use deluge_srv_user to execute data/media management commands. Role
-# applies media permissions using 'root' by default. For mounted data locations
-# (NFS with squashed mounts, mapped container mounts, etc) the local root user
-# will not have sufficient privileges to modify these files.
+# Ansible controller path to source configuration files (treated as a jinja2
+# templates allowing for ansible variable interpretation). Overwrites existing
+# config set in /var/opt/deluge/config. Files not sourced will be removed.
 #
-# Applies to:
-# * deluge_cfg_core_download_location
-# * deluge_cfg_core_move_completed_path
-# * deluge_cfg_core_torrentfiles_location
+# Use absolute paths. Paths will be parsed and directories automatically
+# created with correct permissions when deluge_flg_perms=true.
 #
-# Default: False.
-deluge_srv_user_data_manage_enable: false
-
-# Media folder permissions octal.
+# A minimally configured template that works with the role will be deployed if
+# no config is specified (see files/default). core.conf is required.
 #
-# Media folders affected by deluge_srv_user_data_manage_enable will always be
-# recursively set using deluge_srv_media_perms_folder, deluge_srv_user, and
-# deluge_srv_group.
+# deluge_cfg_dir: 'host_vars/deluge.example.com/config'
 #
-# Default: '0750'.
-deluge_srv_media_perms_folder: '0750'
-
-# Enable setting of media file permissions?
+# Default: '' (use minimally configured default).
 #
-# Set file permissions affected by deluge_srv_user_data_manage_enable using
-# deluge_srv_media_perms_file, deluge_srv_user, and deluge_srv_group. Large
-# sets of files may be slow to set permissions.
-#
-# Useful when first configuring to ensure service has access to all specified
-# media locations. Suggest applying with extra options:
-#
-#   ansible-playbook site.yml
-#       --tags Deluge
-#       -e '{"deluge_srv_media_set_perms_file_enable": true}'
-#
-# Default: False.
-deluge_srv_media_set_perms_file_enable: false
-
-# Media file permissions octal. Default: '0640'.
-deluge_srv_media_perms_file: '0640'
+# Reference:
+# * https://nzbget.com/documentation
+deluge_cfg_dir: ''

@@ -1,77 +1,155 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
-# Deluge Prep
+# Pre Execution Tasks
 ###############################################################################
-# Deluge install from deb packages are categorically broken. There are no
-# debconf options.
-#
-# Prepare system for install by creating user/group for service, add drop-in
-# for user/group service override, and sanitize (standardize with default
-# values if not set) Deluge configuration.
-#
-# Debian install places services in /var/{lib,log}/deluged owned by
-# debian-deluged. Create /var/{lib,log}/deluge with configured user and
-# override services for those users and new location. Leave package locations
-# untouched to ensure package upgrades work properly.
-#
-# Do not remove the default (debian-deluged) user as this will put APT in a
-# broken state. Instead ensure the account is fully locked.
-#
-# The default password is 'deluge' and is hardcoded if a password is not set
-# in web.conf.
-#
-# For updates search the source code for undocumented variable usage and
-# changes.
+# Only use data annotations in role after merging role, defaults, runtime data.
+# Service may not exist if first install.
 #
 # Reference:
-# * https://deluge-torrent.org/
-# * https://deluge.readthedocs.io/en/latest/how-to/systemd-service.html
-# * https://archlinuxarm.org/forum/viewtopic.php?f=30&t=7729
-# * https://linuxconfig.org/set-up-a-headless-deluge-server-on-linux
-# * https://serverfault.com/questions/22414/how-can-i-run-debian-stable-but-install-some-packages-from-testing
-# yamllint enable rule:line-length
+# * https://deluge-torrent.org
 
-- name: 'Prep | assert SSL requirements'
-  when: _deluge_cfg_web_https.raw
+- name: 'Prep | fact | record start time'
+  ansible.builtin.set_fact:
+    deluge__srv: "{{ deluge___release | r_pufky.data.v3(
+
+        _start=now(utc=True, fmt='%Y-%m-%dT%H%M%S'),
+        _log_level=deluge_srv_log_level,
+        _user=deluge_srv_user,
+        _group=deluge_srv_group,
+      ) }}"
+    deluge__cfg: "{{ {} | r_pufky.data.v3(
+
+        _dir=deluge_cfg_dir,
+      ) }}"
+
+- name: 'Prep | assert | service user is not deluge'
   ansible.builtin.assert:
     quiet: true
     that:
-      - _deluge_cfg_web_ssl_cert_path.raw | length > 0
-      - _deluge_cfg_web_ssl_key_path.raw | length > 0
+      - deluge__srv._user != 'deluge'
+      - deluge__srv._group != 'deluge'
     fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │                     SSL Requirements NOT met.                     │
-      │                                                                   │
-      ├───────────────────────────────────────────────────────────────────╯
-      │ deluge_cfg_web_https=true requires:
-      │ * deluge_cfg_web_ssl_cert_path set
-      │ * deluge_cfg_web_ssl_key_path set
 
-- name: 'Prep | manage users'
-  when: _deluge_srv_create_user.raw
-  ansible.builtin.include_role:
-    name: 'r_pufky.deb.users'
-    tasks_from: 'role_account_add.yml'
-  vars:
-    users_role_user: '{{ deluge_role_user }}'
-    users_role_group: '{{ deluge_role_group }}'
+      ✘ deluge service user/group must NOT be 'deluge'.
+      Create a custom user before executing this role or use 'media' to
+      automatically create a service user for deluge.
 
-- name: 'Prep | enumerate system user {{ _deluge_srv_user.raw }}'
+      deluge_srv_user: {{ deluge__srv._user }}
+      deluge_srv_group: {{ deluge__srv._group }}
+
+- name: 'Prep | assert | config enabled and source defined'
+  when: deluge_flg_config
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - deluge__cfg._dir | length > 0
+    fail_msg: |
+
+      ✘ Config source not set.
+      Config source enabled but no config source defined.
+
+      deluge_flg_config: {{ deluge_flg_config }}
+      deluge_cfg_dir: {{ deluge__cfg._dir }}
+
+- name: '{{ "Prep | account | query user " ~ deluge__srv._user }}'
+  ansible.builtin.command: '{{ "id " ~ deluge__srv._user }}'
+  failed_when: false
+  register: deluge__cfg_check
+  changed_when: deluge__cfg_check.rc > 0
+
+- name: '{{ "Prep | account | query group " ~ deluge__srv._group }}'
+  ansible.builtin.command: '{{ "groups " ~ deluge__srv._group }}'
+  failed_when: false
+  register: deluge__group_check
+  changed_when: deluge__group_check.rc > 0
+
+- name: '{{ "Prep | account | create group " ~ deluge__srv._group }}'
+  when: deluge__group_check.rc != 0
+  ansible.builtin.group:
+    gid: '{{ deluge___group.gid }}'
+    name: '{{ deluge___group.name }}'
+    state: 'present'
+
+- name: '{{ "Prep | account | create user " ~ deluge__srv._user }}'
+  when: deluge__cfg_check.rc != 0
   ansible.builtin.user:
-    name: '{{ _deluge_srv_user.raw }}'
+    name: '{{ deluge___user.name }}'
+    group: '{{ deluge___user.group }}'
+    uid: '{{ deluge___user.uid }}'
+    shell: '{{ deluge___user.shell }}'
+    home: '{{ deluge___user.home }}'
+    create_home: '{{ deluge___user.create_home }}'
+    password: '{{ deluge___user.password }}'
+    password_lock: '{{ deluge___user.password_lock }}'
+    update_password: '{{ deluge___user.update_password }}'
+    expires: '{{ deluge___user.expires }}'
+    system: '{{ deluge___user.system }}'
+
+# Pre-existing users may have a different UID/GID/Home.
+- name: '{{ "Prep | account | enumerate " ~ deluge__srv._user }}'
+  ansible.builtin.user:
+    name: '{{ deluge__srv._user }}'
   check_mode: true
   changed_when: false
-  register: _deluge_srv_user_query
+  register: deluge__cfg_query
 
-- name: 'Prep | parse system user UID/GID'
+- name: 'Prep | fact | parse service UID/GID'
   ansible.builtin.set_fact:
-    _deluge_srv_user: '{{
-        _deluge_srv_user |
-        combine({"_uid": _deluge_srv_user_query.uid})
-      }}'
-    _deluge_srv_group: '{{
-        _deluge_srv_group |
-        combine({"_gid": _deluge_srv_user_query.group})
-      }}'
+    deluge__cfg: "{{ deluge__cfg | r_pufky.data.v3(
+
+        _uid=deluge__cfg_query.uid,
+        _gid=deluge__cfg_query.group,
+      ) }}"
+
+# Render configuration locally and resolve configured service paths.
+- name: 'Prep | fact | resolve deluge.conf'
+  ansible.builtin.set_fact:
+    deluge__srv: "{{ deluge__srv | r_pufky.data.v3(
+
+        _tmpl_cfg=lookup(
+          'ansible.builtin.template',
+          deluge__cfg._dir ~ '/core.conf'
+          if deluge__cfg._dir | length > 0 else
+          'files/default/core.conf'
+        ),
+      ) }}"
+
+- name: 'Prep | fact | parse directories'
+  ansible.builtin.set_fact:
+    deluge__srv: "{{ deluge__srv | r_pufky.data.v3(
+
+        _cfg_download_location=(
+          deluge__srv._tmpl_cfg |
+          regex_search(
+              '\"download_location\":\\s*\"(.*?)\"', '\\1', multiline=True
+            ) |
+          default([''], true) | first
+        ),
+        _cfg_move_completed_path=(
+          deluge__srv._tmpl_cfg |
+          regex_search(
+              '\"move_completed_path\":\\s*\"(.*?)\"', '\\1', multiline=True
+            ) |
+          default([''], true) | first
+        ),
+        _cfg_plugins_location=(
+          deluge__srv._tmpl_cfg |
+          regex_search(
+              '\"plugins_location\":\\s*\"(.*?)\"', '\\1', multiline=True
+            ) |
+          default([''], true) | first
+        ),
+        _cfg_torrentfiles_location=(
+          deluge__srv._tmpl_cfg |
+          regex_search(
+              '\"torrentfiles_location\":\\s*\"(.*?)\"', '\\1', multiline=True
+            ) |
+          default([''], true) | first
+        ),
+      ) }}"
+
+- name: 'Prep | systemd | stop deluge.service'
+  ansible.builtin.systemd:
+    name: 'deluge.service'
+    state: 'stopped'
+  failed_when: false

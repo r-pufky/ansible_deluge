@@ -2,11 +2,8 @@
 ###############################################################################
 # Configure Deluge Install
 ###############################################################################
-# Run Deluge under specific role user, using systemd logging instead of log
-# files; add ability to restart the service daily.
-#
-# Do not remove the default (debian-deluged) user as this will put APT in a
-# broken state. Instead ensure the account is fully locked.
+# Filetree returns a dict (instead of a list of dict) for one element. Use
+# query to guarantee a list result.
 #
 # NOTE
 # > Deluge will silently fail parsing configuration files and continue
@@ -18,166 +15,36 @@
 # > Debugging requires working backwards in the config until the errors are
 # > found.
 #
-# New Deluge options must be manually added to the template and role
-# default templates.
-#
 # Reference:
-# * https://deluge-torrent.org/
 # * https://git.deluge-torrent.org/deluge
+# * https://deluge.readthedocs.io/en/latest
 
-- name: 'Config | lock Deluge package user'
-  when: _deluge_srv_user.raw != 'debian-deluged'
-  ansible.builtin.user:
-    name: 'debian-deluged'
-    password: '!'
-    password_lock: true
-
-# Permissions determined from vanilla service start
-- name: 'Config | manage config directories'
-  ansible.builtin.file:
-    path: '{{ _deluge_srv_config_dir._config_dir ~ item.path }}'
-    owner: '{{ _deluge_srv_user._uid }}'
-    group: '{{ _deluge_srv_group._gid }}'
-    mode: '{{ item.mode }}'
-    recurse: true
-    state: 'directory'
-  become: true
-  changed_when: false  # https://github.com/ansible/ansible/issues/32636
-  loop:
-    - path: 'icons'
-      mode: '0750'
-    - path: 'plugins'
-      mode: '0770'
-    - path: 'ssl'
-      mode: '0770'
-    - path: 'state'
-      mode: '0770'
-    - path: 'scripts'
-      mode: '0770'
+- name: 'Config | filetree | deploy managed files'
+  ansible.builtin.template:
+    src: '{{ item.src }}'
+    dest: '{{ deluge___app._cfg_dir ~ "/" ~ item.path }}'
+    owner: '{{ deluge__srv._user }}'
+    group: '{{ deluge__srv._group }}'
+    mode: '0640'
+  loop: '{{ query("community.general.filetree", deluge__cfg._dir) }}'
   loop_control:
     label: '{{ item.path }}'
+  when: item.state == 'file'
+  register: deluge__local
 
-- name: 'Config | manage media directories'
+- name: 'Config | filesystem | query remote files'
+  ansible.builtin.find:
+    paths: '{{ deluge___app._cfg_dir }}'
+    file_type: 'file'
+    recurse: true
+  register: deluge__remote
+
+- name: 'Config | filesystem | remove unmanaged files'
   ansible.builtin.file:
-    path: '{{ item }}'
-    owner: '{{ _deluge_srv_user._uid }}'
-    group: '{{ _deluge_srv_group._gid }}'
-    mode: '{{ _deluge_srv_media_perms_folder.raw }}'
-    state: 'directory'
-  become: true
-  become_user: '{{
-      _deluge_srv_user.raw
-      if _deluge_srv_user_data_manage_enable.raw else
-      "root"
-    }}'
-  loop:
-    - '{{ _deluge_cfg_core_download_location.raw }}'
-    - '{{ _deluge_cfg_core_move_completed_path.raw }}'
-    - '{{ _deluge_cfg_core_torrentfiles_location.raw }}'
-
-# yamllint disable rule:line-length
-- name: 'Config | set media file permissions'
-  when: _deluge_srv_media_set_perms_file_enable.raw
-  ansible.builtin.shell: >-
-    find '{{ item }}'
-    -type f
-    -exec chmod {{ _deluge_srv_media_perms_file.raw }} {};
-      chown {{ _deluge_srv_user._uid }}:{{ _deluge_srv_group._gid }} {} \;
-  changed_when: false
-  become: true
-  become_user: '{{
-      _deluge_srv_user.raw
-      if _deluge_srv_user_data_manage_enable.raw else
-      "root"
-    }}'
-  loop:
-    - '{{ _deluge_cfg_core_download_location.raw }}'
-    - '{{ _deluge_cfg_core_move_completed_path.raw }}'
-    - '{{ _deluge_cfg_core_torrentfiles_location.raw }}'
-
-- name: 'Config | set daemon HTTPS certs'
-  when: _deluge_cfg_web_https.raw
-  ansible.builtin.copy:
-    src: '{{ item.raw }}'
-    dest: '{{ item._dest }}'
-    owner: '{{ _deluge_srv_user._uid }}'
-    group: '{{ _deluge_srv_group._gid }}'
-    mode: '0600'
-    force: true
-  loop:
-    - '{{ _deluge_cfg_web_ssl_cert_path }}'
-    - '{{ _deluge_cfg_web_ssl_key_path }}'
-  loop_control:
-    label: '{{ item.raw }}'
-
-# Deluged will always re-create default daemon.* on startup; remove custom.
-- name: 'Config | remove daemon HTTPS certs'
-  when: not _deluge_cfg_web_https.raw
-  ansible.builtin.file:
-    dest: '{{ item._dest }}'
+    path: '{{ item.path }}'
     state: 'absent'
-  loop:
-    - '{{ _deluge_cfg_web_ssl_cert_path }}'
-    - '{{ _deluge_cfg_web_ssl_key_path }}'
+  loop: '{{ deluge__remote.files }}'
   loop_control:
-    label: '{{ item._dest }}'
-
-- name: 'Config | set core.conf'
-  ansible.builtin.template:
-    src: 'core.conf.j2'
-    dest: '{{ _deluge_srv_config_dir._config_dir ~ "core.conf" }}'
-    owner: '{{ _deluge_srv_user._uid }}'
-    group: '{{ _deluge_srv_group._gid }}'
-    mode: '0600'
-
-- name: 'Config | set web.conf'
-  ansible.builtin.template:
-    src: 'web.conf.j2'
-    dest: '{{ _deluge_srv_config_dir._config_dir ~ "web.conf" }}'
-    owner: '{{ _deluge_srv_user._uid }}'
-    group: '{{ _deluge_srv_group._gid }}'
-    mode: '0600'
-
-- name: 'Config | configure plugins'
-  ansible.builtin.include_tasks: 'plugins.yml'
-
-- name: 'Config | set service drop-ins'
-  ansible.builtin.include_role:
-    name: 'r_pufky.deb.systemd'
-  vars:
-    systemd_daemon_reload_enable: true
-    systemd_services:
-      - name: 'deluged'
-        state: 'present'
-        drop_in: true
-        service:
-          exec_start:
-            - ''
-            - >-
-              /usr/bin/deluged -d
-              --loglevel {{ _deluge_srv_log_level.raw }}
-              --config "{{ _deluge_srv_config_dir._config_dir }}"
-          restart: 'always'  # Always restart for periodic service restarts.
-          runtime_max_sec: '{{
-              "1d" if _deluge_srv_restart_daily_enable.raw else "infinity"
-            }}'
-        exec:
-          user: '{{ _deluge_srv_user.raw }}'
-          group: '{{ _deluge_srv_group.raw }}'
-      - name: 'deluge-web'
-        state: 'present'
-        drop_in: true
-        service:
-          exec_start:
-            - ''
-            - >-
-              /usr/bin/deluge-web -d
-              --loglevel {{ _deluge_srv_log_level.raw }}
-              --config "{{ _deluge_srv_config_dir._config_dir }}"
-          restart: 'always'  # Always restart for periodic service restarts.
-          runtime_max_sec: '{{
-              "1d" if _deluge_srv_restart_daily_enable.raw else "infinity"
-            }}'
-        exec:
-          user: '{{ _deluge_srv_user.raw }}'
-          group: '{{ _deluge_srv_group.raw }}'
+    label: '{{ item.path }}'
+  when: >
+    item.path not in deluge__local.results | map(attribute='dest') | list

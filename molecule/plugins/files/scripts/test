@@ -1,5 +1,0 @@
-#!/bin/bash
-
-echo "test script for execute plugin commands"
-
-exit 0

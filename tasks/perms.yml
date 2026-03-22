@@ -1,0 +1,23 @@
+---
+###############################################################################
+# Permissions
+###############################################################################
+# Parse core.conf for configured directories and set permissions according to
+# the service user. Only parse absolute paths. Other files/paths are unmanaged.
+#
+# Use a single task for speed-up instead of a task per directory.
+
+# yamllint disable rule:line-length
+- name: 'Perms | cmd | set ownership and permissions'
+  ansible.builtin.shell: >-
+    mkdir -p {% for path in path_list %}"{{ path }}" {% endfor %} &&
+    chown -R {{ deluge__srv._user }}:{{ deluge__srv._group }} {% for path in path_list %}"{{ path }}" {% endfor %} &&
+    find {% for path in path_list %}"{{ path }}" {% endfor %} -type d -exec chmod 0750 {} \; &&
+    find {% for path in path_list %}"{{ path }}" {% endfor %} -type f -exec chmod 0640 {} \;
+  changed_when: false
+  vars:
+    path_list:
+      - '{{ deluge__srv._cfg_download_location }}'
+      - '{{ deluge__srv._cfg_move_completed_path }}'
+      - '{{ deluge__srv._cfg_plugins_location }}'
+      - '{{ deluge__srv._cfg_torrentfiles_location }}'

@@ -1,65 +1,56 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
 # Install Deluge Packages
 ###############################################################################
-# Deluge requires APT Debian components contrib, non-free to be enabled for all
-# dependencies to be installed.
+# Use custom service according to Linux FHS standards:
 #
-# Attempt to install packages. If failed, install Debian repository components
-# and re-run install if enabled.
+# Type    | Perms               | Path
+# --------|---------------------|-------
+# Runtime | 0750/0640 SRV:SRV   | /var/opt/deluge
+# Config  | 0640 SRV:SRV        | /etc/opt/deluge
+#
+# Installation notes:
+# * Package does not follow Debian standards (defaults, DEBCONF options).
+#     Resolution: Use overrides.conf only.
+# * Deluge requires APT Debian components contrib, non-free to be enabled for
+#   all dependencies to be installed.
+#     Resolution: Flag for explicitly disabling sources.
+# * Removing deluge user breaks APT package.
+#     Resolution: Lock deluge user and prevent use with role.
+# * Install places services in /var/lib/deluged owned by deluge. Changing the
+#   user/group for this location breaks package upgrades.
+#     Resolution: Create FHS standard locations and use service drop-ins.
+#
+# Reference:
+# * https://deluge.readthedocs.io/en/latest/how-to/systemd-service.html
+# * https://archlinuxarm.org/forum/viewtopic.php?f=30&t=7729
+# * https://linuxconfig.org/set-up-a-headless-deluge-server-on-linux
+# * https://serverfault.com/questions/22414/how-can-i-run-debian-stable-but-install-some-packages-from-testing
+# yamllint enable rule:line-length
 
-- name: 'Install'
-  block:
-    - name: 'Install | packages'
-      ansible.builtin.include_role:
-        name: 'r_pufky.deb.apt'
-      vars:
-        apt_packages:
-          - '{{ deluge_role_packages }}'
-        apt_package_update_cache: true
-  rescue:
-    - name: 'Install | APT SOURCE REQUIRED ⚠'
-      when: not _deluge_srv_auto_add_apt_sources_enable.raw
-      ansible.builtin.fail:
-        msg: |
-          ╭───────────────────────────────────────────────────────────────────╮
-          │                                                                   │
-          │             Required packages could not be installed.             │
-          │                                                                   │
-          ├───────────────────────────────────────────────────────────────────╯
-          │ Deluge requires APT Debian components:
-          │ * contrib
-          │ * non-free
-          │
-          │ Enable deluge_srv_auto_add_apt_sources_enable or manage APT
-          │ outside of this role.
+- name: 'Install | filesystem | set system directories'
+  ansible.builtin.file:
+    path: '{{ item }}'
+    owner: '{{ deluge__srv._user }}'
+    group: '{{ deluge__srv._group }}'
+    mode: '0755'
+    state: 'directory'
+  loop:
+    - '{{ deluge___app._etc_dir }}'
+    - '{{ deluge___app._cfg_dir }}'  # cfg_dir includes var_dir.
 
-    - name: 'Install | APT SOURCE REQUIRED ⚠'
-      when: not _deluge_srv_auto_add_apt_sources_enable.raw
-      ansible.builtin.fail:
-        msg: |
-          ╭───────────────────────────────────────────────────────────────────╮
-          │                                                                   │
-          │             Required packages could not be installed.             │
-          │                                                                   │
-          ├───────────────────────────────────────────────────────────────────╯
-          │ Deluge requires APT Debian components:
-          │ * contrib
-          │ * non-free
-          │
-          │ deluge_srv_auto_add_apt_sources_enable=true
-          │
-          │ Automatically adding required Debian components ...
-
-    - name: 'Install | packages (modify APT debian repository)'
-      when: _deluge_srv_auto_add_apt_sources_enable.raw
-      ansible.builtin.include_role:
-        name: 'r_pufky.deb.apt'
-      vars:
-        apt_packages:
-          - '{{ deluge_role_packages }}'
-        apt_sources: '{{ deluge_role_apt_debian_all }}'
-        apt_package_update_cache: true
+- name: 'Install | packages'
+  when: deluge_flg_apt_sources
+  ansible.builtin.include_role:
+    name: 'r_pufky.deb.apt'
+  vars:
+    apt_packages:
+      - '{{ deluge___packages }}'
+    apt_sources:
+      '{{ deluge___apt_debian_all if deluge_flg_apt_sources else [] }}'
+    apt_srv_sources_list_disable: true
+    apt_srv_package_update_cache: true
 
 - name: 'Install | stop services'
   ansible.builtin.systemd:
@@ -69,3 +60,48 @@
   loop:
     - 'deluged.service'
     - 'deluge-web.service'
+
+- name: 'Install | account | lock debian-deluged'
+  when: deluge__srv._user != 'debian-deluged'
+  ansible.builtin.user:
+    name: 'debian-deluged'
+    password: '!'
+    password_lock: true
+
+- name: '{{ "Install | filesystem | set minimal " ~ deluge___app._cfg }}'
+  when: deluge__cfg._dir | length == 0
+  ansible.builtin.template:
+    src: 'files/default/core.conf'
+    dest: '{{ deluge___app._cfg }}'
+    owner: '{{ deluge__srv._user }}'
+    group: '{{ deluge__srv._group }}'
+    mode: '0600'
+
+- name: 'Install | filesystem | set /etc/systemd/system'
+  ansible.builtin.file:
+    path: '{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'directory'
+  loop:
+    - '{{ deluge___app._srv_drop_in | dirname }}'
+    - '{{ deluge___app._web_drop_in | dirname }}'
+
+- name: '{{ "Install | filesystem | set " ~ deluge___app._srv_drop_in }}'
+  ansible.builtin.template:
+    src: 'systemd/deluged.override.conf.j2'
+    dest: '{{ deluge___app._srv_drop_in }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: deluge__srv_override
+
+- name: '{{ "Install | filesystem | set " ~ deluge___app._web_drop_in }}'
+  ansible.builtin.template:
+    src: 'systemd/deluge-web.override.conf.j2'
+    dest: '{{ deluge___app._web_drop_in }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: deluge__web_override
