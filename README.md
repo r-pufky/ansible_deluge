@@ -54,7 +54,8 @@ will deploy a working Deluge install.
 #### Existing Deployments
 Configuration directory deployed as templates, allowing for vault use of
 sensitive information. File permissions can be set based on the configured
-directories in **core.conf** to ensure the service can manage the files.
+directories in **core.conf** to ensure the service can manage the files. Files
+not present in the source config directory will be removed on the remote.
 
 ``` yaml
 - name: 'Set custom config, and ensure file permissions set.'

@@ -97,7 +97,7 @@ deluge_srv_group: 'media'
 # created with correct permissions when deluge_flg_perms=true.
 #
 # A minimally configured template that works with the role will be deployed if
-# no config is specified (see files/default). core.conf is required.
+# no config is specified (see files/default/core.conf).
 #
 # deluge_cfg_dir: 'host_vars/deluge.example.com/config'
 #

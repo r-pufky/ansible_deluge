@@ -19,7 +19,7 @@
       ) }}"
     deluge__cfg: "{{ {} | r_pufky.data.v3(
 
-        _dir=deluge_cfg_dir,
+        _dir=deluge_cfg_dir | regex_replace('\\/$', ''),
       ) }}"
 
 - name: 'Prep | assert | service user is not deluge'
