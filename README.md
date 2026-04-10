@@ -64,7 +64,7 @@ not present in the source config directory will be removed on the remote.
   vars:
     deluge_flg_config: true
     deluge_flg_perms: true
-    deluge_cfg_dir: 'host_vars/deluge.example.com/config'
+    deluge_cfg_d: 'host_vars/deluge.example.com/config'
 ```
 
 ## Development
@@ -109,4 +109,4 @@ PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
 [i]: https://github.com/r-pufky/ansible_deluge/blob/main/meta/main.yml
 [j]: https://github.com/r-pufky/ansible_deluge/tree/main/defaults/main/main.yml
 [k]: https://github.com/r-pufky/ansible_deluge/blob/main/defaults/main/ports.yml
-[m]: https://github.com/r-pufky/ansible_deluge/blob/main/files/default/core.conf
+[m]: https://github.com/r-pufky/ansible_deluge/blob/main/templates/default/core.conf

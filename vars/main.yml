@@ -25,10 +25,10 @@ deluge___release: "{{ {} | r_pufky.data.v3(
 
 deluge___app: "{{ {} | r_pufky.data.v3(
 
-    _etc_dir='/etc/opt/deluge',
-    _var_dir='/var/opt/deluge',
-    _cfg='/var/opt/deluge/config/core.conf',
-    _cfg_dir='/var/opt/deluge/config',
+    _etc_d='/etc/opt/deluge',
+    _var_d='/var/opt/deluge',
+    _core='/var/opt/deluge/config/core.conf',
+    _cfg_d='/var/opt/deluge/config',
     _srv_drop_in='/etc/systemd/system/deluged.service.d/override.conf',
     _web_drop_in='/etc/systemd/system/deluge-web.service.d/override.conf',
   ) }}"

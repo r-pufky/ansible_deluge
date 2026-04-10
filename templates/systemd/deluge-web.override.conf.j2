@@ -1,6 +1,6 @@
 [Service]
 ExecStart=
-ExecStart=/usr/bin/deluge-web -d --loglevel {{ deluge__srv._log_level }} --config "{{ deluge___app._cfg_dir }}"
+ExecStart=/usr/bin/deluge-web -d --loglevel {{ deluge__srv._log_level }} --config "{{ deluge___app._cfg_d }}"
 Restart=always
 User={{ deluge__srv._user }}
 Group={{ deluge__srv._group }}

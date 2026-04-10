@@ -12,8 +12,8 @@
     daemon_reload: true
   delay: 15
   retries: 3
-  register: nzbget__service
-  until: nzbget__service.status.ActiveState == 'active'
+  register: deluge__service
+  until: deluge__service.status.ActiveState == 'active'
   loop:
     - 'deluged.service'
     - 'deluge-web.service'

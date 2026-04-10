@@ -9,17 +9,17 @@
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~ "/vars/main.yml"
           }}'
 
-    - name: '{{ "Verify | test | " ~ deluge___app._cfg }}'
+    - name: '{{ "Verify | test | " ~ deluge___app._core }}'
       ansible.builtin.include_role:
         name: 'r_pufky.data.test'
         tasks_from: 'copy.yml'
       vars:
-        test_name: '{{ "Verify | test | " ~ deluge___app._cfg }}'
+        test_name: '{{ "Verify | test | " ~ deluge___app._core }}'
         test_src: '{{
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-            "/files/default/core.conf"
+            "/templates/default/core.conf"
           }}'
-        test_file: '{{ deluge___app._cfg }}'
+        test_file: '{{ deluge___app._core }}'
         test_owner: 'media'
         test_group: 'media'
         test_mode: '0640'

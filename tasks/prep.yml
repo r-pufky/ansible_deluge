@@ -19,7 +19,7 @@
       ) }}"
     deluge__cfg: "{{ {} | r_pufky.data.v3(
 
-        _dir=deluge_cfg_dir | regex_replace('\\/$', ''),
+        _d=deluge_cfg_d | regex_replace('\\/$', ''),
       ) }}"
 
 - name: 'Prep | assert | service user is not deluge'
@@ -42,14 +42,14 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - deluge__cfg._dir | length > 0
+      - deluge__cfg._d | length > 0
     fail_msg: |
 
       ✘ Config source not set.
       Config source enabled but no config source defined.
 
       deluge_flg_config: {{ deluge_flg_config }}
-      deluge_cfg_dir: {{ deluge__cfg._dir }}
+      deluge_cfg_d: {{ deluge__cfg._d }}
 
 - name: '{{ "Prep | account | query user " ~ deluge__srv._user }}'
   ansible.builtin.command: '{{ "id " ~ deluge__srv._user }}'
@@ -108,9 +108,9 @@
 
         _tmpl_cfg=lookup(
           'ansible.builtin.template',
-          deluge__cfg._dir ~ '/core.conf'
-          if deluge__cfg._dir | length > 0 else
-          'files/default/core.conf'
+          deluge__cfg._d ~ '/core.conf'
+          if deluge__cfg._d | length > 0 else
+          'templates/default/core.conf'
         ),
       ) }}"
 

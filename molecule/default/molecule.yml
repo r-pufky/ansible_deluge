@@ -31,9 +31,9 @@ provisioner:
       all:
         deluge_flg_config: true
         deluge_flg_perms: true
-        deluge_cfg_dir: '{{
+        deluge_cfg_d: '{{
             lookup("env", "MOLECULE_PROJECT_DIRECTORY") ~
-            "/files/default"
+            "/templates/default"
           }}'
 platforms:
   - name: 'deluge-default'

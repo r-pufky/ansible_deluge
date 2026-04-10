@@ -37,8 +37,8 @@
     mode: '0755'
     state: 'directory'
   loop:
-    - '{{ deluge___app._etc_dir }}'
-    - '{{ deluge___app._cfg_dir }}'  # cfg_dir includes var_dir.
+    - '{{ deluge___app._etc_d }}'
+    - '{{ deluge___app._cfg_d }}'  # cfg_dir includes var_dir.
 
 - name: 'Install | packages'
   when: deluge_flg_apt_sources
@@ -68,11 +68,11 @@
     password: '!'
     password_lock: true
 
-- name: '{{ "Install | filesystem | set minimal " ~ deluge___app._cfg }}'
-  when: deluge__cfg._dir | length == 0
+- name: '{{ "Install | filesystem | set minimal " ~ deluge___app._core }}'
+  when: deluge__cfg._d | length == 0
   ansible.builtin.template:
-    src: 'files/default/core.conf'
-    dest: '{{ deluge___app._cfg }}'
+    src: 'templates/default/core.conf'
+    dest: '{{ deluge___app._core }}'
     owner: '{{ deluge__srv._user }}'
     group: '{{ deluge__srv._group }}'
     mode: '0600'

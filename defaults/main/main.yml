@@ -97,12 +97,12 @@ deluge_srv_group: 'media'
 # created with correct permissions when deluge_flg_perms=true.
 #
 # A minimally configured template that works with the role will be deployed if
-# no config is specified (see files/default/core.conf).
+# no config is specified (see templates/default/core.conf).
 #
-# deluge_cfg_dir: 'host_vars/deluge.example.com/config'
+# deluge_cfg_d: 'host_vars/deluge.example.com/config'
 #
 # Default: '' (use minimally configured default).
 #
 # Reference:
 # * https://nzbget.com/documentation
-deluge_cfg_dir: ''
+deluge_cfg_d: ''
