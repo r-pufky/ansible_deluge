@@ -25,7 +25,6 @@ deluge___release: "{{ {} | r_pufky.data.v3(
 
 deluge___app: "{{ {} | r_pufky.data.v3(
 
-    _etc_d='/etc/opt/deluge',
     _var_d='/var/opt/deluge',
     _core='/var/opt/deluge/config/core.conf',
     _cfg_d='/var/opt/deluge/config',

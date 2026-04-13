@@ -8,7 +8,6 @@
 # Type    | Perms               | Path
 # --------|---------------------|-------
 # Runtime | 0750/0640 SRV:SRV   | /var/opt/deluge
-# Config  | 0640 SRV:SRV        | /etc/opt/deluge
 #
 # Installation notes:
 # * Package does not follow Debian standards (defaults, DEBCONF options).
@@ -31,14 +30,11 @@
 
 - name: 'Install | filesystem | set system directories'
   ansible.builtin.file:
-    path: '{{ item }}'
+    path: '{{ deluge___app._cfg_d }}'  # cfg_dir includes var_dir.
     owner: '{{ deluge__srv._user }}'
     group: '{{ deluge__srv._group }}'
     mode: '0755'
     state: 'directory'
-  loop:
-    - '{{ deluge___app._etc_d }}'
-    - '{{ deluge___app._cfg_d }}'  # cfg_dir includes var_dir.
 
 - name: 'Install | packages'
   when: deluge_flg_apt_sources
