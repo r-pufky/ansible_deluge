@@ -19,49 +19,67 @@
 # * https://git.deluge-torrent.org/deluge
 # * https://deluge.readthedocs.io/en/latest
 
-- name: 'Config | filetree | set managed directories'
-  ansible.builtin.file:
-    path: '{{ deluge___app._cfg_d ~ "/" ~ item.path }}'
-    owner: '{{ deluge__srv._user }}'
-    group: '{{ deluge__srv._group }}'
-    mode: '0750'
-    state: 'directory'
-  loop: '{{ query("community.general.filetree", deluge__cfg._d) }}'
-  loop_control:
-    label: '{{ item.path }}'
-  when: item.state == 'directory'
+- name: '{{ "Config | filesystem | set " ~ deluge___app._cfg_d }}'
+  when: deluge__cfg._d | length > 0
+  block:
+    - name: 'Config | filetree | set managed directories'
+      ansible.builtin.file:
+        path: '{{ deluge___app._cfg_d ~ "/" ~ item.path }}'
+        owner: '{{ deluge__srv._user }}'
+        group: '{{ deluge__srv._group }}'
+        mode: '0750'
+        state: 'directory'
+      loop: '{{ query("community.general.filetree", deluge__cfg._d) }}'
+      loop_control:
+        label: '{{ item.path }}'
+      when: item.state == 'directory'
 
-- name: 'Config | filetree | set managed files'
-  ansible.builtin.template:
-    src: '{{ item.src }}'
-    dest: '{{ deluge___app._cfg_d ~ "/" ~ item.path }}'
-    owner: '{{ deluge__srv._user }}'
-    group: '{{ deluge__srv._group }}'
-    mode: '0640'
-  loop: '{{ query("community.general.filetree", deluge__cfg._d) }}'
-  loop_control:
-    label: '{{ item.path }}'
-  when: item.state == 'file'
+    - name: 'Config | filetree | set managed files'
+      ansible.builtin.template:
+        src: '{{ item.src }}'
+        dest: '{{ deluge___app._cfg_d ~ "/" ~ item.path }}'
+        owner: '{{ deluge__srv._user }}'
+        group: '{{ deluge__srv._group }}'
+        mode: '0640'
+      loop: '{{ query("community.general.filetree", deluge__cfg._d) }}'
+      loop_control:
+        label: '{{ item.path }}'
+      when: item.state == 'file'
 
-- name: 'Config | filesystem | query remote files'
+    - name: 'Config | filesystem | query remote files'
+      ansible.builtin.find:
+        paths: '{{ deluge___app._cfg_d }}'
+        file_type: 'any'
+        hidden: true
+        recurse: true
+      register: deluge__remote
+
+    - name: 'Config | filetree | remove unmanaged files and directories'
+      ansible.builtin.file:
+        path: '{{ item.path }}'
+        state: 'absent'
+      loop: '{{ deluge__remote.files | sort(attribute="path", reverse=true) }}'
+      loop_control:
+        label: '{{ item.path }}'
+      when: >
+        item.path not in
+        (
+          query("community.general.filetree", deluge__cfg._d) |
+          map(attribute='path') |
+          map('regex_replace', '^', deluge___app._cfg_d ~ "/") | list
+        )
+
+- name: '{{ "Config | filesystem | query " ~ deluge___app._cfg_d }}'
+  when: deluge__cfg._d | length == 0
   ansible.builtin.find:
-    paths: '{{ deluge___app._cfg_d }}'
-    file_type: 'any'
+    paths: "{{ deluge___app._cfg_d }}"
+    recurse: false  # Don't need to enumerate sub-directories to remove.
     hidden: true
-    recurse: true
-  register: deluge__remote
+  register: deluge__cmd
 
-- name: 'Config | filetree | remove unmanaged files and directories'
+- name: '{{ "Config | filesystem | clear " ~ deluge___app._cfg_d }}'
+  when: deluge__cfg._d | length == 0
   ansible.builtin.file:
-    path: '{{ item.path }}'
-    state: 'absent'
-  loop: '{{ deluge__remote.files | sort(attribute="path", reverse=true) }}'
-  loop_control:
-    label: '{{ item.path }}'
-  when: >
-    item.path not in
-    (
-      query("community.general.filetree", deluge__cfg._d) |
-      map(attribute='path') |
-      map('regex_replace', '^', deluge___app._cfg_d ~ "/") | list
-    )
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ deluge__cmd.files }}"

@@ -40,7 +40,7 @@ deluge_flg_config: false
 #
 # Special Case:
 # * Always use absolute paths.
-# * Must be modifiable by root user (e.g. NFS squashed mounts may fail).
+# * Run as the task user and fallback to the service user.
 # * Locations in /var/opt/deluge will always be set to specified service user.
 #
 # Disable to managed these directories outside of this role.
@@ -87,22 +87,21 @@ deluge_srv_group: 'media'
 # Config
 ###############################################################################
 
-# Deluge configuration to set.
+# Ansible controller path to source directory (treated as a jinja2 templates
+# allowing for ansible variable use).
 #
-# Ansible controller path to source configuration files (treated as a jinja2
-# templates allowing for ansible variable interpretation). Overwrites existing
-# config set in /var/opt/deluge/config. Files not sourced will be removed.
+# Sets data in /var/opt/deluge/config. Files not sourced will be removed. Use
+# absolute paths. Paths will be parsed and directories automatically created
+# with correct permissions when deluge_flg_perms=true. See templates/default
+# for examples.
 #
-# Use absolute paths. Paths will be parsed and directories automatically
-# created with correct permissions when deluge_flg_perms=true.
-#
-# A minimally configured template that works with the role will be deployed if
-# no config is specified (see templates/default/core.conf).
+# deluge_flg_config=true:
+# ⋮deluge_cfg_d='' - Remove existing files.
+# ⋮deluge_cfg_d='{DIR}' - Replace existing files with sourced template dir.
+# deluge_flg_config=false:
+# ⋮deluge_cfg_d=* - Use template dir in templates/default.
 #
 # deluge_cfg_d: 'host_vars/deluge.example.com/config'
 #
 # Default: '' (use minimally configured default).
-#
-# Reference:
-# * https://nzbget.com/documentation
 deluge_cfg_d: ''
