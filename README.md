@@ -100,7 +100,6 @@ Associate pull requests with a submitted bug.
 ## Author Information
 PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
 
-
 [a]: https://r-pufky.github.io/ansible_docs
 [b]: https://semver.org/spec/v2.0.0
 [c]: https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0
@@ -109,7 +108,7 @@ PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
 
 [f]: https://github.com/r-pufky/ansible_deluge/blob/main/LICENSE
 [g]: https://github.com/r-pufky/ansible_collection_arr
-[h]: https://r-pufky.github.io/docs/arr/deluge
+[h]: https://r-pufky.github.io/docs/media/deluge
 [i]: https://github.com/r-pufky/ansible_deluge/blob/main/meta/main.yml
 [j]: https://github.com/r-pufky/ansible_deluge/tree/main/defaults/main/main.yml
 [k]: https://github.com/r-pufky/ansible_deluge/blob/main/defaults/main/ports.yml
